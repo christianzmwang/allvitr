@@ -4,7 +4,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-blue-100 p-4">
       <div className="max-w-xl w-full text-center">
         <h1 className="text-5xl font-extrabold text-emerald-700 mb-4">
-          Welcome to Huginn
+          Welcome to Hugin
         </h1>
         <p className="text-lg text-gray-700 mb-8">
           Your dedicated platform for market research. Get started by exploring our features or make your first search!
