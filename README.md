@@ -1,3 +1,1 @@
 # Market Research
-
-
