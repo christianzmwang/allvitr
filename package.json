@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx && prettier --check .",
+    "test": "playwright test"
   },
   "dependencies": {
     "@kubiks/otel-nextjs": "^1.0.23",
@@ -21,11 +22,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.54.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
+    "prettier": "^3.6.2",
     "typescript": "^5"
   }
 }
