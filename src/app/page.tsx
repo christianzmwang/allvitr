@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-blue-100 p-4">
@@ -10,24 +12,24 @@ export default function Home() {
           our features or make your first search!
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/features"
             className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition"
           >
             Explore Features
-          </a>
-          <a
+          </Link>
+          <Link
             href="/hugin"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             Learn More About Hugin
-          </a>
-          <a
+          </Link>
+          <Link
             href="/signup"
             className="px-6 py-3 border border-emerald-600 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition"
           >
             Get Started
-          </a>
+          </Link>
         </div>
       </div>
     </main>
