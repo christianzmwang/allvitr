@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function HuginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-blue-100 p-4">
@@ -31,18 +33,18 @@ export default function HuginPage() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/"
             className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition"
           >
             Back to Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/features"
             className="px-6 py-3 border border-emerald-600 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition"
           >
             Explore Features
-          </a>
+          </Link>
         </div>
       </div>
     </main>
