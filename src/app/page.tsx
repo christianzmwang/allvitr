@@ -17,6 +17,12 @@ export default function Home() {
             Explore Features
           </a>
           <a
+            href="/hugin"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Learn More About Hugin
+          </a>
+          <a
             href="/signup"
             className="px-6 py-3 border border-emerald-600 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition"
           >
