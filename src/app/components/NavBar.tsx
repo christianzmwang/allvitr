@@ -2,6 +2,7 @@
 
 import { Menu, Search, X } from 'lucide-react'; // icons
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
@@ -15,7 +16,7 @@ export default function NavBar() {
         "
       >
         {/* Brand "search bar" */}
-        <a
+        <Link
           href="/"
           className="
             flex items-center gap-2 text-lg font-medium text-white
@@ -23,7 +24,7 @@ export default function NavBar() {
           "
         >
           Allvitr
-        </a>
+        </Link>
 
         {/* Right-hand actions */}
         <div className="flex items-center gap-3">
@@ -66,10 +67,10 @@ export default function NavBar() {
       {/* Mobile slide-down (ultra-simple) */}
       {open && (
         <div className="md:hidden glass mx-4 mt-3 rounded-xl p-6 space-y-4">
-          <a href="#product" className="block text-white">Product</a>
-          <a href="#solutions" className="block text-white">Solutions</a>
-          <a href="#pricing" className="block text-white">Pricing</a>
-          <a href="#contact" className="block text-white">Contact</a>
+          <Link href="#product" className="block text-white">Product</Link>
+          <Link href="#solutions" className="block text-white">Solutions</Link>
+          <Link href="#pricing" className="block text-white">Pricing</Link>
+          <Link href="#contact" className="block text-white">Contact</Link>
         </div>
       )}
     </header>
