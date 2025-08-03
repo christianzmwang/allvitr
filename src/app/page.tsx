@@ -64,37 +64,40 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-black text-white py-12 px-8 mt-auto">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="max-w-[80%] mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-8">
             <div>
               <h3 className="text-xl font-semibold mb-4">Allvitr</h3>
               <p className="text-gray-300">
-                Your dedicated platform for market research and insights.
+                Your dedicated platform for<br />
+                market research and insights.
               </p>
             </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition">Features</a></li>
-                <li><a href="#" className="hover:text-white transition">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition">API</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition">About</a></li>
-                <li><a href="#" className="hover:text-white transition">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition">Status</a></li>
-              </ul>
+            <div className="flex flex-col md:flex-row gap-30">
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Product</h4>
+                <ul className="space-y-2 text-gray-300 [&>li>a]:hover:text-white [&>li>a]:transition">
+                  <li><a href="#">Features</a></li>
+                  <li><a href="#">Pricing</a></li>
+                  <li><a href="#">API</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Company</h4>
+                <ul className="space-y-2 text-gray-300 [&>li>a]:hover:text-white [&>li>a]:transition">
+                  <li><a href="#">About</a></li>
+                  <li><a href="#">Blog</a></li>
+                  <li><a href="#">Careers</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Support</h4>
+                <ul className="space-y-2 text-gray-300 [&>li>a]:hover:text-white [&>li>a]:transition">
+                  <li><a href="#">Help Center</a></li>
+                  <li><a href="#">Contact</a></li>
+                  <li><a href="#">Status</a></li>
+                </ul>
+              </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
