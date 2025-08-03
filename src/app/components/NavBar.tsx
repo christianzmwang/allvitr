@@ -32,7 +32,7 @@ export default function NavBar() {
             className="
               hidden md:inline rounded-full border border-black/70
               bg-white px-5 py-1.5 text-sm font-semibold
-              transition-all duration-300 ease-in-out hover:bg-gray-800 hover:text-white hover:border-gray-800
+              transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white hover:border-[#1f1f1f]
             "
           >
             Get&nbsp;Started
@@ -43,8 +43,7 @@ export default function NavBar() {
             aria-label="Site search"
             className="
               grid w-10 h-8 place-items-center rounded-full border
-              border-white bg-white text-black transition-all duration-300 ease-in-out hover:bg-gray-800 hover:text-white hover:border-gray-800
-            "
+              border-white bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white hover:border-[#1f1f1f]"
           >
             <Search className="w-4" />
           </button>
