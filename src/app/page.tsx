@@ -5,13 +5,13 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center bg-black p-8 py-16">
-        <div className="max-w-xl w-full text-center">
+        <div className="max-w-2xl w-full text-center">
           <h1 className="text-5xl font-extrabold text-white mb-4">
             Welcome to Allvitr
           </h1>
           <p className="text-lg text-gray-400 mb-8">
-            Your dedicated platform for market research. Get started by exploring
-            Hugin, where you can make your first search!
+            Welcome to your go-to platform for market research. 
+            Start your journey by exploring Hugin and making your first search!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
