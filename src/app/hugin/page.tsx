@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import NavBar from '../components/NavBar'
 
 export default function HuginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black p-4">
+      <NavBar />
       <div className="max-w-2xl w-full text-center">
         <h1 className="text-5xl font-extrabold text-white mb-4">
           Hugin

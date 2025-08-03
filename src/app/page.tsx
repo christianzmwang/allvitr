@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import NavBar from './components/NavBar'
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
+      <NavBar />
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center bg-black p-8 py-16">
         <div className="max-w-2xl w-full text-center">
@@ -25,36 +27,36 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-400">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Section 1
           </h2>
-          <div className="text-center text-gray-600">
+          <div className="text-center text-gray-300">
             {/* Content will go here */}
           </div>
         </div>
       </section>
 
       {/* Section 2 */}
-      <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-white">
+      <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-800">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Section 2
           </h2>
-          <div className="text-center text-gray-600">
+          <div className="text-center text-gray-300">
             {/* Content will go here */}
           </div>
         </div>
       </section>
 
       {/* Section 3 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Section 3
           </h2>
-          <div className="text-center text-gray-600">
+          <div className="text-center text-gray-300">
             {/* Content will go here */}
           </div>
         </div>
