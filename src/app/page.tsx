@@ -96,7 +96,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-            <p>&copy; 2024 Allvitr. All rights reserved.</p>
+            <p>&copy; 2025 Allvitr. All rights reserved.</p>
           </div>
         </div>
       </footer>
