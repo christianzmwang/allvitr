@@ -82,8 +82,8 @@ export default function NavBar() {
           {/* Demo button - show on both mobile and desktop */}
           <button
             className="
-              rounded-full text-gray-200 bg-red-600 px-5 py-1.5 text-sm font-semibold border-2 border-transparent
-              transition-all duration-300 ease-in-out hover:border-gray-200
+              rounded-full text-red-600 bg-whtie px-5 py-1.5 text-sm font-semibold border-2 border-red
+              transition-all duration-300 ease-in-out hover:border-white hover:text-white
             "
           >
             Demo
