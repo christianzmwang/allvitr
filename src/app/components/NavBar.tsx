@@ -1,13 +1,15 @@
 'use client';
 
 import { Menu, X } from 'lucide-react'; // icons
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,9 +17,26 @@ export default function NavBar() {
       setScrolled(isScrolled);
     };
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        open &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 mt-4">
@@ -72,6 +91,7 @@ export default function NavBar() {
 
           {/* Hamburger / close - show on both mobile and desktop */}
           <button
+            ref={buttonRef}
             aria-label="Open menu"
             onClick={() => setOpen(!open)}
             className="
@@ -79,19 +99,38 @@ export default function NavBar() {
               bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
             "
           >
-            {open ? <X className="w-4" /> : <Menu className="w-4" />}
+            <div className="relative w-4 h-4">
+              <Menu 
+                className={`w-4 h-4 absolute inset-0 transition-all duration-300 ease-in-out ${
+                  open ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'
+                }`} 
+              />
+              <X 
+                className={`w-4 h-4 absolute inset-0 transition-all duration-300 ease-in-out ${
+                  open ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'
+                }`} 
+              />
+            </div>
           </button>
         </div>
       </nav>
 
-      {/* Slide-down menu (ultra-simple) */}
-      {open && (
-        <div className="glass mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4">
-          <Link href="#product" className="block text-white">Product</Link>
-          <Link href="#solutions" className="block text-white">Solutions</Link>
-          <Link href="#pricing" className="block text-white">Pricing</Link>
-        </div>
-      )}
+      {/* Slide-down menu with smooth transitions */}
+      <div
+        ref={menuRef}
+        className={`
+          glass mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4
+          transition-all duration-300 ease-in-out transform origin-top
+          ${open 
+            ? 'opacity-100 scale-y-100 translate-y-0' 
+            : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+          }
+        `}
+      >
+        <Link href="#product" className="block text-white hover:text-gray-300 transition-colors duration-200">Product</Link>
+        <Link href="#solutions" className="block text-white hover:text-gray-300 transition-colors duration-200">Solutions</Link>
+        <Link href="#pricing" className="block text-white hover:text-gray-300 transition-colors duration-200">Pricing</Link>
+      </div>
     </header>
   );
 } 
