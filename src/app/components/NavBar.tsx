@@ -43,7 +43,7 @@ export default function NavBar() {
       <nav
         className="
           glass mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
-          rounded-full px-6 py-2
+          rounded-full px-6 py-2 shadow-md
         "
       >
         {/* Brand "search bar" */}
@@ -82,8 +82,8 @@ export default function NavBar() {
           {/* Demo button - show on both mobile and desktop */}
           <button
             className="
-              rounded-full bg-white px-5 py-1.5 text-sm font-semibold
-              transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
+              rounded-full text-gray-200 bg-red-600 px-5 py-1.5 text-sm font-semibold border-2 border-transparent
+              transition-all duration-300 ease-in-out hover:border-gray-200
             "
           >
             Demo
@@ -127,9 +127,9 @@ export default function NavBar() {
           }
         `}
       >
-        <Link href="#product" className="block text-white hover:text-gray-300 transition-colors duration-200">Product</Link>
-        <Link href="#solutions" className="block text-white hover:text-gray-300 transition-colors duration-200">Solutions</Link>
-        <Link href="#pricing" className="block text-white hover:text-gray-300 transition-colors duration-200">Pricing</Link>
+        <Link href="#product" className="block mix-blend-difference text-white transition-colors duration-200">Product</Link>
+        <Link href="#solutions" className="block mix-blend-difference text-white transition-colors duration-200">Solutions</Link>
+        <Link href="#pricing" className="block mix-blend-difference text-white transition-colors duration-200">Pricing</Link>
       </div>
     </header>
   );
