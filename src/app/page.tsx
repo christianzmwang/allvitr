@@ -9,7 +9,7 @@ export default function Home() {
       <section className="min-h-screen flex items-center justify-center bg-black p-8 py-16">
         <div className="max-w-2xl w-full text-center">
           <h1 className="text-5xl font-extrabold text-white mb-4">
-            Welcome to Allvitr
+            Allvitr
           </h1>
           <p className="text-lg text-gray-400 mb-8">
             Your dedicated platform for market research and insights.
@@ -27,7 +27,7 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-white-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Section 1
