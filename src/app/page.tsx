@@ -27,7 +27,7 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-white-900">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Section 1
