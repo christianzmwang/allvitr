@@ -35,13 +35,13 @@ export default function NavBar() {
           "
         >
           {/* Show logo on mobile when scrolled, text otherwise */}
-          <div className="md:hidden relative">
+          <div className="md:hidden relative flex items-center">
             <Image
               src="/globe.svg"
               alt="Allvitr Logo"
               width={24}
               height={24}
-              className={`w-6 h-6 absolute inset-0 transition-all duration-250 ease-in-out ${
+              className={`w-6 h-6 absolute transition-all duration-250 ease-in-out ${
                 scrolled ? 'opacity-100 scale-100 delay-125' : 'opacity-0 scale-75'
               }`}
             />
@@ -60,15 +60,14 @@ export default function NavBar() {
 
         {/* Right-hand actions */}
         <div className="flex items-center gap-3">
-          {/* Get Started button - show on both mobile and desktop */}
+          {/* Demo button - show on both mobile and desktop */}
           <button
             className="
-              rounded-full border border-black/70
-              bg-white px-5 py-1.5 text-sm font-semibold
-              transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white hover:border-[#1f1f1f]
+              rounded-full bg-white px-5 py-1.5 text-sm font-semibold
+              transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
             "
           >
-            Get&nbsp;Started
+            Demo
           </button>
 
           {/* Hamburger / close - show on both mobile and desktop */}
@@ -76,8 +75,8 @@ export default function NavBar() {
             aria-label="Open menu"
             onClick={() => setOpen(!open)}
             className="
-              grid w-10 h-8 place-items-center rounded-full border
-              border-white bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white hover:border-[#1f1f1f]
+              grid w-10 h-8 place-items-center rounded-full
+              bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
             "
           >
             {open ? <X className="w-4" /> : <Menu className="w-4" />}
@@ -91,7 +90,6 @@ export default function NavBar() {
           <Link href="#product" className="block text-white">Product</Link>
           <Link href="#solutions" className="block text-white">Solutions</Link>
           <Link href="#pricing" className="block text-white">Pricing</Link>
-          <Link href="#contact" className="block text-white">Contact</Link>
         </div>
       )}
     </header>
