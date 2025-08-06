@@ -25,13 +25,13 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">
-            What are Buying Signals?
-          </h2>
-          <div className="text-center text-gray-300">
-            <p className="text-lg">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+          <div className="text-left">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              What are Buying Signals?
+            </h2>
+            <p className="text-lg text-gray-400">
               Buying signals are triggers or events that indicate a potential
               customer is ready to make a purchase. These signals can be
               anything from a company announcing a new project, to a key
@@ -40,17 +40,23 @@ export default function Home() {
               likely to be receptive to your solution.
             </p>
           </div>
+          <div className="flex justify-center">
+            <img src="/globe.svg" alt="Globe" className="w-64 h-64" />
+          </div>
         </div>
       </section>
 
       {/* Section 2 */}
-      <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-800">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">
-            How Allvitr Helps You Find Them
-          </h2>
-          <div className="text-center text-gray-300">
-            <p className="text-lg">
+      <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-900">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+          <div className="flex justify-center">
+            <img src="/window.svg" alt="Window" className="w-64 h-64" />
+          </div>
+          <div className="text-left">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              How Allvitr Helps You Find Them
+            </h2>
+            <p className="text-lg text-gray-400">
               Allvitr provides a powerful search interface that allows you to
               scan a vast array of sources for buying signals. Our platform is
               designed to help you filter out the noise and focus on the
