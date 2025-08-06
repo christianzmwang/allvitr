@@ -30,10 +30,12 @@ export default function Home() {
       <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
-            Section 1
+            What are Buying Signals?
           </h2>
           <div className="text-center text-gray-300">
-            {/* Content will go here */}
+            <p className="text-lg">
+              Buying signals are triggers or events that indicate a potential customer is ready to make a purchase. These signals can be anything from a company announcing a new project, to a key executive changing roles. By identifying these signals, you can engage with prospects at the perfect time, when they are most likely to be receptive to your solution.
+            </p>
           </div>
         </div>
       </section>
@@ -42,10 +44,12 @@ export default function Home() {
       <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-800">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
-            Section 2
+            How Allvitr Helps You Find Them
           </h2>
           <div className="text-center text-gray-300">
-            {/* Content will go here */}
+            <p className="text-lg">
+              Allvitr provides a powerful search interface that allows you to scan a vast array of sources for buying signals. Our platform is designed to help you filter out the noise and focus on the information that matters. With Allvitr, you can track companies, industries, and trends, and get notified when a relevant signal is detected.
+            </p>
           </div>
         </div>
       </section>
@@ -54,10 +58,33 @@ export default function Home() {
       <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
-            Section 3
+            Example Signals
           </h2>
-          <div className="text-center text-gray-300">
-            {/* Content will go here */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">New Product Launch</h3>
+              <p className="text-gray-400">A company launching a new product is a strong signal that they are investing in growth and may need new tools and services to support their launch.</p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Executive Hire</h3>
+              <p className="text-gray-400">A new executive, especially in a key role like marketing or sales, will often look to make their mark by bringing in new tools and strategies.</p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Geographic Expansion</h3>
+              <p className="text-gray-400">When a company expands into a new market, they will need to understand the local landscape, and may be looking for partners and services to help them.</p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Mention of "Integration" in Earnings Calls</h3>
+              <p className="text-gray-400">This indicates a focus on connecting different systems and can be a sign that a company is looking for new software solutions.</p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Increased Hiring in a Department</h3>
+              <p className="text-gray-400">A surge in hiring in a specific department can indicate a new focus or project that may require new tools and resources.</p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Regulatory Changes</h3>
+              <p className="text-gray-400">New regulations can force companies to adopt new technologies and processes to ensure compliance, creating opportunities for vendors.</p>
+            </div>
           </div>
         </div>
       </section>
