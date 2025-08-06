@@ -8,6 +8,9 @@
 }
 
 /* Cursor pointer for all interactive elements */
-button, a, [role="button"], [tabindex]:not([tabindex="-1"]) {
+button,
+a,
+[role='button'],
+[tabindex]:not([tabindex='-1']) {
   cursor: pointer;
 }
