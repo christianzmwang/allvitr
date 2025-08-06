@@ -10,27 +10,35 @@ export default function HuginPage() {
           Hugin
         </h1>
         <p className="text-base md:text-lg text-gray-400 mb-6 md:mb-8 px-2">
-          Welcome to the Hugin page! This is where you can explore advanced features
-          and tools for your market research needs.
+          Welcome to the Hugin page! This is where you can explore advanced
+          features and tools for your market research needs.
         </p>
         <div className="bg-gray-900 rounded-lg shadow-lg p-4 md:p-8 mb-6 md:mb-8 border border-gray-700">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">
             What is Hugin?
           </h2>
           <p className="text-sm md:text-base text-gray-300 mb-4 md:mb-6">
-            Hugin is a powerful platform designed to help you gather insights, 
-            analyze market trends, and make data-driven decisions. Our advanced 
-            tools provide comprehensive research capabilities for businesses and 
+            Hugin is a powerful platform designed to help you gather insights,
+            analyze market trends, and make data-driven decisions. Our advanced
+            tools provide comprehensive research capabilities for businesses and
             individuals alike.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-left">
             <div className="bg-gray-800 p-3 md:p-4 rounded-lg border border-gray-700">
-              <h3 className="font-semibold text-white mb-2 text-sm md:text-base">Market Analysis</h3>
-              <p className="text-xs md:text-sm text-gray-400">Comprehensive market research and trend analysis</p>
+              <h3 className="font-semibold text-white mb-2 text-sm md:text-base">
+                Market Analysis
+              </h3>
+              <p className="text-xs md:text-sm text-gray-400">
+                Comprehensive market research and trend analysis
+              </p>
             </div>
             <div className="bg-gray-800 p-3 md:p-4 rounded-lg border border-gray-700">
-              <h3 className="font-semibold text-white mb-2 text-sm md:text-base">Data Insights</h3>
-              <p className="text-xs md:text-sm text-gray-400">Advanced analytics and reporting tools</p>
+              <h3 className="font-semibold text-white mb-2 text-sm md:text-base">
+                Data Insights
+              </h3>
+              <p className="text-xs md:text-sm text-gray-400">
+                Advanced analytics and reporting tools
+              </p>
             </div>
           </div>
         </div>
@@ -48,7 +56,7 @@ export default function HuginPage() {
             Explore Features
           </Link>
         </div>
-              </div>
-      </main>
-    )
-  } 
+      </div>
+    </main>
+  )
+}
