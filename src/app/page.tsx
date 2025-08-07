@@ -154,7 +154,6 @@ export default function Home() {
               <a
                 href="https://www.linkedin.com/company/allvitr/"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
-                target="_blank" rel="noopener noreferrer"
               >
                 <svg
                   className="w-6 h-6"
@@ -168,7 +167,6 @@ export default function Home() {
               <a
                 href="https://x.com/allvitr"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
-                target="_blank" rel="noopener noreferrer"
               >
                 <svg
                   className="w-6 h-6"
