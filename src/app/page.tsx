@@ -8,8 +8,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center bg-black p-8 py-16">
         <div className="max-w-2xl w-full text-center">
-          <h1 className="text-5xl font-extrabold text-white mb-4">Allvitr</h1>
-          <p className="text-lg text-gray-400 mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Allvitr</h1>
+          <p className="text-md md:text-lg text-gray-400 mb-8">
             Your dedicated platform for market research and insights. Start your
             journey by exploring Hugin and making your first search!
           </p>
@@ -27,7 +27,7 @@ export default function Home() {
       {/* Section 1 */}
       <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="text-left">
+          <div className="text-center md:text-left">
             <h2 className="text-3xl font-bold text-white mb-4">
               What are Buying Signals?
             </h2>
@@ -41,7 +41,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex justify-center">
-            <img src="/globe.svg" alt="Globe" className="w-64 h-64" />
+            <img src="/globe.svg" alt="Globe" className="w-48 h-48 md:w-64 md:h-64" />
           </div>
         </div>
       </section>
@@ -49,10 +49,10 @@ export default function Home() {
       {/* Section 2 */}
       <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-900">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="flex justify-center">
-            <img src="/window.svg" alt="Window" className="w-64 h-64" />
+          <div className="flex justify-center md:order-2">
+            <img src="/window.svg" alt="Window" className="w-48 h-48 md:w-64 md:h-64" />
           </div>
-          <div className="text-left">
+          <div className="text-center md:text-left md:order-1">
             <h2 className="text-3xl font-bold text-white mb-4">
               How Allvitr Helps You Find Them
             </h2>
@@ -74,7 +74,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Example Signals
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-gray-900 p-6 rounded-lg text-center">
               <h3 className="text-xl font-bold text-white mb-2">
                 New Product Launch

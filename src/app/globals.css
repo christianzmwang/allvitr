@@ -14,3 +14,67 @@ a,
 [tabindex]:not([tabindex='-1']) {
   cursor: pointer;
 }
+
+/* Custom animation for Allvitr text */
+@keyframes typing-disappear {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}
+
+@keyframes typing-appear {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from, to { background-color: transparent }
+  50% { background-color: red; }
+}
+
+.allvitr-typing-disappear {
+  animation: typing-disappear 0.8s steps(7, end) forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom; /* To align with the icon */
+  position: relative;
+}
+
+.allvitr-typing-disappear::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 2px;
+  background-color: red;
+  animation: blink-caret .75s step-end infinite;
+}
+
+.allvitr-typing-appear {
+  animation: typing-appear 0.8s steps(7, end) forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom; /* To align with the icon */
+  position: relative;
+}
+
+.allvitr-typing-appear::after {
+ content: '';
+ position: absolute;
+ bottom: 0;
+ right: 0;
+ width: 10px;
+ height: 2px;
+ background-color: red;
+ animation: blink-caret .75s step-end infinite;
+}
