@@ -60,19 +60,15 @@ export default function NavBar() {
               alt="Allvitr Logo"
               width={24}
               height={24}
-              className={`w-6 h-6 absolute transition-all duration-250 ease-in-out ${
+              className={`w-6 h-6 absolute transition-all duration-500 ease-in-out ${
                 scrolled
-                  ? 'opacity-100 scale-100 delay-125'
+                  ? 'opacity-100 scale-100 delay-[1000ms]'
                   : 'opacity-0 scale-75'
               }`}
             />
             <span
-              className={`transition-all duration-250 ease-in-out ${
-                scrolled
-                  ? 'opacity-0 scale-75'
-                  : 'opacity-100 scale-100 delay-125'
-              }`}
-            >
+              key={scrolled ? 'scrolled' : 'not-scrolled'}
+              className={`${scrolled ? 'allvitr-typing-disappear' : 'allvitr-typing-appear'}`}>
               Allvitr
             </span>
           </div>
