@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Allvitr',
-  description: 'Know your market',
+  description: 'Amplifying Human Insight',
 }
 
 export default function RootLayout({
