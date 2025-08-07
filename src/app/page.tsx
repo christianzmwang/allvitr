@@ -144,16 +144,17 @@ export default function Home() {
             <div className="text-left">
               <h3 className="text-2xl font-bold mb-2">Allvitr</h3>
               <p className="text-gray-300 mb-4">
-                Your dedicated platform for market research and insights.
+                Amplifying Human Insight
               </p>
               <p className="text-gray-400 text-sm">
-                &copy; 2025 Allvitr. All rights reserved.
+                &copy; {new Date().getFullYear()} Allvitr. All rights reserved.
               </p>
             </div>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://www.linkedin.com/company/allvitr/"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
+                target="_blank" rel="noopener noreferrer"
               >
                 <svg
                   className="w-6 h-6"
@@ -165,8 +166,9 @@ export default function Home() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://x.com/allvitr"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
+                target="_blank" rel="noopener noreferrer"
               >
                 <svg
                   className="w-6 h-6"
