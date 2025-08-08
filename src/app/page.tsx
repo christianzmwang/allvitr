@@ -1,31 +1,35 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
+import ConnectingDots from './components/ConnectingDots'
+import Spotlight from './components/Spotlight'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <div className="fixed inset-0 z-[-1]">
+        <ConnectingDots backgroundColor="#0a0a0a" color="255,255,255" />
+      </div>
       <NavBar />
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center bg-black p-8 py-16">
-        <div className="max-w-2xl w-full text-center">
+      <section className="relative flex items-center justify-center h-screen p-8 overflow-hidden">
+        <div className="relative z-10 max-w-2xl w-full text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Allvitr</h1>
           <p className="text-md md:text-lg text-gray-400 mb-8">
-            Your dedicated platform for market research and insights. Start your
-            journey by exploring Hugin and making your first search!
+          We build forward-looking ontologies that weave scattered data into a dynamic knowledge fabric: continually amplifying human insight.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/hugin"
               className="px-6 py-3 bg-gray-400 text-black font-semibold border-3 border-transparent hover:border-white transition duration-300"
             >
-              Learn More About Hugin
+              Learn More about Hugin
             </Link>
           </div>
         </div>
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
+      <section className="min-h-screen flex items-end justify-center py-64 px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black -mt-[20vh]">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -47,7 +51,8 @@ export default function Home() {
       </section>
 
       {/* Section 2 */}
-      <section className="h-[60vh] flex items-center justify-center py-16 px-8 bg-gray-900">
+      {/* Section 2 */}
+      <Spotlight className="h-[60vh] flex items-center justify-center py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div className="flex justify-center md:order-2">
             <img src="/window.svg" alt="Window" className="w-48 h-48 md:w-64 md:h-64" />
@@ -66,10 +71,10 @@ export default function Home() {
             </p>
           </div>
         </div>
-      </section>
+      </Spotlight>
 
       {/* Section 3 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gray-950">
+      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Example Signals

@@ -79,6 +79,28 @@ export default function NavBar() {
           </span>
         </Link>
 
+        {/* Centered navigation links for desktop */}
+        <div className="hidden md:flex items-center gap-6">
+          <Link
+            href="#product"
+            className="text-white transition-colors duration-200 hover:text-gray-500"
+          >
+            Platforms
+          </Link>
+          <Link
+            href="#solutions"
+            className="text-white transition-colors duration-200 hover:text-gray-500"
+          >
+            Mission
+          </Link>
+          <Link
+            href="#pricing"
+            className="text-white transition-colors duration-200 hover:text-gray-500"
+          >
+            Pricing
+          </Link>
+        </div>
+
         {/* Right-hand actions */}
         <div className="flex items-center gap-3">
           {/* Demo button - show on both mobile and desktop */}
@@ -91,7 +113,7 @@ export default function NavBar() {
             Demo
           </button>
 
-          {/* Hamburger / close - show on both mobile and desktop */}
+          {/* Hamburger / close - show only on mobile */}
           <button
             ref={buttonRef}
             aria-label="Open menu"
@@ -99,6 +121,7 @@ export default function NavBar() {
             className="
               grid w-10 h-8 place-items-center rounded-full
               bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
+              md:hidden
             "
           >
             <div className="relative w-4 h-4">
@@ -121,12 +144,13 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* Slide-down menu with smooth transitions */}
+      {/* Slide-down menu for mobile */}
       <div
         ref={menuRef}
         className={`
           glass mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4
           transition-all duration-300 ease-in-out transform origin-top
+          md:hidden
           ${
             open
               ? 'opacity-100 scale-y-100 translate-y-0'
@@ -138,13 +162,13 @@ export default function NavBar() {
           href="#product"
           className="block mix-blend-difference text-white transition-colors duration-200"
         >
-          Product
+          Platforms
         </Link>
         <Link
           href="#solutions"
           className="block mix-blend-difference text-white transition-colors duration-200"
         >
-          Solutions
+          Mission
         </Link>
         <Link
           href="#pricing"
