@@ -1,21 +1,19 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
-import ConnectingDots from './components/ConnectingDots'
-import Spotlight from './components/Spotlight'
+import DotsBackgroundSwitcher from './components/DotsBackgroundSwitcher'
+import MouseDotsInSection from './components/MouseDotsInSection'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <div className="fixed inset-0 z-[-1]">
-        <ConnectingDots backgroundColor="#0a0a0a" color="255,255,255" />
-      </div>
+    <div className="min-h-screen flex flex-col relative pt-24">
+      <DotsBackgroundSwitcher targetId="section-2" divisions={20} />
       <NavBar />
       {/* Hero Section */}
-      <section className="relative flex items-center justify-center h-screen p-8 overflow-hidden">
+      <section className="relative flex items-center justify-center min-h-[85vh] md:h-screen p-6 md:p-8 overflow-hidden">
         <div className="relative z-10 max-w-2xl w-full text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Allvitr</h1>
           <p className="text-md md:text-lg text-gray-400 mb-8">
-          We build forward-looking ontologies that weave scattered data into a dynamic knowledge fabric: continually amplifying human insight.
+          We turn information overload into clarity, building smart connections that amplify human insight and empower autonomous decision-making.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -29,9 +27,9 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-end justify-center py-64 px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black -mt-[20vh]">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="text-center md:text-left">
+      <section className="min-h-screen flex items-center md:items-end justify-center py-24 md:py-64 px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="text-center md:text-left px-1">
             <h2 className="text-3xl font-bold text-white mb-4">
               What are Buying Signals?
             </h2>
@@ -45,36 +43,67 @@ export default function Home() {
             </p>
           </div>
           <div className="flex justify-center">
-            <img src="/globe.svg" alt="Globe" className="w-48 h-48 md:w-64 md:h-64" />
+            <img src="/globe.svg" alt="Globe" className="w-40 h-40 md:w-64 md:h-64" />
           </div>
         </div>
       </section>
 
-      {/* Section 2 */}
-      {/* Section 2 */}
-      <Spotlight className="h-[60vh] flex items-center justify-center py-16 px-8 bg-white">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="flex justify-center md:order-2">
-            <img src="/window.svg" alt="Window" className="w-48 h-48 md:w-64 md:h-64" />
-          </div>
-          <div className="text-center md:text-left md:order-1">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              How Allvitr Helps You Find Them
-            </h2>
-            <p className="text-lg text-gray-400">
-              Allvitr provides a powerful search interface that allows you to
-              scan a vast array of sources for buying signals. Our platform is
-              designed to help you filter out the noise and focus on the
-              information that matters. With Allvitr, you can track companies,
-              industries, and trends, and get notified when a relevant signal is
-              detected.
-            </p>
+      {/* Section 2: Why Signals Matter */}
+      <section className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-zinc-950">
+        <div className="w-[95%] md:max-w-[80%] mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">
+            Why Signals Matter
+          </h2>
+          <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-12">
+            Timing is everything. Acting on the right signal lets you start conversations when teams have the
+            budget, urgency, and momentum. Allvitr helps you identify those moments—consistently.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-white mb-2">Prioritize Outreach</h3>
+              <p className="text-gray-400">
+                Focus your team on accounts that are actively evaluating solutions, not just a static ICP list.
+              </p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-white mb-2">Shorten Cycles</h3>
+              <p className="text-gray-400">
+                Start with context. Use signals to tailor messaging and speed up qualification.
+              </p>
+            </div>
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-white mb-2">Increase Win Rate</h3>
+              <p className="text-gray-400">
+                Engage when the need is fresh and budgets are available—improving conversion at every stage.
+              </p>
+            </div>
           </div>
         </div>
-      </Spotlight>
+      </section>
 
-      {/* Section 3 */}
-      <section className="min-h-screen flex items-center justify-center py-16 px-8 bg-gradient-to-b from-gray-900 to-black">
+      {/* Section 3: How Allvitr Helps You Find Them */}
+      <section id="section-2" className="py-4 px-4 bg-zinc-950">
+        <div className="relative h-[60vh] md:h-[68vh] w-[100%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
+          <MouseDotsInSection sectionId="section-2" divisions={20} />
+          <div className="relative z-10 h-full w-full flex items-center justify-center">
+            <div className="max-w-2xl w-full text-center px-6">
+              <div className="flex justify-center mb-6">
+                <img src="/window.svg" alt="Window" className="w-40 h-40 md:w-64 md:h-64" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-4">How Allvitr Helps You Find Them</h2>
+              <p className="text-lg text-gray-300">
+                Allvitr provides a powerful search interface that allows you to scan a vast array of sources for
+                buying signals. Our platform is designed to help you filter out the noise and focus on the information
+                that matters. With Allvitr, you can track companies, industries, and trends, and get notified when a
+                relevant signal is detected.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4 */}
+      <section className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-zinc-950">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             Example Signals
@@ -143,7 +172,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-8 px-8 mt-auto">
+      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto">
         <div className="w-[95%] md:max-w-[80%] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="text-left">
