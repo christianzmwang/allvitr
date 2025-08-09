@@ -8,13 +8,17 @@ import Image from 'next/image'
 export default function NavBar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [useDarkGlass, setUseDarkGlass] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10
       setScrolled(isScrolled)
+      // Re-evaluate background under navbar on scroll
+      evaluateBackground()
     }
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -30,21 +34,82 @@ export default function NavBar() {
     }
 
     window.addEventListener('scroll', handleScroll)
+    window.addEventListener('resize', evaluateBackground)
     document.addEventListener('mousedown', handleClickOutside)
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', evaluateBackground)
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [open])
 
+  // Decide whether content behind navbar is light or dark
+  const evaluateBackground = () => {
+    try {
+      const header = navRef.current
+      if (!header) return
+      const rect = header.getBoundingClientRect()
+      const sampleX = Math.round(rect.left + rect.width / 2)
+      const sampleY = Math.max(0, Math.round(rect.top + rect.height / 2))
+      const elements = document.elementsFromPoint(sampleX, sampleY)
+
+      // Prefer explicit data attribute theme if present
+      for (const el of elements) {
+        if (el === header || header.contains(el)) continue
+        const theme = (el as HTMLElement).dataset?.navTheme
+        if (theme === 'light') {
+          setUseDarkGlass(true)
+          return
+        }
+        if (theme === 'dark' || theme === 'dark-contrast') {
+          setUseDarkGlass(false)
+          return
+        }
+      }
+
+      // Iterate visual stack from top to bottom, skipping header and fully transparent items
+      let bg: string | null = null
+      for (const el of elements) {
+        if (el === header || header.contains(el)) continue
+        const style = window.getComputedStyle(el)
+        const candidate = style.backgroundColor
+        if (candidate && candidate !== 'transparent' && candidate !== 'rgba(0, 0, 0, 0)') {
+          bg = candidate
+          break
+        }
+      }
+
+      // Fallback to body background
+      if (!bg) {
+        bg = window.getComputedStyle(document.body).backgroundColor
+      }
+      if (!bg) return
+
+      const match = bg.match(/rgba?\(([^)]+)\)/)
+      if (!match) return
+      const parts = match[1].split(',').map((p) => parseFloat(p.trim()))
+      const r = parts[0] || 0
+      const g = parts[1] || 0
+      const b = parts[2] || 0
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      setUseDarkGlass(luminance > 180)
+    } catch {
+      // Fail safe: keep default
+    }
+  }
+
+  useEffect(() => {
+    evaluateBackground()
+  }, [])
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 mt-4">
+    <header ref={navRef} className="fixed inset-x-0 top-0 z-50 mt-4">
       <nav
-        className="
-          glass mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
-          rounded-full px-6 py-2 shadow-md
-        "
+        className={`
+          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
+          rounded-full px-6 py-2 shadow-md transition-colors duration-300
+        `}
       >
         {/* Brand "search bar" */}
         <Link
@@ -83,19 +148,19 @@ export default function NavBar() {
         <div className="hidden md:flex items-center gap-6">
           <Link
             href="#product"
-            className="text-white transition-colors duration-200 hover:text-gray-500"
+            className="text-white transition-colors duration-200 hover:text-red-600"
           >
             Platforms
           </Link>
           <Link
             href="#solutions"
-            className="text-white transition-colors duration-200 hover:text-gray-500"
+            className="text-white transition-colors duration-200 hover:text-red-600"
           >
             Mission
           </Link>
           <Link
             href="#pricing"
-            className="text-white transition-colors duration-200 hover:text-gray-500"
+            className="text-white transition-colors duration-200 hover:text-red-600"
           >
             Pricing
           </Link>
@@ -106,7 +171,7 @@ export default function NavBar() {
           {/* Demo button - show on both mobile and desktop */}
           <button
             className="
-              rounded-full text-red-600 bg-whtie px-5 py-1.5 text-sm font-semibold border-2 border-red
+              rounded-full text-red-600 px-5 py-1.5 text-sm font-semibold border-2 border-red
               transition-all duration-300 ease-in-out hover:border-white hover:text-white
             "
           >
@@ -148,7 +213,7 @@ export default function NavBar() {
       <div
         ref={menuRef}
         className={`
-          glass mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4
+          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4
           transition-all duration-300 ease-in-out transform origin-top
           md:hidden
           ${
@@ -160,19 +225,19 @@ export default function NavBar() {
       >
         <Link
           href="#product"
-          className="block mix-blend-difference text-white transition-colors duration-200"
+          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
         >
           Platforms
         </Link>
         <Link
           href="#solutions"
-          className="block mix-blend-difference text-white transition-colors duration-200"
+          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
         >
           Mission
         </Link>
         <Link
           href="#pricing"
-          className="block mix-blend-difference text-white transition-colors duration-200"
+          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
         >
           Pricing
         </Link>
