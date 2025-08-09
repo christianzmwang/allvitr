@@ -1,19 +1,19 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
-import DotsBackgroundSwitcher from './components/DotsBackgroundSwitcher'
-import MouseDotsInSection from './components/MouseDotsInSection'
+import DotsLayer from './components/DotsLayer'
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col relative pt-24">
-      <DotsBackgroundSwitcher targetId="section-2" divisions={20} />
+      <DotsLayer targetId="section-2" showWhenInView={false} mode="uniform" divisions={20} variant="fixed" />
       <NavBar />
       {/* Hero Section */}
-      <section className="relative flex items-center justify-center min-h-[85vh] md:h-screen p-6 md:p-8 overflow-hidden">
+      <section data-nav-theme="dark" className="relative flex items-center justify-center min-h-[80vh] md:min-h-[85vh] p-6 md:p-8 overflow-hidden">
         <div className="relative z-10 max-w-2xl w-full text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Allvitr</h1>
           <p className="text-md md:text-lg text-gray-400 mb-8">
-          We turn information overload into clarity, building smart connections that amplify human insight and empower autonomous decision-making.
+            We turn information overload into clarity,<br />
+            building software that amplify human insight and enable autonomous decision-making.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -27,53 +27,56 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section className="min-h-screen flex items-center md:items-end justify-center py-24 md:py-64 px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="text-center md:text-left px-1">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              What are Buying Signals?
-            </h2>
-            <p className="text-lg text-gray-400">
-              Buying signals are triggers or events that indicate a potential
-              customer is ready to make a purchase. These signals can be
-              anything from a company announcing a new project, to a key
-              executive changing roles. By identifying these signals, you can
-              engage with prospects at the perfect time, when they are most
-              likely to be receptive to your solution.
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <img src="/globe.svg" alt="Globe" className="w-40 h-40 md:w-64 md:h-64" />
+      <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
+        {/* Center within non-gradient area (below top 20% gradient) */}
+        <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="text-center md:text-left px-1">
+              <h2 className="text-3xl font-bold text-white mb-4">
+                What are Buying Signals?
+              </h2>
+              <p className="text-lg text-gray-400">
+                Buying signals are triggers or events that indicate a potential
+                customer is ready to make a purchase. These signals can be
+                anything from a company announcing a new project, to a key
+                executive changing roles. By identifying these signals, you can
+                engage with prospects at the perfect time, when they are most
+                likely to be receptive to your solution.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <img src="/globe.svg" alt="Globe" className="w-40 h-40 md:w-64 md:h-64" />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Section 2: Why Signals Matter */}
-      <section className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-zinc-950">
+      <section data-nav-theme="light" className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-gray-300">
         <div className="w-[95%] md:max-w-[80%] mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             Why Signals Matter
           </h2>
-          <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-12">
+          <p className="text-lg text-gray-700 text-center max-w-3xl mx-auto mb-12">
             Timing is everything. Acting on the right signal lets you start conversations when teams have the
             budget, urgency, and momentum. Allvitr helps you identify those moments—consistently.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gray-900 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-white mb-2">Prioritize Outreach</h3>
-              <p className="text-gray-400">
+            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Prioritize Outreach</h3>
+              <p className="text-gray-700">
                 Focus your team on accounts that are actively evaluating solutions, not just a static ICP list.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-white mb-2">Shorten Cycles</h3>
-              <p className="text-gray-400">
+            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Shorten Cycles</h3>
+              <p className="text-gray-700">
                 Start with context. Use signals to tailor messaging and speed up qualification.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-white mb-2">Increase Win Rate</h3>
-              <p className="text-gray-400">
+            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Increase Win Rate</h3>
+              <p className="text-gray-700">
                 Engage when the need is fresh and budgets are available—improving conversion at every stage.
               </p>
             </div>
@@ -82,16 +85,16 @@ export default function Home() {
       </section>
 
       {/* Section 3: How Allvitr Helps You Find Them */}
-      <section id="section-2" className="py-4 px-4 bg-zinc-950">
-        <div className="relative h-[60vh] md:h-[68vh] w-[100%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
-          <MouseDotsInSection sectionId="section-2" divisions={20} />
+      <section data-nav-theme="light" id="section-2" className="py-4 px-4 bg-gray-300">
+        <div data-nav-theme="dark-contrast" className="relative h-[60vh] md:h-[68vh] w-[100%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
+          <DotsLayer targetId="section-2" showWhenInView mode="mouse" divisions={20} variant="section" />
           <div className="relative z-10 h-full w-full flex items-center justify-center">
             <div className="max-w-2xl w-full text-center px-6">
-              <div className="flex justify-center mb-6">
-                <img src="/window.svg" alt="Window" className="w-40 h-40 md:w-64 md:h-64" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-4">How Allvitr Helps You Find Them</h2>
-              <p className="text-lg text-gray-300">
+          <div className="flex justify-center mb-6">
+            <img src="/window.svg" alt="Window" className="w-40 h-40 md:w-64 md:h-64" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">How Allvitr Helps You Find Them</h2>
+          <p className="text-lg text-gray-700">
                 Allvitr provides a powerful search interface that allows you to scan a vast array of sources for
                 buying signals. Our platform is designed to help you filter out the noise and focus on the information
                 that matters. With Allvitr, you can track companies, industries, and trends, and get notified when a
@@ -103,65 +106,65 @@ export default function Home() {
       </section>
 
       {/* Section 4 */}
-      <section className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-zinc-950">
+      <section data-nav-theme="light" className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-gray-300">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             Example Signals
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 New Product Launch
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 A company launching a new product is a strong signal that they
                 are investing in growth and may need new tools and services to
                 support their launch.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Executive Hire
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 A new executive, especially in a key role like marketing or
                 sales, will often look to make their mark by bringing in new
                 tools and strategies.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Geographic Expansion
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 When a company expands into a new market, they will need to
                 understand the local landscape, and may be looking for partners
                 and services to help them.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Mention of &quot;Integration&quot; in Earnings Calls
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 This indicates a focus on connecting different systems and can
                 be a sign that a company is looking for new software solutions.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Increased Hiring in a Department
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 A surge in hiring in a specific department can indicate a new
                 focus or project that may require new tools and resources.
               </p>
             </div>
-            <div className="bg-gray-900 p-6 rounded-lg text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
+            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Regulatory Changes
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-700">
                 New regulations can force companies to adopt new technologies
                 and processes to ensure compliance, creating opportunities for
                 vendors.
