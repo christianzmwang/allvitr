@@ -90,7 +90,7 @@ export default function NavBar() {
       <nav
         data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} group mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
+          ${useDarkGlass ? 'glass-dark' : 'glass'} group mx-auto flex w-[95%] md:max-w-[95%] items-center justify-between
           rounded-full px-6 py-2 transition-colors duration-300
         `}
       >
@@ -204,7 +204,7 @@ export default function NavBar() {
       <div
         ref={menuRef}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[80%] mt-3 rounded-xl p-6 space-y-4
+          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[95%] mt-3 rounded-xl p-6 space-y-4
           transition-all duration-300 ease-in-out transform origin-top
           md:hidden
           ${
