@@ -9,10 +9,19 @@ export default function NavBar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [useDarkGlass, setUseDarkGlass] = useState(false)
-  const [desktopAnimationDone, setDesktopAnimationDone] = useState(false)
+  const [pageLoaded, setPageLoaded] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const navRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    // Set page as loaded after a brief delay to trigger the animation
+    const timer = setTimeout(() => {
+      setPageLoaded(true)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +60,11 @@ export default function NavBar() {
     if (!header) return
     const rect = header.getBoundingClientRect()
     const sampleX = Math.round(rect.left + rect.width / 2)
-    const sampleY = Math.max(0, Math.round(rect.top + rect.height / 2))
+    // Bias sampling closer to the top edge on small screens to avoid
+    // early transitions before the background has actually changed
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const sampleYOffsetFactor = isMobile ? 0.2 : 0.5
+    const sampleY = Math.max(0, Math.round(rect.top + rect.height * sampleYOffsetFactor))
     const elements = document.elementsFromPoint(sampleX, sampleY)
 
     for (const el of elements) {
@@ -70,15 +83,6 @@ export default function NavBar() {
 
   useEffect(() => {
     evaluateBackground()
-  }, [])
-
-  // Run one-time brand typing animation on desktop only
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches
-    if (!isDesktop) return
-    const timer = setTimeout(() => setDesktopAnimationDone(true), 900)
-    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -116,16 +120,12 @@ export default function NavBar() {
             </span>
           </div>
 
-          {/* Desktop: one-time load animation for brand text */}
-          {!desktopAnimationDone ? (
-            <span className="hidden md:inline allvitr-typing-appear">
-              Allvitr
-            </span>
-          ) : (
-            <span className="hidden md:inline transition-all duration-300 ease-in-out">
-              Allvitr
-            </span>
-          )}
+          {/* Always show text on desktop */}
+          <span className={`hidden md:inline transition-all duration-300 ease-in-out ${
+            pageLoaded ? 'allvitr-typing-appear' : ''
+          }`}>
+            Allvitr
+          </span>
         </Link>
 
         {/* Centered navigation links for desktop */}

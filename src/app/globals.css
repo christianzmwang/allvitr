@@ -41,22 +41,22 @@ a,
   }
 }
 
-@keyframes blink-caret {
-  from, to { background-color: transparent }
-  50% { background-color: red; }
-}
-
-/* Hide caret after typing animation ends */
-@keyframes caret-hide {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@keyframes caret-fade-out {
+  0% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .allvitr-typing-disappear {
   animation: typing-disappear 0.8s steps(7, end) forwards;
   white-space: nowrap;
   overflow: hidden;
-  display: inline-block;
   vertical-align: bottom; /* To align with the icon */
   position: relative;
 }
@@ -69,35 +69,24 @@ a,
   width: 10px;
   height: 2px;
   background-color: red;
-  animation: none;
+  animation: caret-fade-out 0.8s steps(7, end) forwards;
 }
 
 .allvitr-typing-appear {
   animation: typing-appear 0.8s steps(7, end) forwards;
   white-space: nowrap;
   overflow: hidden;
-  display: inline-block;
   vertical-align: bottom; /* To align with the icon */
   position: relative;
 }
 
 .allvitr-typing-appear::after {
- content: '';
- position: absolute;
- bottom: 0;
- right: 0;
- width: 10px;
- height: 2px;
- background-color: red;
-  animation: none;
-}
-
-/* Mobile: show caret during typing, hide immediately after */
-@media (max-width: 767px) {
-  .allvitr-typing-appear::after,
-  .allvitr-typing-disappear::after {
-    opacity: 1;
-    animation: caret-hide 0s linear forwards;
-    animation-delay: 1.0s; /* match typing duration */
-  }
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 2px;
+  background-color: red;
+  animation: caret-fade-out 1.2s steps(7, end) forwards;
 }

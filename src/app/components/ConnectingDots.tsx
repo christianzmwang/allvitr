@@ -84,7 +84,12 @@ export default function ConnectingDots({
 
     // Create grid of jittered points
     const points: Point[] = []
-    const divs = Math.max(5, Math.floor(divisions))
+    const baseDivs = Math.max(5, Math.floor(divisions))
+    // On mobile, reduce divisions to approximately halve point count
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+    const divs = isMobile
+      ? Math.max(5, Math.floor(baseDivs * 0.707)) // ~half the points (since points scale with divs^2)
+      : baseDivs
     const stepX = expandedWidth / divs
     const stepY = expandedHeight / divs
 
