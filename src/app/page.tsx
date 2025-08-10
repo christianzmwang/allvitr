@@ -67,19 +67,19 @@ export default function Home() {
       {/* Section 1 */}
       <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
         {/* Center within non-gradient area (below top 20% gradient) */}
-        <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
-          <div className="w-[95%] md:max-w-[80%] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
+          <div className="w-[95%] md:max-w-[95%] mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
             {/* Left: Textual content */}
-            <div className="text-left">
-              <h2 className="text-3xl font-bold text-white mb-4">Our Platforms</h2>
-              <p className="text-lg text-gray-300 mb-8 max-w-xl">
-                Tools that turn information overload into clarity for every team.
+            <div className="text-left md:col-span-2">
+              <h2 className="text-3xl font-bold text-white mb-3">Our Platforms</h2>
+              <p className="text-lg text-gray-300 mb-6 max-w-lg">
+                Software that turns data into insights.
               </p>
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div>
                   <h3 className="text-xl font-semibold text-white">Hugin</h3>
                   <p className="text-gray-300">
-                    Market research made simple. Indexes internet data to give B2B teams timely, relevant insights about prospects.
+                    Real time market research. Indexes internet data to provide real time insights about prospects.
                   </p>
                 </div>
                 <div>
@@ -95,7 +95,7 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="mt-10 md:mt-12">
+              <div className="mt-16 md:mt-20">
                 <Link href="/platforms" className="px-6 py-3 bg-gray-400 text-black font-semibold border-3 border-transparent hover:border-white transition duration-300">
                   Explore Platforms
                 </Link>
@@ -103,24 +103,24 @@ export default function Home() {
             </div>
 
             {/* Right: Three interactive stacks */}
-            <div className="relative flex justify-center md:justify-end">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-10">
+            <div className="relative md:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
                 <PlatformStack
                   title="Hugin"
-                  subtitle="Market research made simple."
-                  href="/hugin"
+                  subtitle="Market research that dominates."
+                  href="/platforms#hugin"
                   gradient="from-red-500/80 to-red-700/80"
                 />
                 <PlatformStack
                   title="Munin"
                   subtitle="Secure data and analytics."
-                  href="#"
+                  href="/platforms#munin"
                   gradient="from-sky-300/80 to-sky-500/80"
                 />
                 <PlatformStack
                   title="Odin"
                   subtitle="Executive metrics dashboard."
-                  href="#"
+                  href="/platforms#odin"
                   gradient="from-gray-700/80 to-gray-950/80"
                   backGradient="from-gray-400/60 to-gray-600/60"
                 />
@@ -130,126 +130,136 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 2: Why Signals Matter */}
-      <section data-nav-theme="light" className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-gray-300">
-        <div className="w-[95%] md:max-w-[80%] mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Why Signals Matter
-          </h2>
-          <p className="text-lg text-gray-700 text-center max-w-3xl mx-auto mb-12">
-            Timing is everything. Acting on the right signal lets you start conversations when teams have the
-            budget, urgency, and momentum. Allvitr helps you identify those moments—consistently.
+      {/* Section 2: Mission */}
+      <section data-nav-theme="light" className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 px-4 md:px-8 bg-gray-300">
+        <div className="w-[95%] md:max-w-[80%] mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            We turn information overload into clarity. Our mission is to amplify human insight and enable autonomous
+            decision-making by building software that transforms raw signals into actionable knowledge.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Prioritize Outreach</h3>
-              <p className="text-gray-700">
-                Focus your team on accounts that are actively evaluating solutions, not just a static ICP list.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Shorten Cycles</h3>
-              <p className="text-gray-700">
-                Start with context. Use signals to tailor messaging and speed up qualification.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Increase Win Rate</h3>
-              <p className="text-gray-700">
-                Engage when the need is fresh and budgets are available—improving conversion at every stage.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Section 3: How Allvitr Helps You Find Them */}
-      <section data-nav-theme="light" id="section-2" className="py-4 px-4 bg-gray-300">
-        <div data-nav-theme="dark-contrast" className="relative h-[60vh] md:h-[68vh] w-[100%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
+      <section data-nav-theme="light" id="section-2" className="py-4 px-0 bg-gray-300">
+        <div data-nav-theme="dark-contrast" className="relative h-[60vh] md:h-[68vh] w-[95%] md:max-w-[95%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
           <DotsLayer targetId="section-2" showWhenInView mode="mouse" divisions={20} variant="section" />
-          <div className="relative z-10 h-full w-full flex items-center justify-center">
-            <div className="max-w-2xl w-full text-center px-6">
-          <div className="flex justify-center mb-6">
-            <img src="/window.svg" alt="Window" className="w-40 h-40 md:w-64 md:h-64" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">How Allvitr Helps You Find Them</h2>
-          <p className="text-lg text-gray-700">
-                Allvitr provides a powerful search interface that allows you to scan a vast array of sources for
-                buying signals. Our platform is designed to help you filter out the noise and focus on the information
-                that matters. With Allvitr, you can track companies, industries, and trends, and get notified when a
-                relevant signal is detected.
-              </p>
+          <div className="relative z-10 h-full w-full flex items-center">
+            <div className="w-[95%] md:max-w-[95%] mx-auto px-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center justify-items-center">
+                <div className="text-center">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-red-600 leading-tight">
+                    Hugin
+                    <br />
+                    <span className="block text-lg md:text-2xl text-white/90 font-semibold leading-snug mt-2 md:mt-3">
+                      Powered by <br />
+                      <span className="text-white/90">AI-Agents</span>
+                    </span>
+                  </h2>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg md:text-2xl text-gray-200 leading-snug max-w-2xl mx-auto font-semibold">
+                    The around-the-clock AI <br />
+                    sales reps that bring <br />you <span className="italic font-thin">buyers</span>,
+                    not just leads.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 4 */}
-      <section data-nav-theme="light" className="min-h-screen flex items-center justify-center py-12 md:py-16 px-4 md:px-8 bg-gray-300">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Example Signals
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                New Product Launch
-              </h3>
-              <p className="text-gray-700">
-                A company launching a new product is a strong signal that they
-                are investing in growth and may need new tools and services to
-                support their launch.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Executive Hire
-              </h3>
-              <p className="text-gray-700">
-                A new executive, especially in a key role like marketing or
-                sales, will often look to make their mark by bringing in new
-                tools and strategies.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Geographic Expansion
-              </h3>
-              <p className="text-gray-700">
-                When a company expands into a new market, they will need to
-                understand the local landscape, and may be looking for partners
-                and services to help them.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Mention of &quot;Integration&quot; in Earnings Calls
-              </h3>
-              <p className="text-gray-700">
-                This indicates a focus on connecting different systems and can
-                be a sign that a company is looking for new software solutions.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Increased Hiring in a Department
-              </h3>
-              <p className="text-gray-700">
-                A surge in hiring in a specific department can indicate a new
-                focus or project that may require new tools and resources.
-              </p>
-            </div>
-            <div className="bg-gray-100 p-6 rounded-lg text-center border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Regulatory Changes
-              </h3>
-              <p className="text-gray-700">
-                New regulations can force companies to adopt new technologies
-                and processes to ensure compliance, creating opportunities for
-                vendors.
-              </p>
-            </div>
+      {/* Section 4: Contact */}
+      <section data-nav-theme="light" className="py-10 md:py-14 px-4 md:px-8 bg-gray-300">
+        <div className="w-[95%] md:max-w-[95%] mx-auto">
+          <div className="max-w-4xl">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Get in touch</h2>
+            <p className="text-gray-700 mb-6">Have a question or want a demo? We’d love to hear from you.</p>
           </div>
+          <form method="post" className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div>
+              <label htmlFor="name" className="block text-sm text-gray-700 mb-1">Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="Jane Doe"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm text-gray-700 mb-1">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="jane@company.com"
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm text-gray-700 mb-1">Phone</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="+1 555 123 4567"
+              />
+            </div>
+            <div>
+              <label htmlFor="company" className="block text-sm text-gray-700 mb-1">Company</label>
+              <input
+                id="company"
+                name="company"
+                type="text"
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="Acme Inc."
+              />
+            </div>
+            <div>
+              <label htmlFor="title" className="block text-sm text-gray-700 mb-1">Job Title</label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="Head of Sales"
+              />
+            </div>
+            <div>
+              <label htmlFor="country" className="block text-sm text-gray-700 mb-1">Country</label>
+              <input
+                id="country"
+                name="country"
+                type="text"
+                className="w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2"
+                placeholder="United States"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <label htmlFor="message" className="block text-sm text-gray-700 mb-1">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                className="w-full rounded-none bg-transparent border border-gray-400 text-gray-900 placeholder-gray-500 px-3 py-2 focus:outline-none focus:ring-0 focus:border-black"
+                placeholder="What would you like to explore?"
+              />
+            </div>
+            <div className="md:col-span-3 flex justify-start">
+              <button
+                type="submit"
+                className="px-6 py-3 bg-gray-400 text-black font-semibold border-3 border-transparent hover:border-white transition duration-300"
+              >
+                Send
+              </button>
+            </div>
+          </form>
         </div>
       </section>
 
