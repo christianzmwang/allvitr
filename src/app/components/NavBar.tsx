@@ -46,56 +46,24 @@ export default function NavBar() {
 
   // Decide whether content behind navbar is light or dark
   const evaluateBackground = () => {
-    try {
-      const header = navRef.current
-      if (!header) return
-      const rect = header.getBoundingClientRect()
-      const sampleX = Math.round(rect.left + rect.width / 2)
-      const sampleY = Math.max(0, Math.round(rect.top + rect.height / 2))
-      const elements = document.elementsFromPoint(sampleX, sampleY)
+    const header = navRef.current
+    if (!header) return
+    const rect = header.getBoundingClientRect()
+    const sampleX = Math.round(rect.left + rect.width / 2)
+    const sampleY = Math.max(0, Math.round(rect.top + rect.height / 2))
+    const elements = document.elementsFromPoint(sampleX, sampleY)
 
-      // Prefer explicit data attribute theme if present
-      for (const el of elements) {
-        if (el === header || header.contains(el)) continue
-        const theme = (el as HTMLElement).dataset?.navTheme
-        if (theme === 'light') {
-          setUseDarkGlass(true)
-          return
-        }
-        if (theme === 'dark' || theme === 'dark-contrast') {
-          setUseDarkGlass(false)
-          return
-        }
+    for (const el of elements) {
+      if (el === header || header.contains(el)) continue
+      const theme = (el as HTMLElement).dataset?.navTheme
+      if (theme === 'light') {
+        setUseDarkGlass(true)
+        return
       }
-
-      // Iterate visual stack from top to bottom, skipping header and fully transparent items
-      let bg: string | null = null
-      for (const el of elements) {
-        if (el === header || header.contains(el)) continue
-        const style = window.getComputedStyle(el)
-        const candidate = style.backgroundColor
-        if (candidate && candidate !== 'transparent' && candidate !== 'rgba(0, 0, 0, 0)') {
-          bg = candidate
-          break
-        }
+      if (theme === 'dark' || theme === 'dark-contrast') {
+        setUseDarkGlass(false)
+        return
       }
-
-      // Fallback to body background
-      if (!bg) {
-        bg = window.getComputedStyle(document.body).backgroundColor
-      }
-      if (!bg) return
-
-      const match = bg.match(/rgba?\(([^)]+)\)/)
-      if (!match) return
-      const parts = match[1].split(',').map((p) => parseFloat(p.trim()))
-      const r = parts[0] || 0
-      const g = parts[1] || 0
-      const b = parts[2] || 0
-      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
-      setUseDarkGlass(luminance > 180)
-    } catch {
-      // Fail safe: keep default
     }
   }
 
