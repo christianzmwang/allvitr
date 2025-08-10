@@ -46,6 +46,12 @@ a,
   50% { background-color: red; }
 }
 
+/* Hide caret after typing animation ends */
+@keyframes caret-hide {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .allvitr-typing-disappear {
   animation: typing-disappear 0.8s steps(7, end) forwards;
   white-space: nowrap;
@@ -63,7 +69,7 @@ a,
   width: 10px;
   height: 2px;
   background-color: red;
-  animation: blink-caret .75s step-end infinite;
+  animation: none;
 }
 
 .allvitr-typing-appear {
@@ -83,5 +89,15 @@ a,
  width: 10px;
  height: 2px;
  background-color: red;
- animation: blink-caret .75s step-end infinite;
+  animation: none;
+}
+
+/* Mobile: show caret during typing, hide immediately after */
+@media (max-width: 767px) {
+  .allvitr-typing-appear::after,
+  .allvitr-typing-disappear::after {
+    opacity: 1;
+    animation: caret-hide 0s linear forwards;
+    animation-delay: 1.0s; /* match typing duration */
+  }
 }
