@@ -50,7 +50,7 @@ function PlatformStack({
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col relative pt-24">
-      <DotsLayer targetId="section-2" showWhenInView={false} mode="uniform" divisions={20} variant="fixed" />
+      <DotsLayer targetId="section-2" showWhenInView={false} mode="uniform" divisions={20} variant="fixed" alwaysVisible />
       <NavBar />
       {/* Hero Section */}
       <section data-nav-theme="dark" className="relative flex items-center justify-center min-h-[80vh] md:min-h-[85vh] p-6 md:p-8 overflow-hidden">
@@ -65,7 +65,7 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
+      <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 rounded-b-3xl overflow-hidden">
         {/* Center within non-gradient area (below top 20% gradient) */}
           <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
           <div className="w-[95%] md:max-w-[95%] mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
@@ -131,7 +131,7 @@ export default function Home() {
       </section>
 
       {/* Section 2: Mission */}
-      <section data-nav-theme="light" className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 px-4 md:px-8 bg-gray-300">
+      <section data-nav-theme="light" className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 px-4 md:px-8 bg-gray-300 mt-20 md:mt-28 rounded-t-3xl">
         <div className="w-[95%] md:max-w-[80%] mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
@@ -172,7 +172,7 @@ export default function Home() {
       </section>
 
       {/* Section 4: Contact */}
-      <section data-nav-theme="light" className="py-10 md:py-14 px-4 md:px-8 bg-gray-300">
+      <section data-nav-theme="light" className="pt-10 md:pt-14 pb-20 md:pb-24 px-4 md:px-8 bg-gray-300">
         <div className="w-[95%] md:max-w-[95%] mx-auto">
           <div className="max-w-4xl">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Get in touch</h2>
@@ -264,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto">
+      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto rounded-t-3xl overflow-hidden -mt-8 md:-mt-10">
         <div className="w-[95%] md:max-w-[80%] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="text-left">

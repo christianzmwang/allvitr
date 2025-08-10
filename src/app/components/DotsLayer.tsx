@@ -9,12 +9,14 @@ export default function DotsLayer({
   mode = "mouse",
   divisions = 20,
   variant = "section",
+  alwaysVisible = false,
 }: {
   targetId: string
   showWhenInView?: boolean
   mode?: "mouse" | "uniform"
   divisions?: number
   variant?: "fixed" | "section"
+  alwaysVisible?: boolean
 }) {
   const [inView, setInView] = useState(false)
 
@@ -29,7 +31,7 @@ export default function DotsLayer({
       {
         root: null,
         threshold: 0,
-        rootMargin: "0px 0px 50% 0px",
+        rootMargin: "0px 0px 0px 0px",
       }
     )
 
@@ -37,7 +39,7 @@ export default function DotsLayer({
     return () => observer.disconnect()
   }, [targetId])
 
-  const visible = showWhenInView ? inView : !inView
+  const visible = alwaysVisible ? true : (showWhenInView ? inView : !inView)
 
   if (variant === "fixed") {
     return (
