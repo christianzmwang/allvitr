@@ -9,6 +9,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [useDarkGlass, setUseDarkGlass] = useState(false)
+  const [desktopAnimationDone, setDesktopAnimationDone] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const navRef = useRef<HTMLElement>(null)
@@ -71,6 +72,15 @@ export default function NavBar() {
     evaluateBackground()
   }, [])
 
+  // Run one-time brand typing animation on desktop only
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches
+    if (!isDesktop) return
+    const timer = setTimeout(() => setDesktopAnimationDone(true), 900)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <header ref={navRef} className="fixed inset-x-0 top-0 z-50 mt-4">
       <nav
@@ -106,10 +116,16 @@ export default function NavBar() {
             </span>
           </div>
 
-          {/* Always show text on desktop */}
-          <span className="hidden md:inline transition-all duration-300 ease-in-out">
-            Allvitr
-          </span>
+          {/* Desktop: one-time load animation for brand text */}
+          {!desktopAnimationDone ? (
+            <span className="hidden md:inline allvitr-typing-appear">
+              Allvitr
+            </span>
+          ) : (
+            <span className="hidden md:inline transition-all duration-300 ease-in-out">
+              Allvitr
+            </span>
+          )}
         </Link>
 
         {/* Centered navigation links for desktop */}
@@ -201,7 +217,7 @@ export default function NavBar() {
           href="#solutions"
           className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
         >
-          Mission
+          Alpha
         </Link>
         <Link
           href="#pricing"
