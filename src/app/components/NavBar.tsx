@@ -63,7 +63,7 @@ export default function NavBar() {
     // Bias sampling closer to the top edge on small screens to avoid
     // early transitions before the background has actually changed
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-    const sampleYOffsetFactor = isMobile ? 0.1 : 0.5
+    const sampleYOffsetFactor = isMobile ? 0.135 : 0.5
     const sampleY = Math.max(0, Math.round(rect.top + rect.height * sampleYOffsetFactor))
     const elements = document.elementsFromPoint(sampleX, sampleY)
 
@@ -88,9 +88,10 @@ export default function NavBar() {
   return (
     <header ref={navRef} className="fixed inset-x-0 top-0 z-50 mt-4">
       <nav
+        data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
-          rounded-full px-6 py-2 shadow-md transition-colors duration-300
+          ${useDarkGlass ? 'glass-dark' : 'glass'} group mx-auto flex w-[95%] md:max-w-[80%] items-center justify-between
+          rounded-full px-6 py-2 transition-colors duration-300
         `}
       >
         {/* Brand "search bar" */}
@@ -131,20 +132,20 @@ export default function NavBar() {
         {/* Centered navigation links for desktop */}
         <div className="hidden md:flex items-center gap-6">
           <Link
-            href="#product"
-            className="text-white transition-colors duration-200 hover:text-red-600"
+            href="/alpha"
+            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
+          >
+            Alpha
+          </Link>
+          <Link
+            href="/platforms"
+            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
           >
             Platforms
           </Link>
           <Link
-            href="#solutions"
-            className="text-white transition-colors duration-200 hover:text-red-600"
-          >
-            Mission
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-white transition-colors duration-200 hover:text-red-600"
+            href="/pricing"
+            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
           >
             Pricing
           </Link>
@@ -154,10 +155,14 @@ export default function NavBar() {
         <div className="flex items-center gap-3">
           {/* Demo button - show on both mobile and desktop */}
           <button
-            className="
-              rounded-full text-red-600 px-5 py-1.5 text-sm font-semibold border-2 border-red
-              transition-all duration-300 ease-in-out hover:border-white hover:text-white
-            "
+            className={`
+              rounded-full px-5 py-1.5 text-sm font-semibold border-2
+              transition-all duration-300 ease-in-out
+              text-red-600 border-red-600
+              group-data-[glass=light]:hover:text-white group-data-[glass=light]:hover:border-white
+              group-data-[glass=dark]:text-sky-400 group-data-[glass=dark]:border-sky-400
+              group-data-[glass=dark]:hover:text-white group-data-[glass=dark]:hover:border-white
+            `}
           >
             Demo
           </button>
@@ -167,11 +172,13 @@ export default function NavBar() {
             ref={buttonRef}
             aria-label="Open menu"
             onClick={() => setOpen(!open)}
-            className="
+            className={`
               grid w-10 h-8 place-items-center rounded-full
-              bg-white text-black transition-all duration-300 ease-in-out hover:bg-[#1f1f1f] hover:text-white
+              bg-white text-black transition-all duration-300 ease-in-out
+              hover:bg-[#1f1f1f] hover:text-white
+              md:group-data-[glass=dark]:hover:bg-sky-500
               md:hidden
-            "
+            `}
           >
             <div className="relative w-4 h-4">
               <Menu
@@ -208,20 +215,20 @@ export default function NavBar() {
         `}
       >
         <Link
-          href="#product"
-          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
-        >
-          Platforms
-        </Link>
-        <Link
-          href="#solutions"
-          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
+          href="/alpha"
+          className={`block mix-blend-difference text-white transition-colors duration-200 ${useDarkGlass ? 'hover:text-sky-400' : 'hover:text-red-600'}`}
         >
           Alpha
         </Link>
         <Link
-          href="#pricing"
-          className="block mix-blend-difference text-white transition-colors duration-200 hover:text-red-400"
+          href="/platforms"
+          className={`block mix-blend-difference text-white transition-colors duration-200 ${useDarkGlass ? 'hover:text-sky-400' : 'hover:text-red-600'}`}
+        >
+          Platforms
+        </Link>
+        <Link
+          href="/pricing"
+          className={`block mix-blend-difference text-white transition-colors duration-200 ${useDarkGlass ? 'hover:text-sky-400' : 'hover:text-red-600'}`}
         >
           Pricing
         </Link>
