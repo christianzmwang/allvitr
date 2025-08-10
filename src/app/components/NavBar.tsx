@@ -63,7 +63,7 @@ export default function NavBar() {
     // Bias sampling closer to the top edge on small screens to avoid
     // early transitions before the background has actually changed
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-    const sampleYOffsetFactor = isMobile ? 0.2 : 0.5
+    const sampleYOffsetFactor = isMobile ? 0.1 : 0.5
     const sampleY = Math.max(0, Math.round(rect.top + rect.height * sampleYOffsetFactor))
     const elements = document.elementsFromPoint(sampleX, sampleY)
 
