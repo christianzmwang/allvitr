@@ -86,7 +86,7 @@ export default function PlatformsPage() {
                     </p>
                   </div>
                   <div className="bg-white/5 p-6 rounded-lg text-center border border-white/10">
-                    <h4 className="text-lg font-bold text-white mb-2">Mention of "Integration"</h4>
+                    <h4 className="text-lg font-bold text-white mb-2">Mention of &quot;Integration&quot;</h4>
                     <p className="text-gray-300">
                       References to integration in earnings calls indicate a focus on connecting systems and adopting
                       new software solutions.
