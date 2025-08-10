@@ -2,6 +2,51 @@ import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
 
+function PlatformStack({
+  title,
+  subtitle,
+  href,
+  gradient,
+  backGradient,
+}: {
+  title: string
+  subtitle: string
+  href?: string
+  gradient: string
+  backGradient?: string
+}) {
+  return (
+    <Link
+      href={href || '#'}
+      className="group relative block w-44 md:w-52 h-56 md:h-64 focus:outline-none"
+    >
+      {/* Glow */}
+      <div
+        className={`pointer-events-none absolute -inset-2 blur-3xl opacity-50 transition duration-500 ease-out group-hover:opacity-95 group-hover:scale-105 ${gradient}`}
+      />
+
+      {/* Bottom layer */}
+      <div className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGradient || gradient} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`} />
+
+      {/* Middle layer */}
+      <div className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGradient || gradient} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`} />
+
+      {/* Top content card */}
+      <div
+        className={`relative z-10 h-full p-5 ring-1 ring-white/10 bg-gradient-to-br ${gradient} transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] shadow-xl shadow-black/30`}
+      >
+        <div className="flex h-full flex-col justify-between">
+          <div>
+            <div className="text-sm text-white/70">Platform</div>
+            <h3 className="mt-1 text-xl font-semibold text-white">{title}</h3>
+          </div>
+          <p className="text-sm text-white/85">{subtitle}</p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col relative pt-24">
@@ -12,17 +57,10 @@ export default function Home() {
         <div className="relative z-10 max-w-2xl w-full text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Allvitr</h1>
           <p className="text-md md:text-lg text-gray-400 mb-8">
-            We turn information overload into clarity,<br />
+            We turn information overload into clarity,
             building software that amplify human insight and enable autonomous decision-making.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/hugin"
-              className="px-6 py-3 bg-gray-400 text-black font-semibold border-3 border-transparent hover:border-white transition duration-300"
-            >
-              Learn More about Hugin
-            </Link>
-          </div>
+          
         </div>
       </section>
 
@@ -30,22 +68,63 @@ export default function Home() {
       <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0">
         {/* Center within non-gradient area (below top 20% gradient) */}
         <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="text-center md:text-left px-1">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                What are Buying Signals?
-              </h2>
-              <p className="text-lg text-gray-400">
-                Buying signals are triggers or events that indicate a potential
-                customer is ready to make a purchase. These signals can be
-                anything from a company announcing a new project, to a key
-                executive changing roles. By identifying these signals, you can
-                engage with prospects at the perfect time, when they are most
-                likely to be receptive to your solution.
+          <div className="w-[95%] md:max-w-[80%] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            {/* Left: Textual content */}
+            <div className="text-left">
+              <h2 className="text-3xl font-bold text-white mb-4">Our Platforms</h2>
+              <p className="text-lg text-gray-300 mb-8 max-w-xl">
+                Tools that turn information overload into clarity for every team.
               </p>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Hugin</h3>
+                  <p className="text-gray-300">
+                    Market research made simple. Indexes internet data to give B2B teams timely, relevant insights about prospects.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Munin</h3>
+                  <p className="text-gray-300">
+                    Secure company data storage and powerful analytics to drive smarter business decisions.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Odin</h3>
+                  <p className="text-gray-300">
+                    An executive dashboard offering a unified view of your company’s key metrics in real time.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-10 md:mt-12">
+                <Link href="/platforms" className="px-6 py-3 bg-gray-400 text-black font-semibold border-3 border-transparent hover:border-white transition duration-300">
+                  Explore Platforms
+                </Link>
+              </div>
             </div>
-            <div className="flex justify-center">
-              <img src="/globe.svg" alt="Globe" className="w-40 h-40 md:w-64 md:h-64" />
+
+            {/* Right: Three interactive stacks */}
+            <div className="relative flex justify-center md:justify-end">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-10">
+                <PlatformStack
+                  title="Hugin"
+                  subtitle="Market research made simple."
+                  href="/hugin"
+                  gradient="from-red-500/80 to-red-700/80"
+                />
+                <PlatformStack
+                  title="Munin"
+                  subtitle="Secure data and analytics."
+                  href="#"
+                  gradient="from-sky-300/80 to-sky-500/80"
+                />
+                <PlatformStack
+                  title="Odin"
+                  subtitle="Executive metrics dashboard."
+                  href="#"
+                  gradient="from-gray-700/80 to-gray-950/80"
+                  backGradient="from-gray-400/60 to-gray-600/60"
+                />
+              </div>
             </div>
           </div>
         </div>
