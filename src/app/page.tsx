@@ -170,15 +170,29 @@ export default async function Home({
       {/* Section 2: Mission */}
       <section
         data-nav-theme="light"
-        className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 pad-section bg-gray-300"
+        className="min-h-[60vh] flex items-center justify-center py-12 md:py-15 bg-gray-300"
       >
-        <div className="container-80 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Age of <br />Autonomy</h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-            We turn information overload into clarity. Our mission is to amplify
-            human insight and enable autonomous decision-making by building
-            software that transforms raw signals into actionable knowledge.
-          </p>
+        <div className="container-95">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-center">
+            <div className="text-center pl-4 md:pl-18">
+              <h2 className="text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-4 md:gap-15 [-webkit-text-stroke-width:1.5px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(17,24,39)]">
+                <span>Age</span>
+                <span>Of</span>
+                <span>Autonomy</span>
+              </h2>
+            </div>
+            <div className="flex justify-center">
+              <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
+                <p className="text-xl font-bold">Autonomy is inevitable.</p>
+                <p className="text-xl mt-12 mb-12 font-bold">Start now, dominate tomorrow.</p>
+                <p className="text-xl">
+                  We deploy autonomous platforms: <br />
+                  Converting data into real-time, AI-powered insights that
+                  enable rapid, clear, and autonomous decision-making.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -203,16 +217,16 @@ export default async function Home({
             <div className="container-95 w-full">
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold text-white/80 leading-tight md:whitespace-nowrap text-center">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-transparent leading-tight text-center gap-4 md:gap-6 [-webkit-text-stroke-width:1.5px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(255,255,255)]">
                     AI Integration
                   </h2>
                 </div>
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <div className="text-left text-white/80 font-semibold leading-snug text-xl md:text-4xl space-y-1">
+                  <div className="text-left text-white font-semibold leading-snug text-xl md:text-4xl space-y-1">
                     <div>Clarity</div>
                     <div>Speed</div>
                     <div>Execution</div>
-                    <div className="text-red-600">Dominance</div>
+                    <div className="text-red-600/80">Dominance</div>
                   </div>
                 </div>
               </div>
