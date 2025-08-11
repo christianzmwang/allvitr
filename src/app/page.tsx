@@ -164,7 +164,7 @@ export default async function Home({
       <div
         data-nav-theme="dark"
         aria-hidden
-        className="glass-spacer mx-auto w-[100%] md:max-w-[100%] h-20 md:h-28"
+        className="mx-auto w-[100%] md:max-w-[100%] h-20 md:h-28"
       />
 
       {/* Section 2: Mission */}
@@ -173,7 +173,7 @@ export default async function Home({
         className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 pad-section bg-gray-300"
       >
         <div className="container-80 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Age of <br />Autonomy</h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
             We turn information overload into clarity. Our mission is to amplify
             human insight and enable autonomous decision-making by building
