@@ -107,13 +107,13 @@ export default async function Home({
                   <h3 className="text-xl font-semibold text-white">Hugin</h3>
                   <p className="text-gray-300">
                     Real time market research. Indexes internet data to provide
-                    real time insights about prospects.
+                    real time insights about your market.
                   </p>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-white">Munin</h3>
                   <p className="text-gray-300">
-                    Secure company data storage and powerful analytics to drive
+                    Secure data storage and powerful analytics to drive
                     smarter business decisions.
                   </p>
                 </div>
@@ -137,22 +137,22 @@ export default async function Home({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
                 <PlatformStack
                   title="Hugin"
-                  subtitle="Market research that dominates."
+                  subtitle="Real time market research"
                   href="/platforms#hugin"
                   gradient="from-red-500/80 to-red-700/80"
                 />
                 <PlatformStack
                   title="Munin"
-                  subtitle="Secure data and analytics."
+                  subtitle="Secure data and analytics"
                   href="/platforms#munin"
                   gradient="from-sky-300/80 to-sky-500/80"
                 />
                 <PlatformStack
                   title="Odin"
-                  subtitle="Executive metrics dashboard."
+                  subtitle="Executive metrics dashboard"
                   href="/platforms#odin"
-                  gradient="from-gray-700/80 to-gray-950/80"
-                  backGradient="from-gray-400/60 to-gray-600/60"
+                  gradient="from-gray-800/80 to-gray-950/80"
+                  backGradient="from-gray-500/70 to-gray-600/70"
                 />
               </div>
             </div>
@@ -204,15 +204,15 @@ export default async function Home({
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
                   <h2 className="text-4xl md:text-6xl font-extrabold text-white/80 leading-tight md:whitespace-nowrap text-center">
-                    AI in your hands
+                    AI Integration
                   </h2>
                 </div>
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <div className="text-center text-white/90 font-semibold leading-snug text-xl md:text-2xl space-y-1">
+                  <div className="text-left text-white/80 font-semibold leading-snug text-xl md:text-4xl space-y-1">
                     <div>Clarity</div>
                     <div>Speed</div>
                     <div>Execution</div>
-                    <div>Dominance</div>
+                    <div className="text-red-600">Dominance</div>
                   </div>
                 </div>
               </div>
