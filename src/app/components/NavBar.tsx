@@ -91,7 +91,7 @@ export default function NavBar() {
         data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
           ${useDarkGlass ? 'glass-dark' : 'glass'} group mx-auto flex w-[95%] md:max-w-[95%] items-center justify-between
-          rounded-full px-6 py-2 transition-colors duration-300
+          px-6 md:px-4 py-2 transition-colors duration-300
         `}
       >
         {/* Brand "search bar" */}
@@ -129,8 +129,8 @@ export default function NavBar() {
           </span>
         </Link>
 
-        {/* Centered navigation links for desktop */}
-        <div className="hidden md:flex items-center gap-6">
+          {/* Centered navigation links for desktop */}
+          <div className="hidden md:flex items-center gap-6 mx-auto">
           <Link
             href="/alpha"
             className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
@@ -152,11 +152,11 @@ export default function NavBar() {
         </div>
 
         {/* Right-hand actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-auto md:ml-8">
           {/* Demo button - show on both mobile and desktop */}
           <button
             className={`
-              rounded-full px-5 py-1.5 text-sm font-semibold border-2
+              rounded-none px-5 py-1.5 text-sm font-semibold border-2
               transition-all duration-300 ease-in-out
               text-red-600 border-red-600
               group-data-[glass=light]:hover:text-white group-data-[glass=light]:hover:border-white
@@ -173,7 +173,7 @@ export default function NavBar() {
             aria-label="Open menu"
             onClick={() => setOpen(!open)}
             className={`
-              grid w-10 h-8 place-items-center rounded-full
+              grid w-10 h-8 place-items-center rounded-none
               bg-white text-black transition-all duration-300 ease-in-out
               hover:bg-[#1f1f1f] hover:text-white
               md:group-data-[glass=dark]:hover:bg-sky-500
@@ -204,7 +204,7 @@ export default function NavBar() {
       <div
         ref={menuRef}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[95%] mt-3 rounded-xl p-6 space-y-4
+          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[95%] mt-3 p-6 space-y-4
           transition-all duration-300 ease-in-out transform origin-top
           md:hidden
           ${

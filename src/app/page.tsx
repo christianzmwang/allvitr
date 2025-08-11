@@ -1,6 +1,95 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
+
+async function sendContactToSlack(formData: FormData) {
+  'use server'
+
+  const name = (formData.get('name') || '').toString().trim()
+  const email = (formData.get('email') || '').toString().trim()
+  const phone = (formData.get('phone') || '').toString().trim()
+  const company = (formData.get('company') || '').toString().trim()
+  const title = (formData.get('title') || '').toString().trim()
+  const country = (formData.get('country') || '').toString().trim()
+  const message = (formData.get('message') || '').toString().trim()
+
+  const text = [
+    '*New Website Contact*',
+    `Name: ${name || 'N/A'}`,
+    `Email: ${email || 'N/A'}`,
+    `Phone: ${phone || 'N/A'}`,
+    `Company: ${company || 'N/A'}`,
+    `Title: ${title || 'N/A'}`,
+    `Country: ${country || 'N/A'}`,
+    `Message: ${message || 'N/A'}`,
+  ].join('\n')
+
+  try {
+    const botToken = process.env.SLACK_BOT_TOKEN ?? process.env['slack_bot_token']
+    const channelId =
+      process.env.SLACK_CHANNEL_ID ?? process.env['slack_channel_ID'] ?? process.env['slack_channel_id']
+
+    if (botToken && channelId) {
+      const response = await fetch('https://slack.com/api/chat.postMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Authorization: `Bearer ${botToken}`,
+        },
+        body: JSON.stringify({
+          channel: channelId,
+          text,
+          blocks: [
+            { type: 'section', text: { type: 'mrkdwn', text: '*New Website Contact*' } },
+            {
+              type: 'section',
+              fields: [
+                { type: 'mrkdwn', text: `*Name*\n${name || 'N/A'}` },
+                { type: 'mrkdwn', text: `*Email*\n${email || 'N/A'}` },
+                { type: 'mrkdwn', text: `*Phone*\n${phone || 'N/A'}` },
+                { type: 'mrkdwn', text: `*Company*\n${company || 'N/A'}` },
+                { type: 'mrkdwn', text: `*Title*\n${title || 'N/A'}` },
+                { type: 'mrkdwn', text: `*Country*\n${country || 'N/A'}` },
+              ],
+            },
+            { type: 'section', text: { type: 'mrkdwn', text: `*Message*\n${message || 'N/A'}` } },
+          ],
+        }),
+        cache: 'no-store',
+      })
+
+      const result = await response.json()
+      if (!result.ok) {
+        console.error('Slack API error', result)
+        redirect('/?sent=0')
+      }
+    } else {
+      const webhookUrl = process.env.SLACK_WEBHOOK_URL
+      if (!webhookUrl) {
+        console.error('No Slack configuration provided (missing bot token + channel or webhook URL).')
+        redirect('/?sent=0')
+      }
+
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        console.error('Failed to post to Slack', await response.text())
+        redirect('/?sent=0')
+      }
+    }
+  } catch (error) {
+    console.error('Error posting to Slack', error)
+    redirect('/?sent=0')
+  }
+
+  redirect('/?sent=1')
+}
 
 function PlatformStack({
   title,
@@ -47,7 +136,12 @@ function PlatformStack({
   )
 }
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>
+}) {
+  const isSent = (searchParams?.sent || '') === '1'
   return (
     <div className="min-h-screen flex flex-col relative pt-24">
       <DotsLayer targetId="section-2" showWhenInView={false} mode="uniform" divisions={20} variant="fixed" alwaysVisible />
@@ -65,7 +159,7 @@ export default function Home() {
       </section>
 
       {/* Section 1 */}
-      <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 rounded-b-3xl overflow-hidden">
+      <section data-nav-theme="dark" className="min-h-screen px-4 md:px-8 bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 overflow-hidden">
         {/* Center within non-gradient area (below top 20% gradient) */}
           <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
           <div className="w-[95%] md:max-w-[95%] mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
@@ -130,8 +224,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Spacer to ensure navbar is dark in the space between section 1 and 2 */}
+      <div data-nav-theme="dark" aria-hidden className="h-20 md:h-28" />
+
       {/* Section 2: Mission */}
-      <section data-nav-theme="light" className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 px-4 md:px-8 bg-gray-300 mt-20 md:mt-28 rounded-t-3xl">
+      <section data-nav-theme="light" className="min-h-[60vh] flex items-center justify-center py-12 md:py-20 px-4 md:px-8 bg-gray-300">
         <div className="w-[95%] md:max-w-[80%] mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
@@ -143,7 +240,7 @@ export default function Home() {
 
       {/* Section 3: How Allvitr Helps You Find Them */}
       <section data-nav-theme="light" id="section-2" className="py-4 px-0 bg-gray-300">
-        <div data-nav-theme="dark-contrast" className="relative h-[60vh] md:h-[68vh] w-[95%] md:max-w-[95%] mx-auto rounded-3xl overflow-hidden border border-gray-950">
+        <div data-nav-theme="dark-contrast" className="relative h-[60vh] md:h-[68vh] w-[95%] md:max-w-[95%] mx-auto overflow-hidden border border-gray-950">
           <DotsLayer targetId="section-2" showWhenInView mode="mouse" divisions={20} variant="section" />
           <div className="relative z-10 h-full w-full flex items-center">
             <div className="w-[95%] md:max-w-[95%] mx-auto px-6">
@@ -178,7 +275,12 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Get in touch</h2>
             <p className="text-gray-700 mb-6">Have a question or want a demo? We’d love to hear from you.</p>
           </div>
-          <form method="post" className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {isSent && (
+            <div className="mt-4 mb-2 rounded-md border border-green-600/30 bg-green-100/50 text-green-900 p-3 max-w-xl">
+              Thanks! Your message was sent. We’ll be in touch shortly.
+            </div>
+          )}
+          <form action={sendContactToSlack} className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             <div>
               <label htmlFor="name" className="block text-sm text-gray-700 mb-1">Name</label>
               <input
@@ -264,7 +366,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto rounded-t-3xl overflow-hidden -mt-8 md:-mt-10">
+      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto overflow-hidden">
         <div className="w-[95%] md:max-w-[80%] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="text-left">
