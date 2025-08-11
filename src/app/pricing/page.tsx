@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import NavBar from '../components/NavBar'
-import ContactForm from '../components/ContactForm'
 
 export default async function PricingPage({
   searchParams,
@@ -12,18 +12,27 @@ export default async function PricingPage({
   return (
     <div className="page">
       <NavBar />
-      <main className="flex-1 pad-section py-12 md:py-16">
+      <main className="flex-1 pad-section py-10 md:py-16">
         <div className="container-80">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
             Pricing
           </h1>
-          <p className="text-lg text-gray-400 max-w-3xl">
-            Get in touch with us to discuss your challenges <br />
-            and get a tailored solution!
+          <p className="text-base md:text-lg text-gray-400 max-w-3xl">
+            Get in touch with us to discuss what you want to automate. <br /> We will deploy a demo to your needs.
           </p>
         </div>
-
-        <ContactForm origin="/pricing" isSent={isSent} className="mt-12" />
+        {isSent && (
+          <div className="container-80 mt-6">
+            <div className="rounded-md border border-green-600/30 bg-green-100/50 text-green-900 p-3 max-w-xl">
+              Thanks! Your message was sent. We’ll be in touch shortly.
+            </div>
+          </div>
+        )}
+        <div className="container-80 mt-10 md:mt-12">
+          <Link href="/contact" className="btn btn-primary px-5 py-3">
+            Contact us
+          </Link>
+        </div>
       </main>
     </div>
   )

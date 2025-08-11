@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Footer from './components/Footer'
@@ -16,6 +16,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Allvitr',
   description: 'Amplifying Human Insight',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
