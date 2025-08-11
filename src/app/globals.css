@@ -92,3 +92,46 @@ a,
   background-color: red;
   animation: caret-fade-out 1.2s steps(7, end) forwards;
 }
+
+/* Reusable component classes to reduce Tailwind verbosity */
+@layer components {
+  .container-95 {
+    @apply w-[95%] md:max-w-[95%] mx-auto;
+  }
+  .container-80 {
+    @apply w-[95%] md:max-w-[80%] mx-auto;
+  }
+  .pad-section {
+    @apply px-4 md:px-8;
+  }
+  .page {
+    @apply min-h-screen flex flex-col relative pt-24;
+  }
+
+  .btn {
+    @apply px-6 py-3 font-semibold border-3 border-transparent transition duration-300;
+  }
+  .btn-primary {
+    @apply bg-gray-400 text-black hover:border-white;
+  }
+  .btn-outline {
+    @apply border-2 border-gray-400 text-gray-400 hover:border-white hover:text-white;
+  }
+
+  .label {
+    @apply block text-sm text-gray-700 mb-1;
+  }
+  .input-underline {
+    @apply w-full rounded-none bg-transparent border-0 border-b border-gray-400 text-gray-900 placeholder-gray-500 px-0 py-2 focus:outline-none focus:ring-0 focus:border-black focus:border-b-2;
+  }
+  .textarea-base {
+    @apply w-full rounded-none bg-transparent border border-gray-400 text-gray-900 placeholder-gray-500 px-3 py-2 focus:outline-none focus:ring-0 focus:border-black;
+  }
+
+  .nav-links {
+    @apply hidden md:flex items-center gap-6 mx-auto;
+  }
+  .nav-link {
+    @apply text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400;
+  }
+}

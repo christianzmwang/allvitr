@@ -1,21 +1,21 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import ConnectingDots from "./ConnectingDots"
+import { useEffect, useState } from 'react'
+import ConnectingDots from './ConnectingDots'
 
 export default function DotsLayer({
   targetId,
   showWhenInView = true,
-  mode = "mouse",
+  mode = 'mouse',
   divisions = 20,
-  variant = "section",
+  variant = 'section',
   alwaysVisible = false,
 }: {
   targetId: string
   showWhenInView?: boolean
-  mode?: "mouse" | "uniform"
+  mode?: 'mouse' | 'uniform'
   divisions?: number
-  variant?: "fixed" | "section"
+  variant?: 'fixed' | 'section'
   alwaysVisible?: boolean
 }) {
   const [inView, setInView] = useState(false)
@@ -31,17 +31,17 @@ export default function DotsLayer({
       {
         root: null,
         threshold: 0,
-        rootMargin: "0px 0px 0px 0px",
-      }
+        rootMargin: '0px 0px 0px 0px',
+      },
     )
 
     observer.observe(target)
     return () => observer.disconnect()
   }, [targetId])
 
-  const visible = alwaysVisible ? true : (showWhenInView ? inView : !inView)
+  const visible = alwaysVisible || (showWhenInView ? inView : !inView)
 
-  if (variant === "fixed") {
+  if (variant === 'fixed') {
     return (
       <div className="fixed inset-0 z-[-1] pointer-events-none">
         <div className="absolute inset-0 bg-black" />
@@ -56,5 +56,3 @@ export default function DotsLayer({
     </div>
   )
 }
-
-
