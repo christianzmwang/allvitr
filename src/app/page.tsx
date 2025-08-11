@@ -136,12 +136,13 @@ function PlatformStack({
   )
 }
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const isSent = (searchParams?.sent || '') === '1'
+  const resolvedSearchParams = await searchParams
+  const isSent = (resolvedSearchParams?.sent || '') === '1'
   return (
     <div className="min-h-screen flex flex-col relative pt-24">
       <DotsLayer targetId="section-2" showWhenInView={false} mode="uniform" divisions={20} variant="fixed" alwaysVisible />
