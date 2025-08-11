@@ -82,7 +82,10 @@ export default function NavBar() {
   }, [])
 
   return (
-    <header ref={navRef} className="fixed inset-x-0 top-0 z-50 mt-4">
+    <header
+      ref={navRef}
+      className="fixed inset-x-0 top-0 z-50 mt-[max(1rem,env(safe-area-inset-top))]"
+    >
       <nav
         data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
@@ -145,7 +148,7 @@ export default function NavBar() {
         <div className="flex items-center gap-3 ml-auto md:ml-8">
           {/* Demo link - show on both mobile and desktop */}
           <Link
-            href="/#contact"
+            href="/contact"
             className={`
               rounded-none px-5 py-1.5 text-sm font-semibold border-2
               transition-all duration-300 ease-in-out

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
-import ContactForm from './components/ContactForm'
+// Contact form moved to dedicated /contact page
 
 function PlatformStack({
   title,
@@ -73,13 +73,13 @@ export default async function Home({
       {/* Hero Section */}
       <section
         data-nav-theme="dark"
-        className="relative flex items-center justify-center min-h-[80vh] md:min-h-[85vh] p-6 md:p-8 overflow-hidden"
+        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[85vh] p-4 md:p-8 overflow-hidden"
       >
         <div className="relative z-10 max-w-2xl w-full text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
             Allvitr
           </h1>
-          <p className="text-md md:text-lg text-gray-400 mb-8">
+          <p className="text-base md:text-lg text-gray-400 mb-8">
             We turn information overload into clarity, building software that
             amplify human insight and enable autonomous decision-making.
           </p>
@@ -170,12 +170,12 @@ export default async function Home({
       {/* Section 2: Mission */}
       <section
         data-nav-theme="light"
-        className="min-h-[60vh] flex items-center justify-center py-12 md:py-15 bg-gray-300"
+        className="min-h-[60vh] flex items-center justify-center py-10 md:py-15 bg-gray-300"
       >
         <div className="container-95">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-4 md:gap-15 [-webkit-text-stroke-width:1.5px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(17,24,39)]">
+              <h2 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 [-webkit-text-stroke-width:1px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(17,24,39)]">
                 <span>Age</span>
                 <span>Of</span>
                 <span>Autonomy</span>
@@ -183,12 +183,10 @@ export default async function Home({
             </div>
             <div className="flex justify-center">
               <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
-                <p className="text-xl font-bold">Autonomy is inevitable.</p>
-                <p className="text-xl mt-12 mb-12 font-bold">Start now, dominate tomorrow.</p>
-                <p className="text-xl">
-                  We deploy autonomous platforms: <br />
-                  Converting data into real-time, AI-powered insights that
-                  enable rapid, clear, and autonomous decision-making.
+                <p className="text-lg md:text-xl font-bold">Autonomy is inevitable.</p>
+                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Start now, dominate tomorrow.</p>
+                <p className="text-lg md:text-xl">
+                We deploy autonomous platforms that turn data into real-time, AI-powered insights:<br/>enabling rapid, clear, and autonomous decision-making.
                 </p>
               </div>
             </div>
@@ -204,7 +202,7 @@ export default async function Home({
       >
         <div
           data-nav-theme="dark-contrast"
-          className="relative h-[60vh] md:h-[68vh] container-95 overflow-hidden border border-gray-950"
+          className="relative h-[52vh] md:h-[68vh] container-95 overflow-hidden border border-gray-950"
         >
           <DotsLayer
             targetId="section-2"
@@ -222,7 +220,7 @@ export default async function Home({
                   </h2>
                 </div>
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <div className="text-left text-white font-semibold leading-snug text-xl md:text-4xl space-y-1">
+                  <div className="text-left text-white font-semibold leading-snug text-lg md:text-4xl space-y-1">
                     <div>Clarity</div>
                     <div>Speed</div>
                     <div>Execution</div>
@@ -235,7 +233,41 @@ export default async function Home({
         </div>
       </section>
 
-      <ContactForm origin="/" isSent={isSent} />
+      {/* Section 4: CTA */}
+      <section data-nav-theme="light" className="py-4 md:py-5 bg-gray-300">
+        <div className="container-95 flex items-center justify-center">
+          <div className="flex w-full flex-col md:flex-row items-stretch gap-6">
+            <Link href="/contact" className="group btn btn-primary text-xl md:text-3xl px-8 md:px-10 py-12 md:py-20 w-full md:flex-1 text-center flex items-center justify-center gap-4 md:gap-5">
+              <span>Work with us</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link href="/platforms" className="group btn btn-outline text-xl md:text-3xl px-8 md:px-10 py-12 md:py-20 w-full md:flex-1 text-center flex items-center justify-center gap-4 md:gap-5">
+              <span>Explore Platforms</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
