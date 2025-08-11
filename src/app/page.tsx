@@ -1,95 +1,8 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
+import { sendContactToSlack } from './actions/sendContactToSlack'
 
-async function sendContactToSlack(formData: FormData) {
-  'use server'
-
-  const name = (formData.get('name') || '').toString().trim()
-  const email = (formData.get('email') || '').toString().trim()
-  const phone = (formData.get('phone') || '').toString().trim()
-  const company = (formData.get('company') || '').toString().trim()
-  const title = (formData.get('title') || '').toString().trim()
-  const country = (formData.get('country') || '').toString().trim()
-  const message = (formData.get('message') || '').toString().trim()
-
-  const text = [
-    '*New Website Contact*',
-    `Name: ${name || 'N/A'}`,
-    `Email: ${email || 'N/A'}`,
-    `Phone: ${phone || 'N/A'}`,
-    `Company: ${company || 'N/A'}`,
-    `Title: ${title || 'N/A'}`,
-    `Country: ${country || 'N/A'}`,
-    `Message: ${message || 'N/A'}`,
-  ].join('\n')
-
-  try {
-    const botToken = process.env.SLACK_BOT_TOKEN ?? process.env['slack_bot_token']
-    const channelId =
-      process.env.SLACK_CHANNEL_ID ?? process.env['slack_channel_ID'] ?? process.env['slack_channel_id']
-
-    if (botToken && channelId) {
-      const response = await fetch('https://slack.com/api/chat.postMessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          Authorization: `Bearer ${botToken}`,
-        },
-        body: JSON.stringify({
-          channel: channelId,
-          text,
-          blocks: [
-            { type: 'section', text: { type: 'mrkdwn', text: '*New Website Contact*' } },
-            {
-              type: 'section',
-              fields: [
-                { type: 'mrkdwn', text: `*Name*\n${name || 'N/A'}` },
-                { type: 'mrkdwn', text: `*Email*\n${email || 'N/A'}` },
-                { type: 'mrkdwn', text: `*Phone*\n${phone || 'N/A'}` },
-                { type: 'mrkdwn', text: `*Company*\n${company || 'N/A'}` },
-                { type: 'mrkdwn', text: `*Title*\n${title || 'N/A'}` },
-                { type: 'mrkdwn', text: `*Country*\n${country || 'N/A'}` },
-              ],
-            },
-            { type: 'section', text: { type: 'mrkdwn', text: `*Message*\n${message || 'N/A'}` } },
-          ],
-        }),
-        cache: 'no-store',
-      })
-
-      const result = await response.json()
-      if (!result.ok) {
-        console.error('Slack API error', result)
-        redirect('/?sent=0')
-      }
-    } else {
-      const webhookUrl = process.env.SLACK_WEBHOOK_URL
-      if (!webhookUrl) {
-        console.error('No Slack configuration provided (missing bot token + channel or webhook URL).')
-        redirect('/?sent=0')
-      }
-
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-        cache: 'no-store',
-      })
-
-      if (!response.ok) {
-        console.error('Failed to post to Slack', await response.text())
-        redirect('/?sent=0')
-      }
-    }
-  } catch (error) {
-    console.error('Error posting to Slack', error)
-    redirect('/?sent=0')
-  }
-
-  redirect('/?sent=1')
-}
 
 function PlatformStack({
   title,
@@ -282,6 +195,7 @@ export default async function Home({
             </div>
           )}
           <form action={sendContactToSlack} className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <input type="hidden" name="origin" value="/" />
             <div>
               <label htmlFor="name" className="block text-sm text-gray-700 mb-1">Name</label>
               <input
@@ -366,50 +280,6 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black text-white py-8 px-4 md:px-8 mt-auto overflow-hidden">
-        <div className="w-[95%] md:max-w-[80%] mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="text-left">
-              <h3 className="text-2xl font-bold mb-2">Allvitr</h3>
-              <p className="text-gray-300 mb-4">
-                Amplifying Human Insight
-              </p>
-              <p className="text-gray-400 text-sm">
-                &copy; {new Date().getFullYear()} Allvitr. All rights reserved.
-              </p>
-            </div>
-            <div className="flex space-x-4">
-              <a
-                href="https://www.linkedin.com/company/allvitr/"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-              </a>
-              <a
-                href="https://x.com/allvitr"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

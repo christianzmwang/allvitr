@@ -8,7 +8,7 @@ export default function AlphaPage() {
         <div className="w-[95%] md:max-w-[80%] mx-auto">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Alpha</h1>
           <p className="text-lg text-gray-400 max-w-3xl">
-            Welcome to the Alpha program. This is a placeholder page. Add your content here.
+            Welcome to the Alpha program. Work in progess. <br /> Stay tuned!
           </p>
         </div>
       </main>
