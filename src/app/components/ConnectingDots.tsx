@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import React, { useEffect, useRef } from "react"
-import { gsap } from "gsap"
+import React, { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
 
 // Connected points + floating circles hero background
 // Ported from the imperative IIFE to a React/Next.js component with GSAP tweens
@@ -13,15 +13,15 @@ import { gsap } from "gsap"
 // - Tailwind handles layout; no extra CSS required
 
 export default function ConnectingDots({
-  className = "",
-  heading = "",
-  mode = "mouse",
+  className = '',
+  heading = '',
+  mode = 'mouse',
   divisions = 20,
   bleed = 48,
 }: {
   className?: string
   heading?: string
-  mode?: "mouse" | "uniform"
+  mode?: 'mouse' | 'uniform'
   divisions?: number
   bleed?: number
 }) {
@@ -49,7 +49,10 @@ export default function ConnectingDots({
   const mouseViewportRef = useRef({ x: 0, y: 0, active: false })
   // Always animate; do not pause on scroll
 
-  const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
+  const getDistance = (
+    p1: { x: number; y: number },
+    p2: { x: number; y: number },
+  ) => {
     const dx = p1.x - p2.x
     const dy = p1.y - p2.y
     return dx * dx + dy * dy
@@ -73,10 +76,10 @@ export default function ConnectingDots({
     canvas.style.height = `${expandedHeight}px`
     canvas.style.left = `-${bleedPx}px`
     canvas.style.top = `-${bleedPx}px`
-    canvas.style.right = "auto"
-    canvas.style.bottom = "auto"
+    canvas.style.right = 'auto'
+    canvas.style.bottom = 'auto'
 
-    const ctx = canvas.getContext("2d")!
+    const ctx = canvas.getContext('2d')!
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctxRef.current = ctx
 
@@ -86,7 +89,7 @@ export default function ConnectingDots({
     const points: Point[] = []
     const baseDivs = Math.max(5, Math.floor(divisions))
     // On mobile, reduce divisions to approximately halve point count
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
     const divs = isMobile
       ? Math.max(5, Math.floor(baseDivs * 0.707)) // ~half the points (since points scale with divs^2)
       : baseDivs
@@ -153,7 +156,7 @@ export default function ConnectingDots({
         x: p.originX - 50 + Math.random() * 100,
         y: p.originY - 50 + Math.random() * 100,
         duration: 1 + Math.random(),
-        ease: "circ.inOut",
+        ease: 'circ.inOut',
         onComplete: () => startShift(p),
       })
     }
@@ -182,10 +185,10 @@ export default function ConnectingDots({
     const height = canvas.clientHeight
 
     // Solid black background for the animation
-    ctx.fillStyle = "#000"
+    ctx.fillStyle = '#000'
     ctx.fillRect(0, 0, width, height)
     const points = pointsRef.current
-    if (mode === "uniform") {
+    if (mode === 'uniform') {
       for (let i = 0; i < points.length; i++) {
         const p = points[i]
         p.active = 0.12
@@ -226,7 +229,7 @@ export default function ConnectingDots({
     animate()
 
     const onMouseMove = (e: MouseEvent) => {
-      if (mode !== "mouse") return
+      if (mode !== 'mouse') return
       // Track viewport mouse position and map to canvas coordinates
       mouseViewportRef.current = { x: e.clientX, y: e.clientY, active: true }
       const canvas = canvasRef.current
@@ -236,7 +239,7 @@ export default function ConnectingDots({
     }
 
     const onScroll = () => {
-      if (mode !== "mouse") return
+      if (mode !== 'mouse') return
       // Recalculate canvas-relative target when page scrolls without mouse movement
       const canvas = canvasRef.current
       if (!canvas) return
@@ -253,21 +256,21 @@ export default function ConnectingDots({
       setupCanvasAndGeometry()
     }
 
-    if (mode === "mouse" && !("ontouchstart" in window)) {
-      window.addEventListener("mousemove", onMouseMove)
+    if (mode === 'mouse' && !('ontouchstart' in window)) {
+      window.addEventListener('mousemove', onMouseMove)
     }
-    window.addEventListener("resize", onResize)
-    if (mode === "mouse") {
-      window.addEventListener("scroll", onScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+    if (mode === 'mouse') {
+      window.addEventListener('scroll', onScroll, { passive: true })
     }
 
     return () => {
-      if (mode === "mouse" && !("ontouchstart" in window)) {
-        window.removeEventListener("mousemove", onMouseMove)
+      if (mode === 'mouse' && !('ontouchstart' in window)) {
+        window.removeEventListener('mousemove', onMouseMove)
       }
-      window.removeEventListener("resize", onResize)
-      if (mode === "mouse") {
-        window.removeEventListener("scroll", onScroll)
+      window.removeEventListener('resize', onResize)
+      if (mode === 'mouse') {
+        window.removeEventListener('scroll', onScroll)
       }
 
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -278,13 +281,21 @@ export default function ConnectingDots({
   }, [])
 
   return (
-    <section ref={containerRef} className={`relative h-full w-full overflow-hidden ${className}`}>
-      <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full" />
+    <section
+      ref={containerRef}
+      className={`relative h-full w-full overflow-hidden ${className}`}
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 block h-full w-full"
+      />
 
       {/* Optional content overlay */}
       <div className="relative z-10 flex h-full w-full items-center justify-center">
         {heading ? (
-          <h1 className="text-4xl md:text-6xl font-semibold text-white/90 drop-shadow">{heading}</h1>
+          <h1 className="text-4xl md:text-6xl font-semibold text-white/90 drop-shadow">
+            {heading}
+          </h1>
         ) : null}
       </div>
 

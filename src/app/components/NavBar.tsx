@@ -26,8 +26,7 @@ export default function NavBar() {
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10
-      setScrolled(isScrolled)
-      // Re-evaluate background under navbar on scroll
+      if (isScrolled !== scrolled) setScrolled(isScrolled)
       evaluateBackground()
     }
 
@@ -52,7 +51,7 @@ export default function NavBar() {
       window.removeEventListener('resize', evaluateBackground)
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [open])
+  }, [open, scrolled])
 
   // Decide whether content behind navbar is light or dark
   const evaluateBackground = () => {
@@ -64,20 +63,17 @@ export default function NavBar() {
     // early transitions before the background has actually changed
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
     const sampleYOffsetFactor = isMobile ? 0.135 : 0.5
-    const sampleY = Math.max(0, Math.round(rect.top + rect.height * sampleYOffsetFactor))
+    const sampleY = Math.max(
+      0,
+      Math.round(rect.top + rect.height * sampleYOffsetFactor),
+    )
     const elements = document.elementsFromPoint(sampleX, sampleY)
-
     for (const el of elements) {
       if (el === header || header.contains(el)) continue
       const theme = (el as HTMLElement).dataset?.navTheme
-      if (theme === 'light') {
-        setUseDarkGlass(true)
-        return
-      }
-      if (theme === 'dark' || theme === 'dark-contrast') {
-        setUseDarkGlass(false)
-        return
-      }
+      if (theme === 'light') return setUseDarkGlass(true)
+      if (theme === 'dark' || theme === 'dark-contrast')
+        return setUseDarkGlass(false)
     }
   }
 
@@ -116,37 +112,31 @@ export default function NavBar() {
             />
             <span
               key={scrolled ? 'scrolled' : 'not-scrolled'}
-              className={`${scrolled ? 'allvitr-typing-disappear' : 'allvitr-typing-appear'}`}>
+              className={`${scrolled ? 'allvitr-typing-disappear' : 'allvitr-typing-appear'}`}
+            >
               Allvitr
             </span>
           </div>
 
           {/* Always show text on desktop */}
-          <span className={`hidden md:inline transition-all duration-300 ease-in-out ${
-            pageLoaded ? 'allvitr-typing-appear' : ''
-          }`}>
+          <span
+            className={`hidden md:inline transition-all duration-300 ease-in-out ${
+              pageLoaded ? 'allvitr-typing-appear' : ''
+            }`}
+          >
             Allvitr
           </span>
         </Link>
 
-          {/* Centered navigation links for desktop */}
-          <div className="hidden md:flex items-center gap-6 mx-auto">
-          <Link
-            href="/alpha"
-            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
-          >
+        {/* Centered navigation links for desktop */}
+        <div className="nav-links">
+          <Link href="/alpha" className="nav-link">
             Alpha
           </Link>
-          <Link
-            href="/platforms"
-            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
-          >
+          <Link href="/platforms" className="nav-link">
             Platforms
           </Link>
-          <Link
-            href="/pricing"
-            className={`text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400`}
-          >
+          <Link href="/pricing" className="nav-link">
             Pricing
           </Link>
         </div>

@@ -26,9 +26,12 @@ export async function sendContactToSlack(formData: FormData) {
   ].join('\n')
 
   try {
-    const botToken = process.env.SLACK_BOT_TOKEN ?? process.env['slack_bot_token']
+    const botToken =
+      process.env.SLACK_BOT_TOKEN ?? process.env['slack_bot_token']
     const channelId =
-      process.env.SLACK_CHANNEL_ID ?? process.env['slack_channel_ID'] ?? process.env['slack_channel_id']
+      process.env.SLACK_CHANNEL_ID ??
+      process.env['slack_channel_ID'] ??
+      process.env['slack_channel_id']
 
     if (botToken && channelId) {
       const response = await fetch('https://slack.com/api/chat.postMessage', {
@@ -41,7 +44,10 @@ export async function sendContactToSlack(formData: FormData) {
           channel: channelId,
           text,
           blocks: [
-            { type: 'section', text: { type: 'mrkdwn', text: '*New Website Contact*' } },
+            {
+              type: 'section',
+              text: { type: 'mrkdwn', text: '*New Website Contact*' },
+            },
             {
               type: 'section',
               fields: [
@@ -53,7 +59,10 @@ export async function sendContactToSlack(formData: FormData) {
                 { type: 'mrkdwn', text: `*Country*\n${country || 'N/A'}` },
               ],
             },
-            { type: 'section', text: { type: 'mrkdwn', text: `*Message*\n${message || 'N/A'}` } },
+            {
+              type: 'section',
+              text: { type: 'mrkdwn', text: `*Message*\n${message || 'N/A'}` },
+            },
           ],
         }),
         cache: 'no-store',
@@ -67,7 +76,9 @@ export async function sendContactToSlack(formData: FormData) {
     } else {
       const webhookUrl = process.env.SLACK_WEBHOOK_URL
       if (!webhookUrl) {
-        console.error('No Slack configuration provided (missing bot token + channel or webhook URL).')
+        console.error(
+          'No Slack configuration provided (missing bot token + channel or webhook URL).',
+        )
         redirect(`${origin}?sent=0`)
       }
 
@@ -90,5 +101,3 @@ export async function sendContactToSlack(formData: FormData) {
 
   redirect(`${origin}?sent=1`)
 }
-
-
