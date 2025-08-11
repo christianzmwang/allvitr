@@ -125,7 +125,7 @@ export default async function Home({
                   </p>
                 </div>
               </div>
-              <div className="mt-16 md:mt-20">
+              <div className="mt-16 md:mt-15">
                 <Link href="/platforms" className="btn btn-primary">
                   Explore Platforms
                 </Link>
@@ -161,7 +161,11 @@ export default async function Home({
       </section>
 
       {/* Spacer to ensure navbar is dark in the space between section 1 and 2 */}
-      <div data-nav-theme="dark" aria-hidden className="h-20 md:h-28" />
+      <div
+        data-nav-theme="dark"
+        aria-hidden
+        className="glass-spacer mx-auto w-[100%] md:max-w-[100%] h-20 md:h-28"
+      />
 
       {/* Section 2: Mission */}
       <section
@@ -178,7 +182,7 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Section 3: How Allvitr Helps You Find Them */}
+      {/* Section 3*/}
       <section
         data-nav-theme="light"
         id="section-2"
@@ -195,26 +199,21 @@ export default async function Home({
             divisions={20}
             variant="section"
           />
-          <div className="relative z-10 h-full w-full flex items-center">
-            <div className="container-95 px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center justify-items-center">
-                <div className="text-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold text-red-600 leading-tight">
-                    Hugin
-                    <br />
-                    <span className="block text-lg md:text-2xl text-white/90 font-semibold leading-snug mt-2 md:mt-3">
-                      Powered by <br />
-                      <span className="text-white/90">AI-Agents</span>
-                    </span>
+          <div className="relative z-10 h-full w-full flex items-center px-6">
+            <div className="container-95 w-full">
+              <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
+                <div className="w-full md:w-1/2 flex justify-center">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-white/80 leading-tight md:whitespace-nowrap text-center">
+                    AI in your hands
                   </h2>
                 </div>
-                <div className="text-center">
-                  <p className="text-lg md:text-2xl text-gray-200 leading-snug max-w-2xl mx-auto font-semibold">
-                    The around-the-clock AI <br />
-                    sales reps that bring <br />
-                    you <span className="italic font-thin">buyers</span>, not
-                    just leads.
-                  </p>
+                <div className="w-full md:w-1/2 flex justify-center">
+                  <div className="text-center text-white/90 font-semibold leading-snug text-xl md:text-2xl space-y-1">
+                    <div>Clarity</div>
+                    <div>Speed</div>
+                    <div>Execution</div>
+                    <div>Dominance</div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -11,8 +11,9 @@ export default function ContactForm({
 }) {
   return (
     <section
+      id="contact"
       data-nav-theme="light"
-      className={`pt-10 md:pt-14 pb-20 md:pb-24 pad-section bg-gray-300 ${className}`}
+      className={`pt-10 md:pt-14 pb-20 md:pb-24 pad-section bg-gray-300 scroll-mt-24 md:scroll-mt-32 ${className}`}
     >
       <div className="container-95">
         <div className="max-w-4xl">
@@ -108,7 +109,7 @@ export default function ContactForm({
             />
           </div>
           <div className="md:col-span-3">
-            <label htmlFor="message" className="label">
+            <label htmlFor="message" className="label mb-4">
               Message
             </label>
             <textarea
@@ -120,7 +121,7 @@ export default function ContactForm({
             />
           </div>
           <div className="md:col-span-3 flex justify-start">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary hover:border-gray-600">
               Send
             </button>
           </div>

@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="bg-black text-white py-8 pad-section overflow-hidden">
-      <div className="container-80">
+      <div className="container-95">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="text-left">
             <h3 className="text-2xl font-bold mb-2">Allvitr</h3>

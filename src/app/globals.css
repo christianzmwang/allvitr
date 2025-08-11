@@ -8,6 +8,14 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
+/* High-transparency glass without shadow for inter-section spacer */
+.glass-spacer {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  box-shadow: none;
+}
+
 /* Dark glass variant for light backgrounds */
 .glass-dark {
   background: rgba(0, 0, 0, 0.5);

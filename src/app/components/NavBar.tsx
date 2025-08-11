@@ -143,8 +143,9 @@ export default function NavBar() {
 
         {/* Right-hand actions */}
         <div className="flex items-center gap-3 ml-auto md:ml-8">
-          {/* Demo button - show on both mobile and desktop */}
-          <button
+          {/* Demo link - show on both mobile and desktop */}
+          <Link
+            href="/#contact"
             className={`
               rounded-none px-5 py-1.5 text-sm font-semibold border-2
               transition-all duration-300 ease-in-out
@@ -155,7 +156,7 @@ export default function NavBar() {
             `}
           >
             Demo
-          </button>
+          </Link>
 
           {/* Hamburger / close - show only on mobile */}
           <button
