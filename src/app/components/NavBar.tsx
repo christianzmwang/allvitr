@@ -89,7 +89,7 @@ export default function NavBar() {
       <nav
         data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} group mx-auto flex w-[95%] md:max-w-[95%] items-center justify-between
+          ${useDarkGlass ? 'glass-dark' : 'glass'} group container-95 flex items-center justify-between
           px-6 md:px-4 py-2 transition-colors duration-300
         `}
       >
@@ -115,7 +115,7 @@ export default function NavBar() {
             />
             <span
               key={scrolled ? 'scrolled' : 'not-scrolled'}
-              className={`${scrolled ? 'allvitr-typing-disappear' : 'allvitr-typing-appear'}`}
+              className={`allvitr-typing ${scrolled ? 'allvitr-typing-disappear' : 'allvitr-typing-appear'}`}
             >
               Allvitr
             </span>
@@ -124,7 +124,7 @@ export default function NavBar() {
           {/* Always show text on desktop */}
           <span
             className={`hidden md:inline transition-all duration-300 ease-in-out ${
-              pageLoaded ? 'allvitr-typing-appear' : ''
+              pageLoaded ? 'allvitr-typing allvitr-typing-appear' : ''
             }`}
           >
             Allvitr
@@ -198,7 +198,7 @@ export default function NavBar() {
       <div
         ref={menuRef}
         className={`
-          ${useDarkGlass ? 'glass-dark' : 'glass'} mx-auto w-[95%] md:max-w-[95%] mt-3 p-6 space-y-4
+          ${useDarkGlass ? 'glass-dark' : 'glass'} container-95 mt-3 p-6 space-y-4
           transition-all duration-300 ease-in-out transform origin-top
           md:hidden
           ${

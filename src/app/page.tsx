@@ -52,13 +52,7 @@ function PlatformStack({
   )
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>
-}) {
-  const resolvedSearchParams = await searchParams
-  const isSent = (resolvedSearchParams?.sent || '') === '1'
+export default function Home() {
   return (
     <div className="page">
       <DotsLayer
@@ -161,11 +155,7 @@ export default async function Home({
       </section>
 
       {/* Spacer to ensure navbar is dark in the space between section 1 and 2 */}
-      <div
-        data-nav-theme="dark"
-        aria-hidden
-        className="mx-auto w-[100%] md:max-w-[100%] h-20 md:h-28"
-      />
+      <div data-nav-theme="dark" aria-hidden className="w-full h-20 md:h-28" />
 
       {/* Section 2: Mission */}
       <section
@@ -175,7 +165,7 @@ export default async function Home({
         <div className="container-95">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 [-webkit-text-stroke-width:1px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(17,24,39)]">
+              <h2 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-dark">
                 <span>Age</span>
                 <span>Of</span>
                 <span>Autonomy</span>
@@ -186,7 +176,7 @@ export default async function Home({
                 <p className="text-lg md:text-xl font-bold">Autonomy is inevitable.</p>
                 <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Deploy now, advance tomorrow.</p>
                 <p className="text-lg md:text-xl">
-                We deploy autonomous platforms that turn data into real-time, AI-powered insights:<br/>enabling rapid, clear, and autonomous decision-making.
+                We deploy autonomous platforms<br />that deliver AI-powered insights: enabling rapid, clear, and autonomous decision-making.
                 </p>
               </div>
             </div>
@@ -215,7 +205,7 @@ export default async function Home({
             <div className="container-95 w-full">
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold text-transparent leading-tight text-center gap-4 md:gap-6 [-webkit-text-stroke-width:1.5px] md:[-webkit-text-stroke-width:2px] [-webkit-text-stroke-color:rgb(255,255,255)]">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-transparent leading-tight text-center gap-4 md:gap-6 heading-outline-light">
                     AI Integration
                   </h2>
                 </div>
@@ -237,7 +227,7 @@ export default async function Home({
       <section data-nav-theme="light" className="py-4 md:py-5 bg-gray-300">
         <div className="container-95 flex items-center justify-center">
           <div className="flex w-full flex-col md:flex-row items-stretch gap-6">
-            <Link href="/contact" className="group btn btn-primary text-xl md:text-3xl px-8 md:px-10 py-12 md:py-20 w-full md:flex-1 text-center flex items-center justify-center gap-4 md:gap-5">
+            <Link href="/contact" className="group btn btn-primary cta-button-large w-full md:flex-1">
               <span>Work with us</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -251,7 +241,7 @@ export default async function Home({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </Link>
-            <Link href="/platforms" className="group btn btn-outline text-xl md:text-3xl px-8 md:px-10 py-12 md:py-20 w-full md:flex-1 text-center flex items-center justify-center gap-4 md:gap-5">
+            <Link href="/platforms" className="group btn btn-outline cta-button-large w-full md:flex-1">
               <span>Explore Platforms</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
