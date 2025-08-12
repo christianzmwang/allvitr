@@ -184,7 +184,7 @@ export default async function Home({
             <div className="flex justify-center">
               <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
                 <p className="text-lg md:text-xl font-bold">Autonomy is inevitable.</p>
-                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Start now, dominate tomorrow.</p>
+                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Start now, advance tomorrow.</p>
                 <p className="text-lg md:text-xl">
                 We deploy autonomous platforms that turn data into real-time, AI-powered insights:<br/>enabling rapid, clear, and autonomous decision-making.
                 </p>
@@ -224,7 +224,7 @@ export default async function Home({
                     <div>Clarity</div>
                     <div>Speed</div>
                     <div>Execution</div>
-                    <div className="text-red-600/80">Dominance</div>
+                    <div className="text-red-600/80">Evolution</div>
                   </div>
                 </div>
               </div>
