@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       orderBy: { score: 'desc' },
     })
 
-    const results = leads.map((l) => ({
+    let results = leads.map((l) => ({
       id: l.id,
       name: l.company.name,
       category: l.company.category,
@@ -104,6 +104,65 @@ export async function POST(req: NextRequest) {
       score: l.score,
       source: l.source,
     }))
+
+    if (results.length === 0) {
+      const mock = [
+        {
+          id: 'mock-1',
+          name: 'Kafé Aurora',
+          category: 'Kafé',
+          website: 'https://kafeaurora.no',
+          city: 'Oslo',
+          zip: '0150',
+          phone: '+47 22 33 44 55',
+          email: 'post@kafeaurora.no',
+          signals: { rating: 4.5, reviews: 132, hiring: false, ads: true, new: false },
+          score: 78,
+          source: 'mock',
+        },
+        {
+          id: 'mock-2',
+          name: 'Sentrum Tannlege',
+          category: 'Tannlege',
+          website: 'https://sentrumtannlege.no',
+          city: 'Bergen',
+          zip: '5014',
+          phone: '+47 55 12 34 56',
+          email: 'post@sentrumtannlege.no',
+          signals: { rating: 4.8, reviews: 89, hiring: true, ads: false, new: false },
+          score: 84,
+          source: 'mock',
+        },
+        {
+          id: 'mock-3',
+          name: 'Trio Frisør',
+          category: 'Frisør',
+          website: 'https://triofrisor.no',
+          city: 'Trondheim',
+          zip: '7013',
+          phone: '+47 73 45 67 89',
+          email: 'post@triofrisor.no',
+          signals: { rating: 4.2, reviews: 57, hiring: false, ads: false, new: true },
+          score: 71,
+          source: 'mock',
+        },
+      ]
+
+      // simple filter logic for mock
+      results = mock.filter((m) => {
+        if (category && !m.category.toLowerCase().includes(category.toLowerCase())) return false
+        if (keywords) {
+          const hay = `${m.name} ${m.city} ${m.website}`.toLowerCase()
+          if (!hay.includes(keywords.toLowerCase())) return false
+        }
+        if (typeof hiring === 'boolean' && m.signals.hiring !== hiring) return false
+        if (typeof ads === 'boolean' && m.signals.ads !== ads) return false
+        if (typeof newlyOpened === 'boolean' && m.signals.new !== newlyOpened) return false
+        if (typeof minRating === 'number' && (m.signals.rating ?? 0) < minRating) return false
+        if (typeof minReviews === 'number' && (m.signals.reviews ?? 0) < minReviews) return false
+        return true
+      })
+    }
 
     return NextResponse.json({ results })
   } catch (err) {
