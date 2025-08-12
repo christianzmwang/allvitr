@@ -1,0 +1,53 @@
+// Prisma schema for minimal lead-gen models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  website   String?
+  city      String
+  zip       String
+  phone     String?
+  email     String?
+  rating    Float?
+  reviews   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads Lead[]
+}
+
+model Lead {
+  id        String  @id @default(cuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  hiring Boolean @default(false)
+  ads    Boolean @default(false)
+  isNew  Boolean @default(false)
+
+  score  Int    @default(0)
+  source String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  status    String   @default("done")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// End of schema
