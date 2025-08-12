@@ -1,14 +1,12 @@
 @import 'tailwindcss';
 
-/* Glass effect for navbar */
+/* Glass navbar variants */
 .glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(4px);
   border: 0.5px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
-
-/* Dark glass variant for light backgrounds */
 .glass-dark {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
@@ -24,7 +22,7 @@ a,
   cursor: pointer;
 }
 
-/* Custom animation for Allvitr text */
+/* Typing animations for brand text */
 @keyframes typing-disappear {
   from {
     width: 100%;
@@ -55,41 +53,32 @@ a,
   }
 }
 
+/* Base and variants (reduced duplication) */
+.allvitr-typing {
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: bottom;
+  position: relative;
+}
+.allvitr-typing::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 2px;
+  background-color: red;
+}
 .allvitr-typing-disappear {
   animation: typing-disappear 0.8s steps(7, end) forwards;
-  white-space: nowrap;
-  overflow: hidden;
-  vertical-align: bottom; /* To align with the icon */
-  position: relative;
 }
-
 .allvitr-typing-disappear::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 2px;
-  background-color: red;
   animation: caret-fade-out 0.8s steps(7, end) forwards;
 }
-
 .allvitr-typing-appear {
   animation: typing-appear 0.8s steps(7, end) forwards;
-  white-space: nowrap;
-  overflow: hidden;
-  vertical-align: bottom; /* To align with the icon */
-  position: relative;
 }
-
 .allvitr-typing-appear::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 2px;
-  background-color: red;
   animation: caret-fade-out 1.2s steps(7, end) forwards;
 }
 
@@ -133,5 +122,44 @@ a,
   }
   .nav-link {
     @apply text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400;
+  }
+
+  /* Context-aware button hover borders based on section background theme */
+  [data-nav-theme='light'] .btn:hover {
+    @apply border-gray-900; /* dark border on light backgrounds */
+  }
+  [data-nav-theme='dark'] .btn:hover,
+  [data-nav-theme='dark-contrast'] .btn:hover {
+    @apply border-white; /* light border on dark backgrounds */
+  }
+
+  /* Keep outline buttons (e.g., Explore) white on hover even on light backgrounds */
+  [data-nav-theme='light'] .btn-outline:hover {
+    @apply border-white;
+  }
+
+  /* Common heading outlines (replace verbose [-webkit-text-stroke-*]) */
+  .heading-outline-dark {
+    -webkit-text-stroke-width: 1.5px;
+    -webkit-text-stroke-color: rgb(17, 24, 39); /* gray-900 */
+  }
+  @media (min-width: 768px) {
+    .heading-outline-dark {
+      -webkit-text-stroke-width: 2px;
+    }
+  }
+  .heading-outline-light {
+    -webkit-text-stroke-width: 1.5px;
+    -webkit-text-stroke-color: rgb(255, 255, 255);
+  }
+  @media (min-width: 768px) {
+    .heading-outline-light {
+      -webkit-text-stroke-width: 2px;
+    }
+  }
+
+  /* Large CTA buttons used on homepage */
+  .cta-button-large {
+    @apply text-xl md:text-3xl px-8 md:px-10 py-12 md:py-20 text-center flex items-center justify-center gap-4 md:gap-5;
   }
 }

@@ -102,7 +102,7 @@ export default function PlatformsPage() {
       </section>
 
       {/* Spacer */}
-      <div data-nav-theme="dark" aria-hidden className="glass-spacer mx-auto w-[100%] md:max-w-[100%] h-16 md:h-24" />
+      <div data-nav-theme="dark" aria-hidden className="mx-auto w-[100%] md:max-w-[100%] h-16 md:h-24" />
 
       {/* Munin (dark, homepage style) */}
       <section
