@@ -252,7 +252,7 @@ export default function Home() {
                 <Link href="/contact" className="btn btn-primary w-full">
                   Work with us
                 </Link>
-                <Link href="/platforms" className="btn btn-outline w-full text-sm">
+                <Link href="/platforms" className="btn btn-outline w-full">
                   Explore Platforms
                 </Link>
               </div>
