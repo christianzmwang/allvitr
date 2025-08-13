@@ -115,8 +115,8 @@ export default function PlatformsPage() {
           <div className="container-95">
             {/* Header + Image two-column layout */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
-              {/* Left: Headline and description */}
-              <div className="md:col-span-2 order-2 md:order-1">
+              {/* Right: Headline and description */}
+              <div className="md:col-span-3 order-2 md:order-2">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Munin</h2>
                 <p className="text-lg text-gray-300 mb-8 max-w-prose">
                   Secure company knowledge base and analytics. Unify documents,
@@ -127,9 +127,9 @@ export default function PlatformsPage() {
                 </div>
               </div>
 
-              {/* Right: Product image */}
-              <div className="md:col-span-3 order-1 md:order-2">
-                <div className="relative group">
+              {/* Left: Product image */}
+              <div className="md:col-span-2 order-1 md:order-1">
+                <div className="relative group max-w-[420px] mx-auto md:mx-0">
                   <div className="absolute -inset-2 bg-gradient-to-b from-white/10 to-transparent rounded-3xl blur-2xl opacity-60 group-hover:opacity-80 transition" aria-hidden />
                   <div className="relative aspect-[1/1] w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5">
                     <Image

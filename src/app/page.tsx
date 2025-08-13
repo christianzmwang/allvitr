@@ -250,7 +250,7 @@ export default function Home() {
             <div className="mt-6 flex justify-end">
               <div className="flex flex-col items-end gap-4 w-56 md:w-64">
                 <Link href="/contact" className="btn btn-primary w-full">
-                  Work with us
+                  Demo Request
                 </Link>
                 <Link href="/platforms" className="btn btn-outline w-full">
                   Explore Platforms
