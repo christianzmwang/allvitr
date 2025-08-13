@@ -195,13 +195,13 @@ export default function HuginPage() {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-20 border-b-2 border-gray-400">
+      <div className="border-b-2 border-gray-400">
         <div className="container-95 py-5">
           <div className="text-sm md:text-base font-semibold text-white"><Link href="/" className="hover:text-gray-300">Allvitr</Link> / <span className="text-red-600">Hugin</span></div>
         </div>
       </div>
-      <div className="container-95 py-6 min-h-full flex flex-col gap-5 relative pt-28">
-      <div className="sticky top-24 z-10">
+      <div className="container-95 py-6 min-h-full flex flex-col gap-5 relative">
+      <div>
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="text-sm md:text-base font-semibold text-white">Market Research</div>
           <div className="flex items-center gap-2 text-xs md:text-sm text-gray-300">
