@@ -228,7 +228,7 @@ export default function Home() {
         <div className="w-full flex justify-center">
           <div className="inline-block text-center py-8 md:py-12">
             <h2 className="text-3xl md:text-9xl font-extrabold text-transparent heading-outline-dark mb-10 md:mb-12">
-              Let's Get To Work
+              Let&apos;s Get To Work
             </h2>
             <div className="mt-6 flex justify-end">
               <div className="flex flex-col items-end gap-4 w-56 md:w-64">
