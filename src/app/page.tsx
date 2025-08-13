@@ -224,37 +224,44 @@ export default function Home() {
       </section>
 
       {/* Section 4: CTA */}
-      <section data-nav-theme="light" className="py-4 md:py-5 bg-gray-300">
-        <div className="container-95 flex items-center justify-center">
-          <div className="flex w-full flex-col md:flex-row items-stretch gap-6">
-            <Link href="/contact" className="group btn btn-primary cta-button-large w-full md:flex-1">
-              <span>Work with us</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-            <Link href="/platforms" className="group btn btn-outline cta-button-large w-full md:flex-1">
-              <span>Explore Platforms</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+      <section data-nav-theme="light" className="py-4 md:py-6 bg-gray-300">
+        <div className="w-full flex justify-center">
+          <div className="inline-block text-center py-8 md:py-12">
+            <h2 className="text-3xl md:text-9xl font-extrabold text-transparent heading-outline-dark mb-10 md:mb-12">
+              Let's Get To Work
+            </h2>
+            <div className="mt-6 flex justify-end">
+              <div className="flex flex-col items-end gap-4 w-56 md:w-64">
+                <Link href="/contact" className="group btn btn-primary inline-flex items-center justify-center gap-2 whitespace-nowrap w-full px-3 py-3.5 text-sm">
+                  <span>Work with us</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <Link href="/platforms" className="group btn btn-outline inline-flex items-center justify-center gap-2 whitespace-nowrap w-full px-3 py-3.5 text-sm">
+                  <span>Explore Platforms</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
