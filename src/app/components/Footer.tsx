@@ -1,10 +1,16 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="bg-black text-white py-8 pad-section overflow-hidden">
       <div className="container-95">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="text-left">
-            <h3 className="text-2xl font-bold mb-2">Allvitr</h3>
+            <h3 className="text-2xl font-bold mb-2">
+              <Link href="/" aria-label="Gå til forsiden" className="hover:text-gray-300 transition-colors">
+                Allvitr
+              </Link>
+            </h3>
             <p className="text-gray-300 mb-4">Amplifying Human Insight</p>
             <p className="text-gray-400 text-sm">
               &copy; {new Date().getFullYear()} Allvitr. All rights reserved.
