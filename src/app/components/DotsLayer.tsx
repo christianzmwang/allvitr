@@ -43,7 +43,7 @@ export default function DotsLayer({
 
   if (variant === 'fixed') {
     return (
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-[-1] pointer-events-none">
         <div className="absolute inset-0 bg-black" />
         {visible ? <ConnectingDots mode={mode} divisions={divisions} /> : null}
       </div>

@@ -94,7 +94,7 @@ a,
     @apply px-4 md:px-8;
   }
   .page {
-    @apply min-h-screen flex flex-col relative pt-24 z-[1];
+    @apply min-h-screen flex flex-col relative pt-24;
   }
 
   .btn {
@@ -158,9 +158,6 @@ a,
 
   /* Common heading outlines (replace verbose [-webkit-text-stroke-*]) */
   .heading-outline-dark {
-    color: transparent;
-    /* Firefox fallback */
-    text-shadow: 0 0 0 rgb(17, 24, 39);
     -webkit-text-stroke-width: 1.5px;
     -webkit-text-stroke-color: rgb(17, 24, 39); /* gray-900 */
   }
@@ -170,9 +167,6 @@ a,
     }
   }
   .heading-outline-light {
-    color: transparent;
-    /* Firefox fallback */
-    text-shadow: 0 0 0 rgb(255, 255, 255);
     -webkit-text-stroke-width: 1.5px;
     -webkit-text-stroke-color: rgb(255, 255, 255);
   }
