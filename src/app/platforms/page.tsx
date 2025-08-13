@@ -1,4 +1,5 @@
 import NavBar from '../components/NavBar'
+import Image from 'next/image'
 
 export default function PlatformsPage() {
   return (
@@ -111,42 +112,64 @@ export default function PlatformsPage() {
         className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black overflow-hidden"
       >
         <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
-          <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-start">
-            <div className="md:col-span-2">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Munin</h2>
-              <p className="text-lg text-gray-300 mb-8 max-w-prose">
-                Secure company knowledge base and analytics. Unify documents,
-                notes, tickets, and data with governance and search that scales.
-              </p>
-            </div>
-            <div className="md:col-span-3 space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Unified Knowledge</h4>
-                  <p className="text-gray-300">Connect sources into a single, searchable system.</p>
-                </div>
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Access Controls</h4>
-                  <p className="text-gray-300">Fine-grained permissions, governance, and audit history.</p>
-                </div>
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Analytics & AI</h4>
-                  <p className="text-gray-300">Usage analytics and retrieval-augmented generation.</p>
+          <div className="container-95">
+            {/* Header + Image two-column layout */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
+              {/* Left: Headline and description */}
+              <div className="md:col-span-2 order-2 md:order-1">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Munin</h2>
+                <p className="text-lg text-gray-300 mb-8 max-w-prose">
+                  Secure company knowledge base and analytics. Unify documents,
+                  notes, tickets, and data with governance and search that scales.
+                </p>
+                <div className="hidden md:block text-gray-400 text-sm">
+                  Centralize institutional knowledge while maintaining strict access controls and auditability.
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Customer Support</h4>
-                  <p className="text-gray-300">Deflect tickets with accurate, approved answers.</p>
+
+              {/* Right: Product image */}
+              <div className="md:col-span-3 order-1 md:order-2">
+                <div className="relative group">
+                  <div className="absolute -inset-2 bg-gradient-to-b from-white/10 to-transparent rounded-3xl blur-2xl opacity-60 group-hover:opacity-80 transition" aria-hidden />
+                  <div className="relative aspect-[1/1] w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                    <Image
+                      src="/glassSquare.png"
+                      alt="Munin visualization"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 900px"
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Engineering Enablement</h4>
-                  <p className="text-gray-300">Reduce onboarding time with a shared context hub.</p>
-                </div>
-                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
-                  <h4 className="text-lg font-semibold text-white mb-2">Sales Playbooks</h4>
-                  <p className="text-gray-300">Keep discovery and competitive intel current.</p>
-                </div>
+              </div>
+            </div>
+
+            {/* Feature cards */}
+            <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Unified Knowledge</h4>
+                <p className="text-gray-300">Connect sources into a single, searchable system.</p>
+              </div>
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Access Controls</h4>
+                <p className="text-gray-300">Fine-grained permissions, governance, and audit history.</p>
+              </div>
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Analytics & AI</h4>
+                <p className="text-gray-300">Usage analytics and retrieval-augmented generation.</p>
+              </div>
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Customer Support</h4>
+                <p className="text-gray-300">Deflect tickets with accurate, approved answers.</p>
+              </div>
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Engineering Enablement</h4>
+                <p className="text-gray-300">Reduce onboarding time with a shared context hub.</p>
+              </div>
+              <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-2">Sales Playbooks</h4>
+                <p className="text-gray-300">Keep discovery and competitive intel current.</p>
               </div>
             </div>
           </div>
