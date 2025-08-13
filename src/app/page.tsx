@@ -1,12 +1,52 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
-// Contact form moved to dedicated /contact page
+
+type Platform = {
+  key: string
+  title: string
+  subtitle: string
+  href: string
+  gradient: string
+  backGradient?: string
+  description: string
+}
+
+const PLATFORMS: Platform[] = [
+  {
+    key: 'hugin',
+    title: 'Hugin',
+    subtitle: 'Real time market research',
+    href: '/platforms#hugin',
+    gradient: 'from-red-500/80 to-red-700/80',
+    description:
+      'Real time market research. Indexes internet data to provide real time insights about your market.',
+  },
+  {
+    key: 'munin',
+    title: 'Munin',
+    subtitle: 'Secure data and analytics',
+    href: '/platforms#munin',
+    gradient: 'from-sky-300/80 to-sky-500/80',
+    description:
+      'Secure data storage and powerful analytics to drive smarter business decisions.',
+  },
+  {
+    key: 'odin',
+    title: 'Odin',
+    subtitle: 'Executive metrics dashboard',
+    href: '/platforms#odin',
+    gradient: 'from-gray-800/80 to-gray-950/80',
+    backGradient: 'from-gray-500/70 to-gray-600/70',
+    description:
+      'An executive dashboard offering a unified view of your company’s key metrics in real time.',
+  },
+]
 
 function PlatformStack({
   title,
   subtitle,
-  href,
+  href = '#',
   gradient,
   backGradient,
 }: {
@@ -18,7 +58,8 @@ function PlatformStack({
 }) {
   return (
     <Link
-      href={href || '#'}
+      href={href}
+      aria-label={`${title} platform`}
       className="group relative block w-44 md:w-52 h-56 md:h-64 focus:outline-none"
     >
       {/* Glow */}
@@ -75,7 +116,7 @@ export default function Home() {
           </h1>
           <p className="text-base md:text-lg text-gray-400 mb-8">
             We turn information overload into clarity, building software that
-            amplify human insight and enable autonomous decision-making.
+            amplifies human insight and enables autonomous decision-making.
           </p>
         </div>
       </section>
@@ -97,27 +138,12 @@ export default function Home() {
                 Software that turns data into insights.
               </p>
               <div className="space-y-5">
-                <div>
-                  <h3 className="text-xl font-semibold text-white">Hugin</h3>
-                  <p className="text-gray-300">
-                    Real time market research. Indexes internet data to provide
-                    real time insights about your market.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white">Munin</h3>
-                  <p className="text-gray-300">
-                    Secure data storage and powerful analytics to drive
-                    smarter business decisions.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white">Odin</h3>
-                  <p className="text-gray-300">
-                    An executive dashboard offering a unified view of your
-                    company’s key metrics in real time.
-                  </p>
-                </div>
+                {PLATFORMS.map(({ key, title, description }) => (
+                  <div key={key}>
+                    <h3 className="text-xl font-semibold text-white">{title}</h3>
+                    <p className="text-gray-300">{description}</p>
+                  </div>
+                ))}
               </div>
               <div className="mt-16 md:mt-15">
                 <Link href="/platforms" className="btn btn-primary">
@@ -129,25 +155,16 @@ export default function Home() {
             {/* Right: Three interactive stacks */}
             <div className="relative md:col-span-3">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
-                <PlatformStack
-                  title="Hugin"
-                  subtitle="Real time market research"
-                  href="/platforms#hugin"
-                  gradient="from-red-500/80 to-red-700/80"
-                />
-                <PlatformStack
-                  title="Munin"
-                  subtitle="Secure data and analytics"
-                  href="/platforms#munin"
-                  gradient="from-sky-300/80 to-sky-500/80"
-                />
-                <PlatformStack
-                  title="Odin"
-                  subtitle="Executive metrics dashboard"
-                  href="/platforms#odin"
-                  gradient="from-gray-800/80 to-gray-950/80"
-                  backGradient="from-gray-500/70 to-gray-600/70"
-                />
+                {PLATFORMS.map(({ key, title, subtitle, href, gradient, backGradient }) => (
+                  <PlatformStack
+                    key={key}
+                    title={title}
+                    subtitle={subtitle}
+                    href={href}
+                    gradient={gradient}
+                    backGradient={backGradient}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -232,33 +249,11 @@ export default function Home() {
             </h2>
             <div className="mt-6 flex justify-end">
               <div className="flex flex-col items-end gap-4 w-56 md:w-64">
-                <Link href="/contact" className="group btn btn-primary inline-flex items-center justify-center gap-2 whitespace-nowrap w-full px-3 py-3.5 text-sm">
-                  <span>Work with us</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
+                <Link href="/contact" className="btn btn-primary w-full">
+                  Work with us
                 </Link>
-                <Link href="/platforms" className="group btn btn-outline inline-flex items-center justify-center gap-2 whitespace-nowrap w-full px-3 py-3.5 text-sm">
-                  <span>Explore Platforms</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
+                <Link href="/platforms" className="btn btn-outline w-full text-sm">
+                  Explore Platforms
                 </Link>
               </div>
             </div>
