@@ -18,7 +18,8 @@ export default async function PricingPage({
             Pricing
           </h1>
           <p className="text-base md:text-lg text-gray-400 max-w-3xl">
-            Get in touch with us to discuss what you want to automate. <br /> We will deploy a demo to your needs.
+            Get in touch with us to discuss what you want to automate. <br /> We
+            will deploy a demo to your needs.
           </p>
         </div>
         {isSent && (

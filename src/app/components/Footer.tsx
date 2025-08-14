@@ -7,7 +7,11 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="text-left">
             <h3 className="text-2xl font-bold mb-2">
-              <Link href="/" aria-label="Gå til forsiden" className="hover:text-gray-300 transition-colors">
+              <Link
+                href="/"
+                aria-label="Gå til forsiden"
+                className="hover:text-gray-300 transition-colors"
+              >
                 Allvitr
               </Link>
             </h3>

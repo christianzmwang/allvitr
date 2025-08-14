@@ -24,7 +24,9 @@ export default async function ContactPage({
       >
         <div className="container-95">
           <div className="max-w-4xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Get in touch</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Get in touch
+            </h2>
             <p className="text-gray-700 mb-6 text-base md:text-lg">
               Have a question or want a demo? We’d love to hear from you.
             </p>
@@ -126,7 +128,10 @@ export default async function ContactPage({
               />
             </div>
             <div className="md:col-span-3 flex justify-start">
-              <button type="submit" className="btn btn-primary hover:border-gray-600">
+              <button
+                type="submit"
+                className="btn btn-primary hover:border-gray-600"
+              >
                 Send
               </button>
             </div>
@@ -136,5 +141,3 @@ export default async function ContactPage({
     </div>
   )
 }
-
-

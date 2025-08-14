@@ -140,7 +140,9 @@ export default function Home() {
               <div className="space-y-5">
                 {PLATFORMS.map(({ key, title, description }) => (
                   <div key={key}>
-                    <h3 className="text-xl font-semibold text-white">{title}</h3>
+                    <h3 className="text-xl font-semibold text-white">
+                      {title}
+                    </h3>
                     <p className="text-gray-300">{description}</p>
                   </div>
                 ))}
@@ -155,16 +157,18 @@ export default function Home() {
             {/* Right: Three interactive stacks */}
             <div className="relative md:col-span-3">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
-                {PLATFORMS.map(({ key, title, subtitle, href, gradient, backGradient }) => (
-                  <PlatformStack
-                    key={key}
-                    title={title}
-                    subtitle={subtitle}
-                    href={href}
-                    gradient={gradient}
-                    backGradient={backGradient}
-                  />
-                ))}
+                {PLATFORMS.map(
+                  ({ key, title, subtitle, href, gradient, backGradient }) => (
+                    <PlatformStack
+                      key={key}
+                      title={title}
+                      subtitle={subtitle}
+                      href={href}
+                      gradient={gradient}
+                      backGradient={backGradient}
+                    />
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -190,10 +194,17 @@ export default function Home() {
             </div>
             <div className="flex justify-center">
               <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
-                <p className="text-lg md:text-xl font-bold">Autonomy is inevitable.</p>
-                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Deploy now, advance tomorrow.</p>
+                <p className="text-lg md:text-xl font-bold">
+                  Autonomy is inevitable.
+                </p>
+                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">
+                  Deploy now, advance tomorrow.
+                </p>
                 <p className="text-lg md:text-xl">
-                We deploy autonomous platforms<br />that deliver AI-powered insights: enabling rapid, clear, and autonomous decision-making.
+                  We deploy autonomous platforms
+                  <br />
+                  that deliver AI-powered insights: enabling rapid, clear, and
+                  autonomous decision-making.
                 </p>
               </div>
             </div>
