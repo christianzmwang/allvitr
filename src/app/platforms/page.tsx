@@ -188,7 +188,7 @@ export default function PlatformsPage() {
               <div className="md:col-span-2 order-1 md:order-1">
                 <div className="relative group max-w-[420px] mx-auto md:mx-0">
                   <div className="absolute -inset-2 bg-gradient-to-b from-white/10 to-transparent blur-2xl opacity-60 group-hover:opacity-80 transition" aria-hidden />
-                  <div className="relative aspect-[1/1] w-full overflow-hidden border-4 md:border-8 border-dashed border-sky-400 bg-white/5">
+                  <div className="relative aspect-[1/1] w-full overflow-hidden border-4 md:border-8 border-dashed border-sky-400">
                     <Image
                       src="/glassSquare.png"
                       alt="Munin visualization"
