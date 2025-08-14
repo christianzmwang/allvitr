@@ -108,9 +108,9 @@ export default function Home() {
       {/* Hero Section */}
       <section
         data-nav-theme="dark"
-        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[85vh] p-4 md:p-8 overflow-hidden"
+        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[90vh] p-4 md:p-8 overflow-hidden"
       >
-        <div className="relative z-10 max-w-2xl w-full text-center">
+        <div className="relative z-10 max-w-2xl w-full text-center pt-24">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
             Allvitr
           </h1>

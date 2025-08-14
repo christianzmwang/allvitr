@@ -94,7 +94,7 @@ a,
     @apply px-4 md:px-8;
   }
   .page {
-    @apply min-h-screen flex flex-col relative pt-24;
+    @apply min-h-screen flex flex-col relative;
   }
 
   .btn {

@@ -9,10 +9,9 @@ export default function PlatformsPage() {
       {/* Hero */}
       <section
         data-nav-theme="dark"
-        className="min-h-[60vh] flex items-center justify-center py-10 md:py-15 bg-black"
-      >
-        <div className="container-95">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center">
+        className="min-h-screen flex items-center justify-center bg-black">
+        <div className=" container-95 h-full flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full">
             <div className="text-center pl-4 md:pl-18">
               <h1 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-light">
                 <span>Allvitr</span>
