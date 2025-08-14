@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx && prettier --check .",
-    "brreg:import": "tsx scripts/import-brreg-enheter.ts"
+    "brreg:import": "tsx scripts/import-brreg-enheter.ts",
+    "db:dump": "supabase db dump --schema public --file supabase/migrations/$(date +%Y-%m-%dT%H-%M-%S)_baseline.sql",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
@@ -32,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
     "prettier": "^3.6.2",
+    "supabase": "^2.34.3",
     "tsx": "^4.20.4",
     "typescript": "^5"
   },
