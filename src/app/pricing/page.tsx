@@ -25,7 +25,7 @@ export default async function PricingPage({
             {isSent && (
               <div className="mt-6 mb-6">
                 <div className="rounded-md border border-green-600/30 bg-green-100/50 text-green-900 p-3 max-w-xl">
-                  Thanks! Your message was sent. We'll be in touch shortly.
+                  Thanks! Your message was sent. We&apos;ll be in touch shortly.
                 </div>
               </div>
             )}
