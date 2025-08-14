@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from "@/lib/supabase";
 
 type LeadRow = {
   id: string
@@ -23,6 +24,14 @@ type LeadRow = {
   score: number
   source: string
 }
+
+type CompanyRec = {
+  id: number;
+  company: string;
+  allvitr_score: number;
+  recommendation: string;
+  rationale: string;
+};
 
 type SearchForm = {
   keywords: string
@@ -104,12 +113,15 @@ export default function HuginPage() {
   const [loading, setLoading] = useState(false)
   const [rows, setRows] = useState<LeadRow[]>([])
   const [selected, setSelected] = useState<Record<string, boolean>>({})
+  const [companyRecs, setCompanyRecs] = useState<CompanyRec[]>([])
+  const [companyRecsLoading, setCompanyRecsLoading] = useState(false)
 
   const numberFmt = useMemo(() => new Intl.NumberFormat('nb-NO'), [])
 
   useEffect(() => {
     // initial load with seed data
     void onSearch()
+    void fetchCompanyRecs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -137,6 +149,27 @@ export default function HuginPage() {
       console.error('search error')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchCompanyRecs() {
+    setCompanyRecsLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from("company_recs")
+        .select("*")
+        .order("allvitr_score", { ascending: false });
+
+      if (error) {
+        console.error('Error fetching company recommendations:', error.message);
+        return;
+      }
+
+      setCompanyRecs(data || []);
+    } catch (error) {
+      console.error('Error fetching company recommendations:', error);
+    } finally {
+      setCompanyRecsLoading(false)
     }
   }
 
@@ -569,6 +602,55 @@ export default function HuginPage() {
             </table>
           </div>
         </main>
+      </div>
+
+      {/* Company Recommendations Section */}
+      <div className="mt-8">
+        <div className="border-b border-white/10 mb-4">
+          <h2 className="text-lg font-semibold text-white mb-2">Company Recommendations</h2>
+        </div>
+        
+        <div className="overflow-x-auto ring-1 ring-white/10">
+          <table className="min-w-full text-sm">
+            <thead className="text-left text-gray-300 sticky z-[1] border-b border-white/10">
+              <tr>
+                <th className="p-3">Company</th>
+                <th className="p-3">Allvitr Score</th>
+                <th className="p-3">Recommendation</th>
+                <th className="p-3">Rationale</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {!companyRecsLoading &&
+                companyRecs.map((row) => (
+                  <tr key={row.id} className="hover:bg-white/5">
+                    <td className="p-3 font-medium text-white">{row.company}</td>
+                    <td className="p-3 font-semibold text-right">{numberFmt.format(row.allvitr_score)}</td>
+                    <td className="p-3">{row.recommendation}</td>
+                    <td className="p-3">{row.rationale}</td>
+                  </tr>
+                ))}
+
+              {companyRecsLoading &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="animate-pulse">
+                    <td className="p-3"><div className="h-4 w-40 bg-white/10 rounded-none" /></td>
+                    <td className="p-3"><div className="h-4 w-16 bg-white/10 rounded-none" /></td>
+                    <td className="p-3"><div className="h-4 w-32 bg-white/10 rounded-none" /></td>
+                    <td className="p-3"><div className="h-4 w-48 bg-white/10 rounded-none" /></td>
+                  </tr>
+                ))}
+
+              {!companyRecsLoading && companyRecs.length === 0 && (
+                <tr>
+                  <td className="p-6 text-gray-400 text-center" colSpan={4}>
+                    No company recommendations available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     </>
