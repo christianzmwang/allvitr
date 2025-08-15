@@ -14,15 +14,14 @@ export default function PlatformsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full">
             <div className="text-center pl-4 md:pl-18">
               <h1 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-light">
-                <span>Allvitr</span>
                 <span>Platforms</span>
               </h1>
             </div>
             <div className="flex justify-center">
               <div className="text-left text-white max-w-xl md:max-w-2xl w-100">
-                <p className="text-lg md:text-xl font-bold">
-                  A suite of tools to discover signals, unify knowledge, and
-                  drive decisions.
+                <p className="text-lg md:text-xl font-bold text-gray-400">
+                  Automation of signal discovery, data analysis, and
+                  decision-making.
                 </p>
               </div>
             </div>
