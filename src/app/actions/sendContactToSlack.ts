@@ -74,7 +74,11 @@ export async function sendContactToSlack(formData: FormData) {
         redirect(`${origin}?sent=0`)
       }
     } else {
-      const webhookUrl = process.env.SLACK_WEBHOOK_URL
+      const webhookUrl =
+        process.env.SLACK_WEBHOOK_URL ||
+        process.env['slack_webhook_url'] ||
+        process.env['SLACK_INCOMING_WEBHOOK_URL'] ||
+        process.env['slack_incoming_webhook_url']
       if (!webhookUrl) {
         console.error(
           'No Slack configuration provided (missing bot token + channel or webhook URL).',

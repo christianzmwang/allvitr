@@ -1,6 +1,6 @@
 import { Pool } from 'pg'
 
-const defaultUrl = 'postgresql://brreg:brreg@localhost:5432/brreg_local'
+const defaultUrl = 'postgresql://hugin:hugin@localhost:5432/hugin_local'
 
 export const pool = new Pool({
 	connectionString: process.env.DATABASE_URL || defaultUrl,

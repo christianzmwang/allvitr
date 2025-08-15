@@ -9,6 +9,32 @@ export async function GET(req: Request) {
 		singleIndustry || undefined,
 	].filter(Boolean) as string[]
 
+	// Revenue filtering
+	const revenueRange = searchParams.get('revenueRange')?.trim()
+	let revenueClause = ''
+	let revenueParams: number[] = []
+	
+	if (revenueRange) {
+		switch (revenueRange) {
+			case '0-1M':
+				revenueClause = 'AND lf.revenue >= $REVENUE_MIN AND lf.revenue < $REVENUE_MAX'
+				revenueParams = [0, 1000000]
+				break
+			case '1M-10M':
+				revenueClause = 'AND lf.revenue >= $REVENUE_MIN AND lf.revenue < $REVENUE_MAX'
+				revenueParams = [1000000, 10000000]
+				break
+			case '10M-100M':
+				revenueClause = 'AND lf.revenue >= $REVENUE_MIN AND lf.revenue < $REVENUE_MAX'
+				revenueParams = [10000000, 100000000]
+				break
+			case '100M+':
+				revenueClause = 'AND lf.revenue >= $REVENUE_MIN'
+				revenueParams = [100000000]
+				break
+		}
+	}
+
 	const hasIndustries = industries.length > 0
 	const industryParams = industries.map((v) => `%${v}%`)
 	const perColumnClause = (col: string) =>
@@ -17,7 +43,16 @@ export async function GET(req: Request) {
 		? `AND ((${perColumnClause('b."industryCode1"')} ) OR (${perColumnClause('b."industryText1"')}) OR (${perColumnClause('b."industryCode2"')}) OR (${perColumnClause('b."industryText2"')}) OR (${perColumnClause('b."industryCode3"')}) OR (${perColumnClause('b."industryText3"')}))`
 		: ''
 
-	const params = industryParams
+	// Combine all params - industries first, then revenue params
+	const params = [...industryParams, ...revenueParams]
+	
+	// Update revenue clause placeholders with actual parameter positions
+	if (revenueClause) {
+		const revenueStartIndex = industryParams.length + 1
+		revenueClause = revenueClause
+			.replace('$REVENUE_MIN', `$${revenueStartIndex}`)
+			.replace('$REVENUE_MAX', `$${revenueStartIndex + 1}`)
+	}
 
 	const baseCte = `
 		WITH latest_fin AS (
@@ -33,10 +68,20 @@ export async function GET(req: Request) {
 			ORDER BY f."businessId", f."fiscalYear" DESC
 		),
 		businesses AS (
-			SELECT * FROM "Business" b
+			SELECT 
+				b.*,
+				lf."fiscalYear",
+				lf.revenue,
+				lf.profit,
+				lf."totalAssets",
+				lf.equity,
+				lf."employeesAvg"
+			FROM "Business" b
+			LEFT JOIN latest_fin lf ON lf."businessId" = b.id
 			WHERE
 				(COALESCE(b."registeredInForetaksregisteret", false) = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
 				${industryClause}
+				${revenueClause}
 		)
 	`
 
@@ -69,14 +114,13 @@ export async function GET(req: Request) {
 			b."orgFormCode" as "orgFormCode",
 			b."orgFormText" as "orgFormText",
 			b."registeredInForetaksregisteret" as "registeredInForetaksregisteret",
-			lf."fiscalYear" as "fiscalYear",
-			lf.revenue as "revenue",
-			lf.profit as "profit",
-			lf."totalAssets" as "totalAssets",
-			lf.equity as "equity",
-			lf."employeesAvg" as "employeesAvg"
+			b."fiscalYear" as "fiscalYear",
+			b.revenue as "revenue",
+			b.profit as "profit",
+			b."totalAssets" as "totalAssets",
+			b.equity as "equity",
+			b."employeesAvg" as "employeesAvg"
 		FROM businesses b
-		LEFT JOIN latest_fin lf ON lf."businessId" = b.id
 		ORDER BY b."updatedAt" DESC
 		LIMIT 100
 	`

@@ -51,6 +51,7 @@ export default function BrregPage() {
 	const [industryQuery, setIndustryQuery] = useState('')
 	const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([])
 	const [suggestions, setSuggestions] = useState<IndustryOpt[]>([])
+	const [selectedRevenueRange, setSelectedRevenueRange] = useState<string>('')
 	const debouncedIndustry = useDebounce(industryQuery, 250)
 	const inputRef = useRef<HTMLInputElement | null>(null)
 	const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -58,11 +59,13 @@ export default function BrregPage() {
 	const [dropdownOpen, setDropdownOpen] = useState(false)
 
 	const queryParam = useMemo(() => {
-		if (selectedIndustries.length === 0) return ''
 		const sp = new URLSearchParams()
 		selectedIndustries.forEach(si => sp.append('industries', si.value))
-		return `?${sp.toString()}`
-	}, [selectedIndustries])
+		if (selectedRevenueRange) {
+			sp.append('revenueRange', selectedRevenueRange)
+		}
+		return sp.toString() ? `?${sp.toString()}` : ''
+	}, [selectedIndustries, selectedRevenueRange])
 
 	const addSelectedIndustry = (value: string, label?: string) => {
 		const v = value.trim()
@@ -141,7 +144,7 @@ export default function BrregPage() {
 
 	return (
 		<div className="container mx-auto p-6 text-white">
-			<h1 className="text-2xl font-bold mb-4">BRREG Active Businesses</h1>
+			<h1 className="text-2xl font-bold mb-4">Hugin</h1>
 
 			<div className="mb-4 max-w-xl">
 				<label className="block text-sm mb-1">Filter by industry</label>
@@ -212,7 +215,35 @@ export default function BrregPage() {
 							</span>
 						))}
 						<span className="opacity-80">({total} results)</span>
-						<button className="ml-2 underline" onClick={() => { setSelectedIndustries([]); setIndustryQuery(''); }}>clear all</button>
+						<button className="ml-2 underline" onClick={() => { setSelectedIndustries([]); setIndustryQuery(''); setSelectedRevenueRange(''); }}>clear all filters</button>
+					</div>
+				)}
+			</div>
+
+			<div className="mb-4 max-w-xl">
+				<label className="block text-sm mb-1">Filter by revenue</label>
+				<select
+					value={selectedRevenueRange}
+					onChange={(e) => setSelectedRevenueRange(e.target.value)}
+					className="w-full px-3 py-2 rounded bg-gray-800 text-white border border-white/10"
+				>
+					<option value="">All revenue ranges</option>
+					<option value="0-1M">0 - 1M NOK</option>
+					<option value="1M-10M">1M - 10M NOK</option>
+					<option value="10M-100M">10M - 100M NOK</option>
+					<option value="100M+">100M+ NOK</option>
+				</select>
+				{selectedRevenueRange && (
+					<div className="mt-2 text-sm text-white/80 flex items-center gap-2">
+						<span>Revenue filter:</span>
+						<span className="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5">
+							<span className="font-mono">{selectedRevenueRange === '0-1M' ? '0 - 1M NOK' : 
+								selectedRevenueRange === '1M-10M' ? '1M - 10M NOK' :
+								selectedRevenueRange === '10M-100M' ? '10M - 100M NOK' :
+								selectedRevenueRange === '100M+' ? '100M+ NOK' : selectedRevenueRange}</span>
+							<button className="opacity-80 hover:opacity-100" onClick={() => setSelectedRevenueRange('')}>×</button>
+						</span>
+						<button className="ml-2 underline" onClick={() => setSelectedRevenueRange('')}>clear</button>
 					</div>
 				)}
 			</div>
