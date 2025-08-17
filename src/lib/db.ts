@@ -2,7 +2,12 @@ import { Pool } from 'pg'
 
 // Prefer Supabase pooled connection in production; fall back to direct or local for dev
 const connectionString =
-	process.env.POOLER_URL || process.env.DATABASE_URL || 'postgresql://hugin:hugin@localhost:5432/hugin_local'
+	process.env.POOLER_URL ||
+	process.env.DATABASE_URL ||
+	// fallbacks for lowercase env names
+	(process.env as any).pooler_url ||
+	(process.env as any).database_url ||
+	'postgresql://hugin:hugin@localhost:5432/hugin_local'
 
 const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1')
 
