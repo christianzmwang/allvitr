@@ -1,12 +1,17 @@
 import { Pool } from 'pg'
 
-// Prefer Supabase pooled connection in production; fall back to direct or local for dev
+// Prefer pooled connection in production; support common provider env names
 const connectionString =
 	process.env.POOLER_URL ||
 	process.env.DATABASE_URL ||
+	// Vercel Postgres / Supabase on Vercel
+	process.env.POSTGRES_URL ||
+	process.env.POSTGRES_URL_NON_POOLING ||
 	// fallbacks for lowercase env names
 	process.env['pooler_url'] ||
 	process.env['database_url'] ||
+	process.env['postgres_url'] ||
+	process.env['postgres_url_non_pooling'] ||
 	'postgresql://hugin:hugin@localhost:5432/hugin_local'
 
 const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1')
