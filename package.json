@@ -6,15 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx && prettier --check .",
-    "hugin:import": "tsx scripts/import-hugin-enheter.ts",
-    "db:dump": "supabase db dump --schema public --file supabase/migrations/$(date +%Y-%m-%dT%H-%M-%S)_baseline.sql",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx && prettier --check ."
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.55.0",
     "@tailwindcss/postcss": "^4.1.11",
     "gsap": "^3.13.0",
     "lucide-react": "^0.536.0",
@@ -38,7 +32,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
     "prettier": "^3.6.2",
-    "supabase": "^2.34.3",
     "tsx": "^4.20.4",
     "typescript": "^5"
   },
