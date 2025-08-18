@@ -90,7 +90,7 @@ export default function NavBar() {
         data-glass={useDarkGlass ? 'dark' : 'light'}
         className={`
           ${useDarkGlass ? 'glass-dark' : 'glass'} group container-95 flex items-center justify-between
-          px-6 md:px-4 py-2 transition-colors duration-300
+          px-3 md:px-4 py-2 transition-colors duration-300
         `}
       >
         {/* Brand "search bar" */}
@@ -103,11 +103,11 @@ export default function NavBar() {
           {/* Show logo on mobile when scrolled, text otherwise */}
           <div className="md:hidden relative flex items-center">
             <Image
-              src="/globe.svg"
+              src="/WebAllvitr.png"
               alt="Allvitr Logo"
-              width={24}
-              height={24}
-              className={`w-6 h-6 absolute transition-all duration-500 ease-in-out ${
+              width={48}
+              height={48}
+              className={`w-12 h-12 absolute transition-all duration-500 ease-in-out ${
                 scrolled
                   ? 'opacity-100 scale-100 delay-[1000ms]'
                   : 'opacity-0 scale-75'
