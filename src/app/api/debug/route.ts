@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server'
 import { dbConfigured, pool } from '@/lib/db'
 
+type ConnectionTestResult = {
+  success: boolean
+  serverTime?: unknown
+  error?: string
+}
+
+type DebugPayload = {
+  timestamp: string
+  dbConfigured: boolean
+  hasPool: boolean
+  envVars: {
+    DATABASE_URL: boolean
+    DATABASE_POOLING_URL: boolean
+  }
+  connectionTest?: ConnectionTestResult
+}
+
 export async function GET() {
-  const debug = {
+  const debug: DebugPayload = {
     timestamp: new Date().toISOString(),
     dbConfigured,
     hasPool: !!pool,
