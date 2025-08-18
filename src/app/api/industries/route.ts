@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
+import { dbConfigured } from '@/lib/db'
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 import { query } from '@/lib/db'
 
 export async function GET(req: Request) {
+  if (!dbConfigured) {
+    return NextResponse.json([], { status: 503 })
+  }
   const { searchParams } = new URL(req.url)
   const q = searchParams.get('q')?.trim()
 
