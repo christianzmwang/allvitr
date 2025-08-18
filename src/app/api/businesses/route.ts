@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { dbConfigured } from '@/lib/db'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const maxDuration = 30
+export const preferredRegion = ['fra1', 'arn1', 'cdg1']
 import { query } from '@/lib/db'
 
 export async function GET(req: Request) {
