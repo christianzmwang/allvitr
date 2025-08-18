@@ -2,8 +2,8 @@ import { Pool } from 'pg'
 
 // Prefer pooled connection in production; support common provider env names
 const connectionString =
-	process.env.POSTGRES_URL ||
-	process.env.POSTGRES_URL_NON_POOLING ||
+	process.env.DATABASE_URL ||
+	process.env.DATABASE_POOLING_URL ||
 	undefined
 
 // Export a flag for external checks
