@@ -37,6 +37,10 @@ type Business = {
 	vatRegisteredDate?: string | null
 	sectorCode?: string | null
 	sectorText?: string | null
+	// Added: CSV recommendation data
+	recommendation?: string | null
+	rationale?: string | null
+	allvitrScore?: number | null
 }
 
 type IndustryOpt = { code: string | null; text: string | null; count: number }
@@ -52,6 +56,9 @@ export default function BrregPage() {
 	const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([])
 	const [suggestions, setSuggestions] = useState<IndustryOpt[]>([])
 	const [selectedRevenueRange, setSelectedRevenueRange] = useState<string>('')
+	const [selectedRecommendation, setSelectedRecommendation] = useState<string>('')
+	const [selectedScoreRange, setSelectedScoreRange] = useState<string>('')
+	const [sortBy, setSortBy] = useState<string>('updatedAt')
 	const debouncedIndustry = useDebounce(industryQuery, 250)
 	const inputRef = useRef<HTMLInputElement | null>(null)
 	const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -64,8 +71,14 @@ export default function BrregPage() {
 		if (selectedRevenueRange) {
 			sp.append('revenueRange', selectedRevenueRange)
 		}
+		if (selectedRecommendation) {
+			sp.append('recommendation', selectedRecommendation)
+		}
+		if (selectedScoreRange) {
+			sp.append('scoreRange', selectedScoreRange)
+		}
 		return sp.toString() ? `?${sp.toString()}` : ''
-	}, [selectedIndustries, selectedRevenueRange])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange])
 
 	const addSelectedIndustry = (value: string, label?: string) => {
 		const v = value.trim()
@@ -142,9 +155,64 @@ export default function BrregPage() {
 
 	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : new Intl.NumberFormat('no-NO').format(Number(v)))
 
+	// Sort data based on selected criteria
+	const sortedData = useMemo(() => {
+		const sorted = [...data]
+		switch (sortBy) {
+			case 'allvitrScore':
+				return sorted.sort((a, b) => (b.allvitrScore || 0) - (a.allvitrScore || 0))
+			case 'allvitrScoreAsc':
+				return sorted.sort((a, b) => (a.allvitrScore || 0) - (b.allvitrScore || 0))
+			case 'name':
+				return sorted.sort((a, b) => a.name.localeCompare(b.name))
+			case 'revenue':
+				return sorted.sort((a, b) => (Number(b.revenue) || 0) - (Number(a.revenue) || 0))
+			case 'employees':
+				return sorted.sort((a, b) => (b.employees || 0) - (a.employees || 0))
+			default:
+				return sorted
+		}
+	}, [data, sortBy])
+
 	return (
 		<div className="container mx-auto p-6 text-white">
 			<h1 className="text-2xl font-bold mb-4">Hugin</h1>
+
+			{/* Added: Recommendation data summary */}
+			{!loading && sortedData.length > 0 && (
+				<div className="mb-6 p-4 bg-gray-800 rounded border border-white/10">
+					<h2 className="text-lg font-semibold mb-3">Recommendation Data Summary</h2>
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+						<div className="text-center">
+							<div className="text-2xl font-bold text-green-400">
+								{sortedData.filter(b => b.recommendation === 'Reach out now').length}
+							</div>
+							<div className="text-white/70">Reach out now</div>
+						</div>
+						<div className="text-center">
+							<div className="text-2xl font-bold text-yellow-400">
+								{sortedData.filter(b => b.recommendation === 'Monitor').length}
+							</div>
+							<div className="text-white/70">Monitor</div>
+						</div>
+						<div className="text-center">
+							<div className="text-2xl font-bold text-blue-400">
+								{sortedData.filter(b => b.recommendation === 'Warm outreach').length}
+							</div>
+							<div className="text-white/70">Warm outreach</div>
+						</div>
+					</div>
+					{sortedData.some(b => b.allvitrScore) && (
+						<div className="mt-3 pt-3 border-t border-white/10 text-center">
+							<div className="text-sm text-white/70">
+								Average Allvitr Score: <span className="font-semibold text-yellow-400">
+									{(sortedData.reduce((sum, b) => sum + (b.allvitrScore || 0), 0) / sortedData.filter(b => b.allvitrScore).length).toFixed(2)}
+								</span>
+							</div>
+						</div>
+					)}
+				</div>
+			)}
 
 			<div className="mb-4 max-w-xl">
 				<label className="block text-sm mb-1">Filter by industry</label>
@@ -215,7 +283,13 @@ export default function BrregPage() {
 							</span>
 						))}
 						<span className="opacity-80">({total} results)</span>
-						<button className="ml-2 underline" onClick={() => { setSelectedIndustries([]); setIndustryQuery(''); setSelectedRevenueRange(''); }}>clear all filters</button>
+						<button className="ml-2 underline" onClick={() => { 
+							setSelectedIndustries([]); 
+							setIndustryQuery(''); 
+							setSelectedRevenueRange(''); 
+							setSelectedRecommendation('');
+							setSelectedScoreRange('');
+						}}>clear all filters</button>
 					</div>
 				)}
 			</div>
@@ -248,13 +322,95 @@ export default function BrregPage() {
 				)}
 			</div>
 
+			<div className="mb-4 max-w-xl">
+				<label className="block text-sm mb-1">Filter by recommendation</label>
+				<select
+					value={selectedRecommendation}
+					onChange={(e) => setSelectedRecommendation(e.target.value)}
+					className="w-full px-3 py-2 rounded bg-gray-800 text-white border border-white/10"
+				>
+					<option value="">All recommendations</option>
+					<option value="Reach out now">Reach out now</option>
+					<option value="Monitor">Monitor</option>
+					<option value="Warm outreach">Warm outreach</option>
+				</select>
+				{selectedRecommendation && (
+					<div className="mt-2 text-sm text-white/80 flex items-center gap-2">
+						<span>Recommendation filter:</span>
+						<span className="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5">
+							<span className="font-mono">{selectedRecommendation}</span>
+							<button className="opacity-80 hover:opacity-100" onClick={() => setSelectedRecommendation('')}>×</button>
+						</span>
+						<button className="ml-2 underline" onClick={() => setSelectedRecommendation('')}>clear</button>
+					</div>
+				)}
+			</div>
+
+			<div className="mb-4 max-w-xl">
+				<label className="block text-sm mb-1">Filter by Allvitr Score</label>
+				<select
+					value={selectedScoreRange}
+					onChange={(e) => setSelectedScoreRange(e.target.value)}
+					className="w-full px-3 py-2 rounded bg-gray-800 text-white border border-white/10"
+				>
+					<option value="">All score ranges</option>
+					<option value="0-50">0 - 50</option>
+					<option value="50-100">50 - 100</option>
+					<option value="100-200">100 - 200</option>
+					<option value="200+">200+</option>
+				</select>
+				{selectedScoreRange && (
+					<div className="mt-2 text-sm text-white/80 flex items-center gap-2">
+						<span>Score filter:</span>
+						<span className="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5">
+							<span className="font-mono">{selectedScoreRange}</span>
+							<button className="opacity-80 hover:opacity-100" onClick={() => setSelectedScoreRange('')}>×</button>
+						</span>
+						<button className="ml-2 underline" onClick={() => setSelectedScoreRange('')}>clear</button>
+					</div>
+				)}
+			</div>
+
+			<div className="mb-4 max-w-xl">
+				<label className="block text-sm mb-1">Sort by</label>
+				<select
+					value={sortBy}
+					onChange={(e) => setSortBy(e.target.value)}
+					className="w-full px-3 py-2 rounded bg-gray-800 text-white border border-white/10"
+				>
+					<option value="updatedAt">Last Updated</option>
+					<option value="allvitrScore">Allvitr Score (High to Low)</option>
+					<option value="allvitrScoreAsc">Allvitr Score (Low to High)</option>
+					<option value="name">Company Name</option>
+					<option value="revenue">Revenue (High to Low)</option>
+					<option value="employees">Employees (High to Low)</option>
+				</select>
+			</div>
+
 			{loading ? (
 				<div>Loading…</div>
 			) : (
 				<ul className="space-y-4">
-					{data.map(b => (
-						<li key={b.orgNumber} className="border border-white/10 p-4 rounded">
-							<div className="font-semibold">{b.name}</div>
+					{sortedData.map(b => (
+						<li key={b.orgNumber} className={`border p-4 rounded ${
+							b.recommendation === 'Reach out now' ? 'border-green-500 bg-green-900/20' :
+							b.recommendation === 'Warm outreach' ? 'border-blue-500 bg-blue-900/20' :
+							b.recommendation === 'Monitor' ? 'border-yellow-500 bg-yellow-900/20' :
+							'border-white/10'
+						}`}>
+							<div className="flex justify-between items-start mb-2">
+								<div className="font-semibold">{b.name}</div>
+								{b.recommendation && (
+									<span className={`px-2 py-1 rounded text-xs font-medium ${
+										b.recommendation === 'Reach out now' ? 'bg-green-600 text-white' :
+										b.recommendation === 'Warm outreach' ? 'bg-blue-600 text-white' :
+										b.recommendation === 'Monitor' ? 'bg-yellow-600 text-white' :
+										'bg-gray-600 text-white'
+									}`}>
+										{b.recommendation}
+									</span>
+								)}
+							</div>
 							<div className="text-sm text-white/70">Org: {b.orgNumber}</div>
 							<div className="text-sm">CEO: {b.ceo || '—'}</div>
 							<div className="text-sm">
@@ -274,6 +430,22 @@ export default function BrregPage() {
 							<div className="text-sm mt-2">Industry: {b.industryCode1 ? `${b.industryCode1} ${b.industryText1 || ''}`.trim() : '—'}</div>
 							<div className="text-sm">VAT: {b.vatRegistered ? 'Registered' : '—'}{b.vatRegisteredDate ? ` (${new Date(b.vatRegisteredDate).toISOString().slice(0,10)})` : ''}</div>
 							<div className="text-sm">Sector: {b.sectorCode ? `${b.sectorCode} ${b.sectorText || ''}`.trim() : '—'}</div>
+							
+							{/* Added: Recommendation data display */}
+							{b.recommendation && (
+								<div className="mt-3 pt-3 border-t border-white/10">
+									{b.allvitrScore && (
+										<div className="text-sm text-yellow-400 font-medium mb-1">
+											⭐ Allvitr Score: {b.allvitrScore.toFixed(2)}
+										</div>
+									)}
+									{b.rationale && (
+										<div className="text-sm text-white/80">
+											<b>Rationale:</b> {b.rationale.length > 150 ? `${b.rationale.substring(0, 150)}...` : b.rationale}
+										</div>
+									)}
+								</div>
+							)}
 						</li>
 					))}
 				</ul>

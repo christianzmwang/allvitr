@@ -43,6 +43,42 @@ export async function GET(req: Request) {
 		}
 	}
 
+	// Recommendation filtering
+	const recommendation = searchParams.get('recommendation')?.trim()
+	let recommendationClause = ''
+	let recommendationParams: string[] = []
+	
+	if (recommendation) {
+		recommendationClause = 'AND b.recommendation = $RECOMMENDATION'
+		recommendationParams = [recommendation]
+	}
+
+	// Score range filtering
+	const scoreRange = searchParams.get('scoreRange')?.trim()
+	let scoreClause = ''
+	let scoreParams: number[] = []
+	
+	if (scoreRange) {
+		switch (scoreRange) {
+			case '0-50':
+				scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
+				scoreParams = [0, 50]
+				break
+			case '50-100':
+				scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
+				scoreParams = [50, 100]
+				break
+			case '100-200':
+				scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
+				scoreParams = [100, 200]
+				break
+			case '200+':
+				scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN'
+				scoreParams = [200]
+				break
+		}
+	}
+
 	const hasIndustries = industries.length > 0
 	const industryParams = industries.map((v) => `%${v}%`)
 	const perColumnClause = (col: string) =>
@@ -51,15 +87,27 @@ export async function GET(req: Request) {
 		? `AND ((${perColumnClause('b."industryCode1"')} ) OR (${perColumnClause('b."industryText1"')}) OR (${perColumnClause('b."industryCode2"')}) OR (${perColumnClause('b."industryText2"')}) OR (${perColumnClause('b."industryCode3"')}) OR (${perColumnClause('b."industryText3"')}))`
 		: ''
 
-	// Combine all params - industries first, then revenue params
-	const params = [...industryParams, ...revenueParams]
+	// Combine all params - industries first, then revenue, recommendation, and score params
+	const params = [...industryParams, ...revenueParams, ...recommendationParams, ...scoreParams]
 	
-	// Update revenue clause placeholders with actual parameter positions
+	// Update clause placeholders with actual parameter positions
 	if (revenueClause) {
 		const revenueStartIndex = industryParams.length + 1
 		revenueClause = revenueClause
 			.replace('$REVENUE_MIN', `$${revenueStartIndex}`)
 			.replace('$REVENUE_MAX', `$${revenueStartIndex + 1}`)
+	}
+	
+	if (recommendationClause) {
+		const recommendationIndex = industryParams.length + revenueParams.length + 1
+		recommendationClause = recommendationClause.replace('$RECOMMENDATION', `$${recommendationIndex}`)
+	}
+	
+	if (scoreClause) {
+		const scoreStartIndex = industryParams.length + revenueParams.length + recommendationParams.length + 1
+		scoreClause = scoreClause
+			.replace('$SCORE_MIN', `$${scoreStartIndex}`)
+			.replace('$SCORE_MAX', `$${scoreStartIndex + 1}`)
 	}
 
 	const baseCte = `
@@ -90,6 +138,8 @@ export async function GET(req: Request) {
 				(COALESCE(b."registeredInForetaksregisteret", false) = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
 				${industryClause}
 				${revenueClause}
+				${recommendationClause}
+				${scoreClause}
 		)
 	`
 
@@ -127,7 +177,10 @@ export async function GET(req: Request) {
 			b.profit as "profit",
 			b."totalAssets" as "totalAssets",
 			b.equity as "equity",
-			b."employeesAvg" as "employeesAvg"
+			b."employeesAvg" as "employeesAvg",
+			b.recommendation as "recommendation",
+			b.rationale as "rationale",
+			b."allvitrScore" as "allvitrScore"
 		FROM businesses b
 		ORDER BY b."updatedAt" DESC
 		LIMIT 100
