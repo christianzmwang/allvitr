@@ -29,7 +29,7 @@ const PLATFORMS: Platform[] = [
     href: '/platforms#munin',
     gradient: 'from-sky-300/80 to-sky-500/80',
     description:
-      'Secure data storage and powerful analytics to drive smarter business decisions.',
+      'Secure data storage and powerful analytics with ontology to drive deeper insights.',
   },
   {
     key: 'odin',

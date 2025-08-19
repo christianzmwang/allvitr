@@ -9,7 +9,7 @@ export default function PlatformsPage() {
       {/* Hero */}
       <section
         data-nav-theme="dark"
-        className="min-h-screen flex items-center justify-center bg-black">
+        className="min-h-screen flex items-center justify-center bg-gray-950">
         <div className=" container-95 h-full flex items-center">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full">
             <div className="text-center pl-4 md:pl-18">
@@ -33,51 +33,43 @@ export default function PlatformsPage() {
       <section
         id="hugin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[10vh] -mt-0 overflow-hidden"
+        className="scroll-mt-32 min-h-screen bg-black overflow-hidden border-t border-red-600/90 shadow-[0_200px_200px_200px_rgba(255,0,0,0.5)] "
       >
-        <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
+        <div className="min-h-[80vh] flex items-center">
           <div className="container-95">
-            {/* Main headline and description */}
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                Hugin
-              </h2>
-              <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                Real-time market research. Index the public web and third-party
-                data to surface timely signals on prospects and markets.
-              </p>
-            </div>
-
-            {/* Why Signals Matter - Large feature box */}
-            <div className="bg-gradient-to-r from-sky-500/10 to-purple-500/10 border border-sky-400/30 p-8 md:p-12 mb-16">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                    Why Signals Matter
-                  </h3>
-                  <p className="text-lg text-gray-300 leading-relaxed">
-                    Timing is everything. Act when budgets, urgency, and
-                    momentum align. Hugin finds those moments—consistently.
-                  </p>
-                  <div className="mt-6 flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-sky-400 animate-pulse"></div>
-                    <span className="text-sky-400 font-medium">
-                      Real-time monitoring
-                    </span>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className="aspect-square w-full bg-gradient-to-br from-sky-500/20 to-purple-500/20 border border-sky-400/30 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">⚡</div>
-                      <div className="text-sky-400 font-semibold">
-                        Live Signals
-                      </div>
-                    </div>
+            {/* Header + Image two-column layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
+              {/* Left: Wave image */}
+              <div className="order-1 md:order-1 flex justify-start">
+                <div className="relative w-full max-w-[600px]">
+                  <div className="relative aspect-[1/1] w-full overflow-hidden">
+                    <Image
+                      src="/wave.png"
+                      alt="Hugin wave visualization"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-contain"
+                    />
                   </div>
                 </div>
               </div>
+
+              {/* Right: Headline and description */}
+              <div className="order-2 md:order-2 text-left">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  Hugin
+                </h2>
+                <p className="text-lg text-gray-300 mb-8 max-w-prose">
+                We cut through the noise with real-time market research, indexing the web and trusted data to surface only the signals that matter. 
+                </p>
+                <div className="hidden md:block text-gray-400 text-sm">
+                Timing is everything. When budgets, urgency, and momentum align, opportunities open. Hugin finds those moments consistently so you can move with precision and win more often.
+                </div>
+              </div>
             </div>
+
+
 
             {/* Core Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -234,7 +226,7 @@ export default function PlatformsPage() {
       <section
         id="munin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black overflow-hidden"
+        className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-gray-800/100 via-20% to-gray-900 overflow-hidden"
       >
         <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
           <div className="container-95">
@@ -343,7 +335,7 @@ export default function PlatformsPage() {
       <section
         id="odin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black overflow-hidden"
+        className="scroll-mt-32 min-h-screen pad-section bg-black overflow-hidden"
       >
         <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
           <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-start">
