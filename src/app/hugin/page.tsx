@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 
 function useDebounce<T>(value: T, delay = 250) {
@@ -532,7 +532,7 @@ export default function BrregPage() {
 														const isHalf = !isExpanded && i === 1 && items.length > 1
 														return (
 															<div key={it.key} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
-																<div className="flex-1 overflow-hidden" style={isHalf ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any } : undefined}>{it.text}</div>
+																<div className="flex-1 overflow-hidden" style={isHalf ? ({ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as CSSProperties) : undefined}>{it.text}</div>
 																{it.impactDisplay && (
 																	<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${it.badgeColor} text-white font-mono`}>{it.impactDisplay}</span>
 																)}
