@@ -179,7 +179,7 @@ export default function BrregPage() {
 			{/* Header */}
 			<div className="bg-black border-b border-white/10">
 				<div className="py-4 px-6">
-					<h1 className="text-2xl font-bold">Allvitr \ <span className="text-red-600">Hugin</span></h1>
+					<h1 className="text-2xl font-bold">Allvitr / <span className="text-red-600">Hugin</span></h1>
 				</div>
 			</div>
 
@@ -481,8 +481,60 @@ export default function BrregPage() {
 										<div className="mt-4 pt-4 border-t border-white/10">
 											<div className="text-sm">
 												<span className="font-medium text-gray-300">Rationale:</span>
-												<div className="mt-1 text-gray-400 leading-relaxed">
-													{b.rationale.length > 200 ? `${b.rationale.substring(0, 200)}...` : b.rationale}
+												<div className="mt-2 grid gap-2 text-gray-300 leading-relaxed">
+													{(b.rationale || '')
+														.split(/\r?\n|;|(?<=\.)\s+/)
+														.map(s => s.trim())
+														.filter(Boolean)
+														.map((line, idx) => {
+															let cleaned = String(line).replace(/\(n\/a\)/gi, '').trim()
+															let impactDisplay: string | null = null
+															let impactRawForRemoval: string | null = null
+															let badgeColor = 'bg-gray-600'
+
+															// Try signed impact first (e.g., +5, -3, +2%)
+															const signed = cleaned.match(/([+-]\s*\d+(?:[.,]\d+)?%?)/)
+															if (signed) {
+																impactRawForRemoval = signed[1]
+																impactDisplay = signed[1].replace(/\s+/g, '')
+																badgeColor = impactDisplay.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
+															} else {
+																// Look for labeled numeric (e.g., "impact direction: +1" or "Impact Direction: 0%")
+																const labeled = cleaned.match(/impact\s*direction\s*:?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
+																if (labeled) {
+																	impactRawForRemoval = labeled[1]
+																	const normalized = labeled[1].replace(/\s+/g, '')
+																	if (/^0([.,]0+)?%?$/.test(normalized)) {
+																		badgeColor = 'bg-gray-600'
+																		impactDisplay = '0'
+																	} else {
+																		impactDisplay = normalized
+																		badgeColor = normalized.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
+																	}
+																}
+															}
+
+															// Remove the label text from main content
+															cleaned = cleaned.replace(/impact\s*direction\s*:?/i, '').trim()
+															// Also remove the raw impact value itself from the text, if present
+															if (impactRawForRemoval) {
+																const esc = impactRawForRemoval.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+																cleaned = cleaned
+																	.replace(new RegExp(esc), '')
+																	.replace(/\(\s*\)/g, '')
+																	.replace(/\s{2,}/g, ' ')
+																	.trim()
+															}
+
+															return (
+																<div key={idx} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
+																	<div className="flex-1">{cleaned}</div>
+																	{impactDisplay && (
+																		<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${badgeColor} text-white font-mono`}>{impactDisplay}</span>
+																	)}
+																</div>
+															)
+														})}
 												</div>
 											</div>
 										</div>

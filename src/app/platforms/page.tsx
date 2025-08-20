@@ -263,7 +263,7 @@ export default function PlatformsPage() {
       <section
         id="munin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen pad-section bg-gradient-to-b from-transparent via-gray-800/100 via-20% to-gray-900 overflow-hidden"
+        className="scroll-mt-32 min-h-screen pad-section bg-black overflow-hidden"
       >
         <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
           <div className="container-95">
@@ -288,10 +288,8 @@ export default function PlatformsPage() {
               {/* Left: Product image */}
               <div className="md:col-span-2 order-1 md:order-1">
                 <div className="relative group max-w-[420px] mx-auto md:mx-0">
-                  <div
-                    className="absolute -inset-2 bg-gradient-to-b from-white/10 to-transparent blur-2xl opacity-60 group-hover:opacity-80 transition"
-                    aria-hidden
-                  />
+                 
+                 
                   <div className="relative aspect-[1/1] w-full overflow-hidden">
                     <Image
                       src="/glassSquare.png"
