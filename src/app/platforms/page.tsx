@@ -29,11 +29,13 @@ export default function PlatformsPage() {
         </div>
       </section>
 
+      <div className="shadow-[0_200px_200px_200px_rgba(255,0,0,0.5)]"></div>
+
       {/* Hugin - Overview Section */}
       <section
         id="hugin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen bg-black overflow-hidden border-t border-red-600/90 shadow-[0_200px_200px_200px_rgba(255,0,0,0.5)] "
+        className="scroll-mt-32 min-h-screen bg-black overflow-hidden border-t border-red-600/90  "
       >
         <div className="min-h-[80vh] flex items-center">
           <div className="container-95">
