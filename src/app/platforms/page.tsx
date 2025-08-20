@@ -186,7 +186,7 @@ export default function PlatformsPage() {
             </div>
 
             {/* How It Works Section */}
-            <div className="bg-gradient-to-r from-gray-900/50 to-black/50 border border-white/10 p-8 md:p-12">
+            <div className="bg-gradient-to-r from-red-950/50 to-black/50 border border-white/10 p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
                   <h4 className="text-lg font-semibold text-white mb-2">
