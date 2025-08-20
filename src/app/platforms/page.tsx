@@ -1,5 +1,6 @@
 import NavBar from '../components/NavBar'
 import Image from 'next/image'
+import wave from '../../../public/wave.png'
 
 export default function PlatformsPage() {
   return (
@@ -44,16 +45,13 @@ export default function PlatformsPage() {
               {/* Left: Wave image */}
               <div className="order-1 md:order-1 flex justify-start">
                 <div className="relative w-full max-w-[600px]">
-                  <div className="relative aspect-[1/1] w-full overflow-hidden">
-                    <Image
-                      src="/wave.png"
-                      alt="Hugin wave visualization"
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-contain"
-                    />
-                  </div>
+                  <Image
+                    src={wave}
+                    alt="Hugin wave visualization"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="w-full h-auto object-contain"
+                  />
                 </div>
               </div>
 
@@ -74,8 +72,8 @@ export default function PlatformsPage() {
 
 
             {/* Core Benefits Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-              <div className="bg-white/5 p-8 border border-white/10 hover:border-sky-400/30 transition-colors">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16">
+              <div className="bg-white/5 p-8 border-2 border-red-500/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(239,68,68,0.55)]">
                 <div className="text-3xl mb-4">🎯</div>
                 <h4 className="text-xl font-semibold text-white mb-3">
                   Prioritize Outreach
@@ -85,7 +83,7 @@ export default function PlatformsPage() {
                   static ICP list.
                 </p>
               </div>
-              <div className="bg-white/5 p-8 border border-white/10 hover:border-sky-400/30 transition-colors">
+              <div className="bg-white/5 p-8 border-2 border-sky-400/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(56,189,248,0.55)]">
                 <div className="text-3xl mb-4">⏱️</div>
                 <h4 className="text-xl font-semibold text-white mb-3">
                   Shorten Cycles
@@ -95,7 +93,7 @@ export default function PlatformsPage() {
                   qualification.
                 </p>
               </div>
-              <div className="bg-white/5 p-8 border border-white/10 hover:border-sky-400/30 transition-colors">
+              <div className="bg-white/5 p-8 border-2 border-green-500/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(34,197,94,0.55)]">
                 <div className="text-3xl mb-4">🏆</div>
                 <h4 className="text-xl font-semibold text-white mb-3">
                   Increase Win Rate
