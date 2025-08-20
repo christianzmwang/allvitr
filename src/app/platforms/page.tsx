@@ -89,7 +89,7 @@ export default function PlatformsPage() {
                     </p>
                     <p className="text-lg text-gray-300 max-w-prose mt-4">
                       Spend time building relationships, <br/>
-                      as you always should've.
+                      as you always should&apos;ve.
                     </p>
                   </div>
                 </div>
