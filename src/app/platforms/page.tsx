@@ -30,7 +30,7 @@ export default function PlatformsPage() {
         </div>
       </section>
 
-      <div className="shadow-[0_200px_200px_200px_rgba(255,0,0,0.5)]"></div>
+      <div className="shadow-[0_0_100px_20px_rgba(255,0,0,0.5)] -mx-[50px]"></div>
 
       {/* Hugin - Overview Section */}
       <section
@@ -57,50 +57,72 @@ export default function PlatformsPage() {
 
               {/* Right: Headline and description */}
               <div className="order-2 md:order-2 text-left">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                  Hugin
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
+                  <span>Hugin</span>
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest px-2.5 py-1 border-2 border-red-700 bg-white/5 text-gray-300 ml-5">powered by AI-Agents</span>
                 </h2>
                 <p className="text-lg text-gray-300 mb-8 max-w-prose">
                 We cut through the noise with real-time market research, indexing the web and trusted data to surface only the signals that matter. 
                 </p>
-                <div className="hidden md:block text-gray-400 text-sm">
-                Timing is everything. When budgets, urgency, and momentum align, opportunities open. Hugin finds those moments consistently so you can move with precision and win more often.
-                </div>
+      
               </div>
             </div>
 
 
 
             {/* Core Benefits Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16">
-              <div className="bg-white/5 p-8 border-2 border-red-500/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(239,68,68,0.55)]">
-                <div className="text-3xl mb-4">🎯</div>
-                <h4 className="text-xl font-semibold text-white mb-3">
-                  Prioritize Outreach
-                </h4>
-                <p className="text-gray-300">
-                  Focus on accounts actively evaluating solutions, not just a
-                  static ICP list.
-                </p>
-              </div>
-              <div className="bg-white/5 p-8 border-2 border-sky-400/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(56,189,248,0.55)]">
-                <div className="text-3xl mb-4">⏱️</div>
-                <h4 className="text-xl font-semibold text-white mb-3">
-                  Shorten Cycles
-                </h4>
-                <p className="text-gray-300">
-                  Start with context. Tailor messaging and speed up
-                  qualification.
-                </p>
-              </div>
-              <div className="bg-white/5 p-8 border-2 border-green-500/90 transform-gpu transition-all duration-500 ease-in-out hover:[transform:perspective(1000px)_rotateX(4deg)_rotateY(4deg)_translateZ(6px)] hover:shadow-[0_0_80px_14px_rgba(34,197,94,0.55)]">
-                <div className="text-3xl mb-4">🏆</div>
-                <h4 className="text-xl font-semibold text-white mb-3">
-                  Increase Win Rate
-                </h4>
-                <p className="text-gray-300">
-                  Engage when the need is fresh and budgets are available.
-                </p>
+            <div className="bg-white/10 p-8 md:p-12 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                {/* Left: Human Connection - Heading at top, text at bottom */}
+                <div className="text-left flex flex-col justify-between h-full">
+                  {/* Top: Human Connection Heading */}
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                      Human connection
+                    </h3>
+                  </div>
+                  
+                  {/* Bottom: Descriptive Text */}
+                  <div className="mt-auto">
+                    <p className="text-lg text-gray-300 max-w-prose">
+                      Automate what should be automated.
+                    </p>
+                    <p className="text-lg text-gray-300 max-w-prose mt-4">
+                      Spend time building relationships, <br/>
+                      as you always should've.
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Right: Stacked Benefit Cards */}
+                <div className="space-y-6">
+                  <div className="bg-black p-6 transform-gpu transition-all duration-500 ease-in-out hover:shadow-[0_0_10px_10px_rgba(239,68,68,0.55)]">
+                    <h4 className="text-lg font-semibold text-white mb-2">
+                      Prioritize Outreach
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      Focus on accounts actively evaluating your solutions, not just a
+                      static ICP list.
+                    </p>
+                  </div>
+                  <div className="bg-black p-6 transform-gpu transition-all duration-500 ease-in-out hover:shadow-[0_0_10px_10px_rgba(56,189,248,0.55)]">
+                    <h4 className="text-lg font-semibold text-white mb-2">
+                      Shorten Cycles
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      Start with context. Tailor messaging and speed up
+                      qualification.
+                    </p>
+                  </div>
+                  <div className="bg-black p-6  transform-gpu transition-all duration-500 ease-in-out hover:shadow-[0_0_10px_10px_rgba(34,197,94,0.55)]">
+                    <h4 className="text-lg font-semibold text-white mb-2">
+                      Increase Win Rate
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      Engage when the need is fresh and budgets are available.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
