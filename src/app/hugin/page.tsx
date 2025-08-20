@@ -64,6 +64,7 @@ export default function BrregPage() {
 	const dropdownRef = useRef<HTMLDivElement | null>(null)
 	const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null)
 	const [dropdownOpen, setDropdownOpen] = useState(false)
+	const [expandedRationalOrgs, setExpandedRationalOrgs] = useState<Record<string, boolean>>({})
 
 	const queryParam = useMemo(() => {
 		const sp = new URLSearchParams()
@@ -481,25 +482,25 @@ export default function BrregPage() {
 										<div className="mt-4 pt-4 border-t border-white/10">
 											<div className="text-sm">
 												<span className="font-medium text-gray-300">Rationale:</span>
-												<div className="mt-2 grid gap-2 text-gray-300 leading-relaxed">
-													{(b.rationale || '')
+											{(() => {
+													const all = (b.rationale || '')
 														.split(/\r?\n|;|(?<=\.)\s+/)
 														.map(s => s.trim())
 														.filter(Boolean)
+													const isExpanded = !!expandedRationalOrgs[b.orgNumber]
+													const items = all
 														.map((line, idx) => {
 															let cleaned = String(line).replace(/\(n\/a\)/gi, '').trim()
 															let impactDisplay: string | null = null
 															let impactRawForRemoval: string | null = null
 															let badgeColor = 'bg-gray-600'
 
-															// Try signed impact first (e.g., +5, -3, +2%)
 															const signed = cleaned.match(/([+-]\s*\d+(?:[.,]\d+)?%?)/)
 															if (signed) {
 																impactRawForRemoval = signed[1]
 																impactDisplay = signed[1].replace(/\s+/g, '')
 																badgeColor = impactDisplay.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
 															} else {
-																// Look for labeled numeric (e.g., "impact direction: +1" or "Impact Direction: 0%")
 																const labeled = cleaned.match(/impact\s*direction\s*:?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
 																if (labeled) {
 																	impactRawForRemoval = labeled[1]
@@ -514,9 +515,7 @@ export default function BrregPage() {
 																}
 															}
 
-															// Remove the label text from main content
 															cleaned = cleaned.replace(/impact\s*direction\s*:?/i, '').trim()
-															// Also remove the raw impact value itself from the text, if present
 															if (impactRawForRemoval) {
 																const esc = impactRawForRemoval.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 																cleaned = cleaned
@@ -526,16 +525,35 @@ export default function BrregPage() {
 																	.trim()
 															}
 
-															return (
-																<div key={idx} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
-																	<div className="flex-1">{cleaned}</div>
-																	{impactDisplay && (
-																		<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${badgeColor} text-white font-mono`}>{impactDisplay}</span>
-																	)}
-																</div>
-															)
-														})}
-												</div>
+															return { key: idx, text: cleaned, impactDisplay, badgeColor }
+														})
+
+													const rendered = (isExpanded ? items : items.slice(0, 2)).map((it, i) => {
+														const isHalf = !isExpanded && i === 1 && items.length > 1
+														return (
+															<div key={it.key} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
+																<div className="flex-1 overflow-hidden" style={isHalf ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any } : undefined}>{it.text}</div>
+																{it.impactDisplay && (
+																	<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${it.badgeColor} text-white font-mono`}>{it.impactDisplay}</span>
+																)}
+															</div>
+														)
+													})
+
+													return (
+														<>
+															{rendered}
+															{items.length > 2 && (
+																<button
+																	onClick={() => setExpandedRationalOrgs(prev => ({ ...prev, [b.orgNumber]: !isExpanded }))}
+																	className="mt-2 self-start inline-flex items-center gap-2 px-2 py-1 bg-gray-800 border border-white/10 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-xs"
+																>
+																	{isExpanded ? '▾ Show less' : '▸ Show all'}
+																</button>
+															)}
+														</>
+													)
+												})()}
 											</div>
 										</div>
 									)}
