@@ -127,72 +127,68 @@ export default function PlatformsPage() {
             </div>
 
             {/* Signal Types Section */}
-            <div className="mb-16">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-8 text-center">
-                Signal Types
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-6 border border-green-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    New Product Launch
-                  </h4>
-                  <p className="text-gray-300">
-                    Signals investment in growth and supporting tools.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 p-6 border border-blue-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Executive Hire
-                  </h4>
-                  <p className="text-gray-300">
-                    New leaders bring new strategies and stacks.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-6 border border-purple-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Geographic Expansion
-                  </h4>
-                  <p className="text-gray-300">
-                    New markets require partners and local insights.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 p-6 border border-orange-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Integration Mentions
-                  </h4>
-                  <p className="text-gray-300">
-                    Connecting systems often precedes software adoption.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 p-6 border border-teal-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Increased Hiring
-                  </h4>
-                  <p className="text-gray-300">
-                    Headcount surges hint at new initiatives needing tooling.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-yellow-500/10 to-amber-500/10 p-6 border border-yellow-400/30">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Regulatory Changes
-                  </h4>
-                  <p className="text-gray-300">
-                    Compliance shifts drive tech adoption and process change.
-                  </p>
+            <div className="min-h-screen flex items-center">
+              <div className="w-full">
+                <h3 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">
+                  Signal Types
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      New Product Launch
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      Signals investment in growth and supporting tools.
+                    </p>
+                  </div>
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      Executive Hire
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      New leaders bring new strategies and stacks.
+                    </p>
+                  </div>
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      Geographic Expansion
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      New markets require partners and local insights.
+                    </p>
+                  </div>
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      Integration Mentions
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      Connecting systems often precedes software adoption.
+                    </p>
+                  </div>
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      Increased Hiring
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      Headcount surges hint at new initiatives needing tooling.
+                    </p>
+                  </div>
+                  <div className="bg-white/5 p-8 border border-white/10">
+                    <h4 className="text-xl font-semibold text-white mb-4">
+                      Regulatory Changes
+                    </h4>
+                    <p className="text-gray-300 text-base">
+                      Compliance shifts drive tech adoption and process change.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* How It Works Section */}
             <div className="bg-gradient-to-r from-gray-900/50 to-black/50 border border-white/10 p-8 md:p-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-8 text-center">
-                How Hugin Works
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-sky-500/20 border border-sky-400/30 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl">🔍</span>
-                  </div>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
                   <h4 className="text-lg font-semibold text-white mb-2">
                     Monitor
                   </h4>
@@ -200,10 +196,10 @@ export default function PlatformsPage() {
                     Track web sources and data feeds
                   </p>
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-500/20 border border-purple-400/30 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl">⚡</span>
-                  </div>
+                
+                <div className="hidden md:block w-16 h-px border-t-2 border-dotted border-white/30"></div>
+                
+                <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
                   <h4 className="text-lg font-semibold text-white mb-2">
                     Detect
                   </h4>
@@ -211,10 +207,10 @@ export default function PlatformsPage() {
                     Identify relevant signals in real-time
                   </p>
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-green-500/20 border border-green-400/30 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl">📊</span>
-                  </div>
+                
+                <div className="hidden md:block w-16 h-px border-t-2 border-dotted border-white/30"></div>
+                
+                <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
                   <h4 className="text-lg font-semibold text-white mb-2">
                     Analyze
                   </h4>
@@ -222,10 +218,10 @@ export default function PlatformsPage() {
                     Score and prioritize opportunities
                   </p>
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-orange-500/20 border border-orange-400/30 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl">🚀</span>
-                  </div>
+                
+                <div className="hidden md:block w-16 h-px border-t-2 border-dotted border-white/30"></div>
+                
+                <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
                   <h4 className="text-lg font-semibold text-white mb-2">Act</h4>
                   <p className="text-gray-300 text-sm">
                     Engage with perfect timing
@@ -243,6 +239,25 @@ export default function PlatformsPage() {
         aria-hidden
         className="mx-auto w-[100%] md:max-w-[100%] h-16 md:h-24"
       />
+
+      {/* Works in Progress Indicator */}
+      <section
+        data-nav-theme="dark"
+        className="py-16 bg-gradient-to-r from-gray-900/50 to-black/50 border-t border-white/10 border-b border-white/10"
+      >
+        <div className="container-95 text-center">
+          <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-gray-300 uppercase tracking-widest">
+              Works in Progress
+            </span>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+          </div>
+          <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+            The following sections showcase our upcoming platforms currently in development
+          </p>
+        </div>
+      </section>
 
       {/* Munin (dark, homepage style) */}
       <section
@@ -277,7 +292,7 @@ export default function PlatformsPage() {
                     className="absolute -inset-2 bg-gradient-to-b from-white/10 to-transparent blur-2xl opacity-60 group-hover:opacity-80 transition"
                     aria-hidden
                   />
-                  <div className="relative aspect-[1/1] w-full overflow-hidden border-4 md:border-8 border-dashed border-sky-400">
+                  <div className="relative aspect-[1/1] w-full overflow-hidden">
                     <Image
                       src="/glassSquare.png"
                       alt="Munin visualization"
