@@ -197,7 +197,7 @@ export async function GET(req: Request) {
 		${baseCte}
 		SELECT COUNT(*)::int as total FROM businesses
 	`
-	let itemsRes: { rows: any[] } = { rows: [] }
+	let itemsRes: { rows: Record<string, unknown>[] } = { rows: [] }
 	let total = 0
 
 	if (countOnly) {
@@ -242,26 +242,7 @@ export async function GET(req: Request) {
 		return out
 	}
 
-	const loadOrgNumbers = (csvAbsPath: string): Set<string> => {
-		try {
-			const content = fs.readFileSync(csvAbsPath, 'utf8')
-			const lines = content.split(/\r?\n/).filter(Boolean)
-			if (lines.length === 0) return new Set<string>()
-			const header = lines.shift() as string
-			const columns = splitCsvLine(header)
-			const orgIdx = columns.findIndex((c) => c.trim().toLowerCase() === 'orgnr')
-			const set = new Set<string>()
-			if (orgIdx === -1) return set
-			for (const line of lines) {
-				const cols = splitCsvLine(line)
-				const org = (cols[orgIdx] || '').trim()
-				if (org) set.add(org)
-			}
-			return set
-		} catch {
-			return new Set<string>()
-		}
-	}
+
 
 	const loadCsvInfo = (csvAbsPath: string): { set: Set<string>; map: Map<string, { recommendation: string | null; rationale: string | null; allvitrScore: number | null }> } => {
 		try {
@@ -298,7 +279,7 @@ export async function GET(req: Request) {
 		}
 	}
 
-	let filteredItems = itemsRes.rows as any[]
+	let filteredItems = itemsRes.rows as Record<string, unknown>[]
 	if (isCsvSource) {
 		const contaPath = process.cwd() + '/public/csv/contaData.csv'
 		const konsulentPath = process.cwd() + '/public/csv/konsulentData.csv'

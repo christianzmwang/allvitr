@@ -148,7 +148,7 @@ export default function BrregPage() {
 				}
 			})
 			.finally(() => setLoading(false))
-	}, [queryParam])
+	}, [queryParam, offset])
 
 	// Background count refresh when industries change and we asked server to skip count
 	useEffect(() => {
@@ -158,11 +158,11 @@ export default function BrregPage() {
 		sp.set('countOnly', '1')
 		fetch('/api/businesses?' + sp.toString())
 			.then(r => r.json())
-			.then((res: any) => {
+			.then((res: { total?: number }) => {
 				if (typeof res.total === 'number') setTotal(res.total)
 			})
 			.catch(() => {})
-	}, [selectedIndustries, queryParam])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, offset])
 
 	// Reset pagination when filters change
 	useEffect(() => {
