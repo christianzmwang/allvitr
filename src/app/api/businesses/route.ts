@@ -183,7 +183,6 @@ export async function GET(req: Request) {
 
 	// Optimized query structure - simplify expensive WHERE conditions
 	// For CSV sources, skip recommendation and score filtering in DB since CSV data overrides these fields
-	const hasActiveFilters = hasIndustries || revenueClause || (!isCsvSource && (recommendationClause || scoreClause))
 	const baseWhere = `
 		WHERE (b."registeredInForetaksregisteret" = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
 		${industryClause}

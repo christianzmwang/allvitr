@@ -203,6 +203,8 @@ const BusinessCard = memo(({
 	)
 })
 
+BusinessCard.displayName = 'BusinessCard'
+
 export default function BrregPage() {
 	const [data, setData] = useState<Business[]>([])
 	const [total, setTotal] = useState<number>(0)
@@ -272,7 +274,7 @@ export default function BrregPage() {
 			sp.append('skipCount', '1')
 		}
 		return sp.toString() ? `?${sp.toString()}` : ''
-	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, offset])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, sortBy, offset])
 
 	const addSelectedIndustry = (value: string, label?: string) => {
 		const v = value.trim()
@@ -318,7 +320,7 @@ export default function BrregPage() {
 				if (typeof res.total === 'number') setTotal(res.total)
 			})
 			.catch(() => {})
-	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, sortBy, offset])
+	}, [queryParam, selectedIndustries.length])
 
 	// Reset pagination when filters or sorting change
 	useEffect(() => {
@@ -368,8 +370,6 @@ export default function BrregPage() {
 		document.addEventListener('mousedown', handleDown)
 		return () => document.removeEventListener('mousedown', handleDown)
 	}, [dropdownOpen])
-
-	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : numberFormatter.format(Number(v)))
 
 	// Data is now sorted server-side, no need for client-side sorting
 	const sortedData = data

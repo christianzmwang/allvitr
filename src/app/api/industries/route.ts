@@ -18,7 +18,7 @@ export async function GET(req: Request) {
   const cacheKey = { endpoint: 'industries', query: q || 'all' }
   
   // Check cache first (5 minute TTL for industry data)
-  const cached = apiCache.get<any[]>(cacheKey)
+  const cached = apiCache.get<{ code: string; text: string; count: number }[]>(cacheKey)
   if (cached) {
     return NextResponse.json(cached)
   }

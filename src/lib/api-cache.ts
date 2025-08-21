@@ -5,26 +5,26 @@ type CacheEntry<T> = {
 }
 
 class ApiCache {
-  private cache = new Map<string, CacheEntry<any>>()
+  private cache = new Map<string, CacheEntry<unknown>>()
   private readonly DEFAULT_TTL = 2 * 60 * 1000 // 2 minutes
 
-  private generateKey(params: Record<string, any>): string {
+  private generateKey(params: Record<string, unknown>): string {
     // Sort keys for consistent cache keys
     const sortedParams = Object.keys(params)
       .sort()
       .reduce((acc, key) => {
         acc[key] = params[key]
         return acc
-      }, {} as Record<string, any>)
+      }, {} as Record<string, unknown>)
     
     return JSON.stringify(sortedParams)
   }
 
-  private isExpired(entry: CacheEntry<any>): boolean {
+  private isExpired(entry: CacheEntry<unknown>): boolean {
     return Date.now() - entry.timestamp > entry.ttl
   }
 
-  get<T>(params: Record<string, any>): T | null {
+  get<T>(params: Record<string, unknown>): T | null {
     const key = this.generateKey(params)
     const entry = this.cache.get(key)
     
@@ -38,7 +38,7 @@ class ApiCache {
     return entry.data as T
   }
 
-  set<T>(params: Record<string, any>, data: T, customTtl?: number): void {
+  set<T>(params: Record<string, unknown>, data: T, customTtl?: number): void {
     const key = this.generateKey(params)
     const ttl = customTtl || this.DEFAULT_TTL
     
@@ -50,7 +50,7 @@ class ApiCache {
   }
 
   // Clear cache entries that match a pattern (useful when data changes)
-  invalidatePattern(pattern: Partial<Record<string, any>>): void {
+  invalidatePattern(pattern: Partial<Record<string, unknown>>): void {
     const patternStr = JSON.stringify(pattern)
     const keysToDelete = Array.from(this.cache.keys()).filter(key => 
       key.includes(patternStr.slice(1, -1)) // Remove outer braces
