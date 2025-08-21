@@ -123,7 +123,13 @@ export async function GET(req: Request) {
 		: ''
 
 	// Combine all params - industries first, then revenue, recommendation, and score params
-	const params = [...industryParams, ...revenueParams, ...recommendationParams, ...scoreParams]
+	// For CSV sources, exclude recommendation and score params since filtering happens after CSV merging
+	const params = [
+		...industryParams, 
+		...revenueParams, 
+		...(isCsvSource ? [] : recommendationParams), 
+		...(isCsvSource ? [] : scoreParams)
+	]
 	
 	// Update clause placeholders with actual parameter positions
 	if (revenueClause) {
@@ -133,12 +139,12 @@ export async function GET(req: Request) {
 			.replace('$REVENUE_MAX', `$${revenueStartIndex + 1}`)
 	}
 	
-	if (recommendationClause) {
+	if (recommendationClause && !isCsvSource) {
 		const recommendationIndex = industryParams.length + revenueParams.length + 1
 		recommendationClause = recommendationClause.replace('$RECOMMENDATION', `$${recommendationIndex}`)
 	}
 	
-	if (scoreClause) {
+	if (scoreClause && !isCsvSource) {
 		const scoreStartIndex = industryParams.length + revenueParams.length + recommendationParams.length + 1
 		scoreClause = scoreClause
 			.replace('$SCORE_MIN', `$${scoreStartIndex}`)
@@ -146,12 +152,13 @@ export async function GET(req: Request) {
 	}
 
 	// Optimized query structure - avoid CTE when possible
+	// For CSV sources, skip recommendation and score filtering in DB since CSV data overrides these fields
 	const baseWhere = `
 		WHERE (COALESCE(b."registeredInForetaksregisteret", false) = true 
 			   OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
 		${industryClause}
-		${recommendationClause}
-		${scoreClause}
+		${isCsvSource ? '' : recommendationClause}
+		${isCsvSource ? '' : scoreClause}
 	`
 	
 	// Only use CTE for financial data when revenue filtering is needed
@@ -299,6 +306,32 @@ export async function GET(req: Request) {
 			if (csvInfo.allvitrScore != null) next.allvitrScore = csvInfo.allvitrScore
 			return next
 		})
+		
+		// Apply recommendation filter after CSV data merging (since CSV overrides DB recommendation)
+		if (recommendation) {
+			filteredItems = filteredItems.filter((row) => String(row.recommendation) === recommendation)
+		}
+		
+		// Apply score range filter after CSV data merging (since CSV overrides DB score)
+		if (scoreRange) {
+			filteredItems = filteredItems.filter((row) => {
+				const score = Number(row.allvitrScore)
+				if (isNaN(score)) return false
+				
+				switch (scoreRange) {
+					case '0-50':
+						return score >= 0 && score < 50
+					case '50-100':
+						return score >= 50 && score < 100
+					case '100-200':
+						return score >= 100 && score < 200
+					case '200+':
+						return score >= 200
+					default:
+						return true
+				}
+			})
+		}
 	}
 
 	// Apply pagination for CSV sources at response level; general uses SQL LIMIT/OFFSET
