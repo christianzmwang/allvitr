@@ -604,7 +604,7 @@ export default function BrregPage() {
 												{/* Show count of available options */}
 												{industryQuery.trim() && (
 													<div className="px-4 py-2 text-xs text-gray-400 bg-gray-800 border-b border-white/10">
-														{suggestions.length} of {totalFilteredCount} industries match "{industryQuery}"
+														{suggestions.length} of {totalFilteredCount} industries match &quot;{industryQuery}&quot;
 													</div>
 												)}
 												{!industryQuery.trim() && allIndustries.length > 0 && (
