@@ -27,7 +27,7 @@ export async function GET(req: Request) {
   let params: (string | null)[]
 
   if (!q) {
-    // No search query - use a faster approach with LIMIT on the table scan
+    // No search query - return ALL industries for client-side filtering
     sql = `
       SELECT DISTINCT
         "industryCode1" as code,
@@ -39,7 +39,6 @@ export async function GET(req: Request) {
         AND (COALESCE("registeredInForetaksregisteret", false) = true 
              OR "orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
       ORDER BY "industryCode1" ASC
-      LIMIT 100
     `
     params = []
   } else {

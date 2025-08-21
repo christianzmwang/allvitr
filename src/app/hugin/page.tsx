@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 
 const numberFormatter = new Intl.NumberFormat('no-NO')
 
-function useDebounce<T>(value: T, delay = 250) {
+function useDebounce<T>(value: T, delay = 100) {
 	const [debounced, setDebounced] = useState(value)
 	useEffect(() => {
 		const t = setTimeout(() => setDebounced(value), delay)
@@ -216,6 +216,7 @@ export default function BrregPage() {
 		const inds = sp.getAll('industries')
 		return inds.map(v => ({ value: v, label: v }))
 	})
+	const [allIndustries, setAllIndustries] = useState<IndustryOpt[]>([])
 	const [suggestions, setSuggestions] = useState<IndustryOpt[]>([])
 	const [selectedRevenueRange, setSelectedRevenueRange] = useState<string>(() => {
 		if (typeof window === 'undefined') return ''
@@ -241,7 +242,7 @@ export default function BrregPage() {
 		return allowed.has(v) ? v : 'updatedAt'
 	})
 	const [offset, setOffset] = useState<number>(0)
-	const debouncedIndustry = useDebounce(industryQuery, 250)
+	const debouncedIndustry = useDebounce(industryQuery, 100)
 	const inputRef = useRef<HTMLInputElement | null>(null)
 	const dropdownRef = useRef<HTMLDivElement | null>(null)
 	const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null)
@@ -328,15 +329,59 @@ export default function BrregPage() {
 		setData([])
 	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, sortBy])
 
+	// Preload all industries on component mount for fast client-side filtering
 	useEffect(() => {
-		const url = debouncedIndustry
-			? '/api/industries?q=' + encodeURIComponent(debouncedIndustry)
-			: '/api/industries'
-		fetch(url)
+		fetch('/api/industries')
 			.then(r => r.json())
-			.then((rows: IndustryOpt[]) => setSuggestions(rows))
-			.catch(() => setSuggestions([]))
-	}, [debouncedIndustry])
+			.then((rows: IndustryOpt[]) => {
+				setAllIndustries(rows)
+				setSuggestions(rows) // Show all initially
+			})
+			.catch(() => {
+				setAllIndustries([])
+				setSuggestions([])
+			})
+	}, [])
+
+	// Client-side filtering for instant results
+	const [totalFilteredCount, setTotalFilteredCount] = useState(0)
+	
+	useEffect(() => {
+		if (!debouncedIndustry.trim()) {
+			setSuggestions(allIndustries)
+			setTotalFilteredCount(allIndustries.length)
+			return
+		}
+
+		const query = debouncedIndustry.toLowerCase()
+		const filtered = allIndustries.filter(industry => {
+			const code = (industry.code || '').toLowerCase()
+			const text = (industry.text || '').toLowerCase()
+			return code.includes(query) || text.includes(query)
+		})
+
+		setTotalFilteredCount(filtered.length)
+
+		// Sort by relevance - exact matches first, then starts with, then contains
+		filtered.sort((a, b) => {
+			const aCode = (a.code || '').toLowerCase()
+			const aText = (a.text || '').toLowerCase()
+			const bCode = (b.code || '').toLowerCase()
+			const bText = (b.text || '').toLowerCase()
+
+			const aExact = aCode === query || aText === query
+			const bExact = bCode === query || bText === query
+			if (aExact !== bExact) return aExact ? -1 : 1
+
+			const aStarts = aCode.startsWith(query) || aText.startsWith(query)
+			const bStarts = bCode.startsWith(query) || bText.startsWith(query)
+			if (aStarts !== bStarts) return aStarts ? -1 : 1
+
+			return aCode.localeCompare(bCode)
+		})
+
+		setSuggestions(filtered.slice(0, 100)) // Show more options for better UX
+	}, [debouncedIndustry, allIndustries])
 
 	// Keep dropdown positioned to the input using a portal so layout below never shifts
 	useEffect(() => {
@@ -529,13 +574,10 @@ export default function BrregPage() {
 											onChange={(e) => setIndustryQuery(e.target.value)}
 											ref={inputRef}
 											onFocus={() => {
-												const url = industryQuery
-													? '/api/industries?q=' + encodeURIComponent(industryQuery)
-													: '/api/industries'
-												fetch(url)
-													.then(r => r.json())
-													.then((rows: IndustryOpt[]) => setSuggestions(rows))
-													.catch(() => setSuggestions([]))
+												// Show all suggestions if no query, otherwise show filtered results
+												if (!industryQuery.trim() && allIndustries.length > 0) {
+													setSuggestions(allIndustries)
+												}
 												setDropdownOpen(true)
 											}}
 											onKeyDown={(e) => {
@@ -556,9 +598,20 @@ export default function BrregPage() {
 										{dropdownOpen && suggestions.length > 0 && dropdownRect && createPortal(
 																				<div
 										ref={dropdownRef}
-										className="z-[9999] max-h-64 overflow-auto border border-white/10 bg-black text-white shadow-xl divide-y divide-white/10"
+										className="z-[9999] max-h-80 overflow-auto border border-white/10 bg-black text-white shadow-xl divide-y divide-white/10"
 												style={{ position: 'fixed', top: dropdownRect.top, left: dropdownRect.left, width: dropdownRect.width }}
 											>
+												{/* Show count of available options */}
+												{industryQuery.trim() && (
+													<div className="px-4 py-2 text-xs text-gray-400 bg-gray-800 border-b border-white/10">
+														{suggestions.length} of {totalFilteredCount} industries match "{industryQuery}"
+													</div>
+												)}
+												{!industryQuery.trim() && allIndustries.length > 0 && (
+													<div className="px-4 py-2 text-xs text-gray-400 bg-gray-800 border-b border-white/10">
+														{suggestions.length} of {allIndustries.length} industries shown
+													</div>
+												)}
 												{suggestions.map((s, idx) => {
 													const label = [s.code, s.text].filter(Boolean).join(' – ')
 													const term = (s.code || s.text || '').toString()
