@@ -12,11 +12,14 @@ class ApiCache {
     // Sort keys for consistent cache keys
     const sortedParams = Object.keys(params)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = params[key]
-        return acc
-      }, {} as Record<string, unknown>)
-    
+      .reduce(
+        (acc, key) => {
+          acc[key] = params[key]
+          return acc
+        },
+        {} as Record<string, unknown>,
+      )
+
     return JSON.stringify(sortedParams)
   }
 
@@ -27,36 +30,36 @@ class ApiCache {
   get<T>(params: Record<string, unknown>): T | null {
     const key = this.generateKey(params)
     const entry = this.cache.get(key)
-    
+
     if (!entry) return null
-    
+
     if (this.isExpired(entry)) {
       this.cache.delete(key)
       return null
     }
-    
+
     return entry.data as T
   }
 
   set<T>(params: Record<string, unknown>, data: T, customTtl?: number): void {
     const key = this.generateKey(params)
     const ttl = customTtl || this.DEFAULT_TTL
-    
+
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl
+      ttl,
     })
   }
 
   // Clear cache entries that match a pattern (useful when data changes)
   invalidatePattern(pattern: Partial<Record<string, unknown>>): void {
     const patternStr = JSON.stringify(pattern)
-    const keysToDelete = Array.from(this.cache.keys()).filter(key => 
-      key.includes(patternStr.slice(1, -1)) // Remove outer braces
+    const keysToDelete = Array.from(this.cache.keys()).filter(
+      (key) => key.includes(patternStr.slice(1, -1)), // Remove outer braces
     )
-    
-    keysToDelete.forEach(key => this.cache.delete(key))
+
+    keysToDelete.forEach((key) => this.cache.delete(key))
   }
 
   // Clear all cache
@@ -68,7 +71,7 @@ class ApiCache {
   getStats(): { size: number; entries: string[] } {
     return {
       size: this.cache.size,
-      entries: Array.from(this.cache.keys())
+      entries: Array.from(this.cache.keys()),
     }
   }
 
@@ -88,7 +91,10 @@ export const apiCache = new ApiCache()
 
 // Auto-cleanup every 5 minutes
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    apiCache.cleanup()
-  }, 5 * 60 * 1000)
+  setInterval(
+    () => {
+      apiCache.cleanup()
+    },
+    5 * 60 * 1000,
+  )
 }

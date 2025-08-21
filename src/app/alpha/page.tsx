@@ -14,7 +14,8 @@ export default function AlphaPage() {
             </div>
             <div className="text-center md:text-left">
               <p className="text-lg text-gray-400 max-w-3xl">
-                Welcome to the Alpha program. Work in progress. <br /> Stay tuned!
+                Welcome to the Alpha program. Work in progress. <br /> Stay
+                tuned!
               </p>
             </div>
           </div>

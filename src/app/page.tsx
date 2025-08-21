@@ -2,17 +2,8 @@ import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
 
-type Platform = {
-  key: string
-  title: string
-  subtitle: string
-  href: string
-  gradient: string
-  backGradient?: string
-  description: string
-}
-
-const PLATFORMS: Platform[] = [
+// Extracted constants for better maintainability
+const PLATFORMS = [
   {
     key: 'hugin',
     title: 'Hugin',
@@ -39,10 +30,11 @@ const PLATFORMS: Platform[] = [
     gradient: 'from-gray-800/80 to-gray-950/80',
     backGradient: 'from-gray-500/70 to-gray-600/70',
     description:
-      'An executive dashboard offering a unified view of your company’s key metrics in real time.',
+      "An executive dashboard offering a unified view of your company's key metrics in real time.",
   },
-]
+] as const
 
+// Simplified PlatformStack component with better performance
 function PlatformStack({
   title,
   subtitle,
@@ -56,25 +48,27 @@ function PlatformStack({
   gradient: string
   backGradient?: string
 }) {
+  const backGrad = backGradient || gradient
+
   return (
     <Link
       href={href}
       aria-label={`${title} platform`}
       className="group relative block w-44 md:w-52 h-56 md:h-64 focus:outline-none"
     >
-      {/* Glow */}
+      {/* Glow effect */}
       <div
         className={`pointer-events-none absolute -inset-2 blur-3xl opacity-50 transition duration-500 ease-out group-hover:opacity-95 group-hover:scale-105 ${gradient}`}
       />
 
       {/* Bottom layer */}
       <div
-        className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGradient || gradient} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`}
+        className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGrad} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`}
       />
 
       {/* Middle layer */}
       <div
-        className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGradient || gradient} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`}
+        className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGrad} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`}
       />
 
       {/* Top content card */}
@@ -105,6 +99,7 @@ export default function Home() {
         alwaysVisible
       />
       <NavBar />
+
       {/* Hero Section */}
       <section
         data-nav-theme="dark"
@@ -121,12 +116,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 1 */}
+      {/* Section 1: Platforms */}
       <section
         data-nav-theme="dark"
         className="min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 overflow-hidden"
       >
-        {/* Center within non-gradient area (below top 20% gradient) */}
         <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
           <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
             {/* Left: Textual content */}
@@ -157,25 +151,27 @@ export default function Home() {
             {/* Right: Three interactive stacks */}
             <div className="relative md:col-span-3">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
-                {PLATFORMS.map(
-                  ({ key, title, subtitle, href, gradient, backGradient }) => (
-                    <PlatformStack
-                      key={key}
-                      title={title}
-                      subtitle={subtitle}
-                      href={href}
-                      gradient={gradient}
-                      backGradient={backGradient}
-                    />
-                  ),
-                )}
+                {PLATFORMS.map((platform) => (
+                  <PlatformStack
+                    key={platform.key}
+                    title={platform.title}
+                    subtitle={platform.subtitle}
+                    href={platform.href}
+                    gradient={platform.gradient}
+                    backGradient={
+                      'backGradient' in platform
+                        ? platform.backGradient
+                        : undefined
+                    }
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Spacer to ensure navbar is dark in the space between section 1 and 2 */}
+      {/* Spacer */}
       <div data-nav-theme="dark" aria-hidden className="w-full h-20 md:h-28" />
 
       {/* Section 2: Mission */}
@@ -212,7 +208,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 3*/}
+      {/* Section 3: AI Integration */}
       <section
         data-nav-theme="light"
         id="section-2"

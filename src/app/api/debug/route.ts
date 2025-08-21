@@ -26,7 +26,7 @@ export async function GET() {
     envVars: {
       DATABASE_URL: !!process.env.DATABASE_URL,
       DATABASE_POOLING_URL: !!process.env.DATABASE_POOLING_URL,
-    }
+    },
   }
 
   if (pool) {
@@ -34,21 +34,20 @@ export async function GET() {
       const result = await pool.query('SELECT NOW() as server_time')
       debug.connectionTest = {
         success: true,
-        serverTime: result.rows[0]?.server_time
+        serverTime: result.rows[0]?.server_time,
       }
     } catch (error) {
       debug.connectionTest = {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   } else {
     debug.connectionTest = {
       success: false,
-      error: 'No database pool available'
+      error: 'No database pool available',
     }
   }
 
   return NextResponse.json(debug)
 }
-

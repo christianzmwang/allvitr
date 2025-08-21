@@ -121,7 +121,10 @@ export default function ContactForm({
             />
           </div>
           <div className="md:col-span-3 flex justify-start">
-            <button type="submit" className="btn btn-primary hover:border-gray-600">
+            <button
+              type="submit"
+              className="btn btn-primary hover:border-gray-600"
+            >
               Send
             </button>
           </div>
