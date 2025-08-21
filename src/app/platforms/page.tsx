@@ -40,10 +40,15 @@ function ProcessStep({
   title: string
   description: string
 }) {
+  const baseClasses = "p-6 text-center w-full md:w-48 h-32 flex flex-col justify-center"
+  const variantClasses = title === "Act" 
+    ? " border-2 border-red-600 text-red-600 bg-white/10"
+    : "bg-white/5 border border-white/10 text-white"
+  
   return (
-    <div className="bg-white/5 p-6 border border-white/10 text-center flex-1">
-      <h4 className="text-lg font-semibold text-white mb-2">{title}</h4>
-      <p className="text-gray-300 text-sm">{description}</p>
+    <div className={`${baseClasses} ${variantClasses}`}>
+      <h4 className="text-lg font-semibold mb-2">{title}</h4>
+      <p className={`text-sm ${title === "Act" ? "text-red-600" : "text-gray-300"}`}>{description}</p>
     </div>
   )
 }
@@ -105,7 +110,7 @@ export default function PlatformsPage() {
             {/* Header + Image two-column layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-36">
               {/* Left: Wave image */}
-              <div className="order-1 md:order-1 flex justify-start">
+              <div className="order-1 md:order-1 flex justify-center">
                 <div className="relative w-full max-w-[600px]">
                   <Image
                     src={wave}
@@ -216,21 +221,21 @@ export default function PlatformsPage() {
                         Signals
                       </h3>
                       <p className="text-lg text-gray-300 max-w-prose">
-                        These are some of the signals we monitor to help you identify the best opportunities for engagement.
+                      We track the business moments that matter most, so you can focus on building relationships. 
                       </p>
                     </div>
 
                     {/* Vertically Centered: Second Text + Button */}
                     <div className="flex-1 flex flex-col justify-center space-y-8">
-                      <p className="text-lg text-gray-300 max-w-prose">
-                        Get in touch with us, and we will add the signals you wish to monitor.
+                      <p className="text-lg text-gray-300 w-fit">
+                      Choose the signals you care about, and let us surface timely insights directly to you.
                       </p>
                                               <a 
                           href="/contact" 
                           className="btn border-2 border-white hover:border-green-500 text-white bg-transparent relative overflow-hidden group"
                         >
-                          <span className="relative z-10">Get in touch</span>
-                          <div className="absolute top-1/2 left-48 right-12 h-1 bg-white -translate-y-1/2" 
+                          <span className="relative z-10">Choose Signals</span>
+                          <div className="absolute top-1/2 left-46 right-12 h-1 bg-white -translate-y-1/2" 
                                style={{backgroundImage: 'repeating-linear-gradient(to right, white 0, white 4px, transparent 4px, transparent 8px)'}}>
                             <div className="absolute top-0 left-0 w-0 h-full bg-green-500 group-hover:w-full transition-all duration-1000 ease-in"></div>
                           </div>
@@ -242,37 +247,44 @@ export default function PlatformsPage() {
             </div>
 
             {/* How It Works Section */}
-            <div className="bg-gradient-to-r from-red-950/50 to-black/50 border border-white/10 p-10 md:p-16">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="mt-24">
+              <div className="text-center mb-36">
+                    <h3 className="text-6xl md:text-8xl font-extrabold text-transparent mb-4 heading-outline-light">
+                    Automated for you to Act
+                  </h3>
+              </div>
+              <div className="border border-white p-10 px-10 md:px-16">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-12">
                 <ProcessStep
                   title="Monitor"
                   description="Track web sources and data feeds"
                 />
 
-                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/30"></div>
+                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/50"></div>
 
                 <ProcessStep
                   title="Detect"
                   description="Identify relevant signals in real-time"
                 />
 
-                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/30"></div>
+                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/50"></div>
 
                 <ProcessStep
                   title="Analyze"
                   description="Score and prioritize opportunities"
                 />
 
-                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/30"></div>
+                <div className="hidden md:block w-20 h-px border-t-2 border-dotted border-white/50"></div>
 
-                <ProcessStep
-                  title="Act"
-                  description="Engage with perfect timing"
-                />
+                                  <ProcessStep
+                    title="Act"
+                    description="Engage with perfect timing"
+                  />
+                </div>
               </div>
             </div>
+            </div>
           </div>
-        </div>
       </section>
 
       {/* Spacer */}
@@ -296,7 +308,7 @@ export default function PlatformsPage() {
             <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
           </div>
           <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
-            The following sections showcase our upcoming platforms currently in
+            The following sections showcase our upcoming platforms currently under
             development
           </p>
         </div>
