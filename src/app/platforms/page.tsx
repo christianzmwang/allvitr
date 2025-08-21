@@ -220,7 +220,7 @@ export default function PlatformsPage() {
                       <h3 className="text-3xl md:text-4xl font-bold text-white">
                         Signals
                       </h3>
-                      <p className="text-lg text-gray-300 max-w-prose">
+                      <p className="text-lg text-gray-300 w-fit">
                       We track the business moments that matter most, so you can focus on building relationships. 
                       </p>
                     </div>
