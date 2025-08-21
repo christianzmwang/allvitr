@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 export const preferredRegion = ['fra1', 'arn1', 'cdg1']
 import { query } from '@/lib/db'
+import { apiCache } from '@/lib/api-cache'
 
 export async function GET(req: Request) {
   if (!dbConfigured) {
@@ -13,53 +14,63 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const q = searchParams.get('q')?.trim()
 
-  const sql = `
-    WITH inds AS (
-      SELECT b."industryCode1" AS code, b."industryText1" AS text FROM "Business" b
-      UNION ALL
-      SELECT b."industryCode2" AS code, b."industryText2" AS text FROM "Business" b
-      UNION ALL
-      SELECT b."industryCode3" AS code, b."industryText3" AS text FROM "Business" b
-    ),
-    filtered AS (
-      SELECT code, text
-      FROM inds
-      WHERE (code IS NOT NULL OR text IS NOT NULL)
-        AND (
-          ($1::text) IS NULL OR (
-            COALESCE(code,'') ILIKE ('%' || ($1::text) || '%') OR
-            COALESCE(text,'') ILIKE ('%' || ($1::text) || '%')
-          )
-        )
-    )
-    SELECT
-      code,
-      text,
-      COUNT(*) AS count,
-      MIN(
-        CASE
-          WHEN ($1::text) IS NULL THEN NULL
-          ELSE LEAST(
-            NULLIF(POSITION(LOWER($1::text) IN LOWER(COALESCE(code, ''))), 0),
-            NULLIF(POSITION(LOWER($1::text) IN LOWER(COALESCE(text, ''))), 0)
-          )
-        END
-      ) AS pos
-    FROM filtered
-    GROUP BY code, text
-    ORDER BY
-      CASE
-        WHEN ($1::text) IS NULL THEN 1
-        WHEN (COALESCE(code,'') ILIKE (($1::text) || '%') OR COALESCE(text,'') ILIKE (($1::text) || '%')) THEN 0
-        ELSE 1
-      END,
-      pos NULLS LAST,
-      count DESC NULLS LAST,
-      text ASC NULLS LAST
-    LIMIT 50
-  `
+  // Create cache key
+  const cacheKey = { endpoint: 'industries', query: q || 'all' }
+  
+  // Check cache first (5 minute TTL for industry data)
+  const cached = apiCache.get<any[]>(cacheKey)
+  if (cached) {
+    return NextResponse.json(cached)
+  }
 
-  const params: (string | null)[] = [q || null]
+  let sql: string
+  let params: (string | null)[]
+
+  if (!q) {
+    // No search query - use a faster approach with LIMIT on the table scan
+    sql = `
+      SELECT DISTINCT
+        "industryCode1" as code,
+        "industryText1" as text,
+        1 as count
+      FROM "Business" 
+      WHERE "industryCode1" IS NOT NULL 
+        AND "industryText1" IS NOT NULL
+        AND (COALESCE("registeredInForetaksregisteret", false) = true 
+             OR "orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
+      ORDER BY "industryCode1" ASC
+      LIMIT 100
+    `
+    params = []
+  } else {
+    // Search query - target specific matches only
+    sql = `
+      SELECT DISTINCT
+        "industryCode1" as code,
+        "industryText1" as text,
+        1 as count,
+        CASE
+          WHEN "industryCode1" ILIKE $1 OR "industryText1" ILIKE $1 THEN 0
+          ELSE 1
+        END as relevance
+      FROM "Business" 
+      WHERE "industryCode1" IS NOT NULL 
+        AND "industryText1" IS NOT NULL
+        AND (COALESCE("registeredInForetaksregisteret", false) = true 
+             OR "orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
+        AND ("industryCode1" ILIKE $2 OR "industryText1" ILIKE $2)
+      ORDER BY relevance ASC, "industryCode1" ASC
+      LIMIT 50
+    `
+    params = [`${q}%`, `%${q}%`]
+  }
+
+  const start = Date.now()
   const { rows } = await query(sql, params)
+  console.log(`[industries] Query took ${Date.now() - start}ms for query: "${q || 'all'}"`)
+
+  // Cache results for 5 minutes
+  apiCache.set(cacheKey, rows, 5 * 60 * 1000)
+  
   return NextResponse.json(rows)
 }

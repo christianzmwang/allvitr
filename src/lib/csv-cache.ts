@@ -10,7 +10,7 @@ type CsvData = {
 class CsvCache {
   private cache = new Map<string, { set: Set<string>; map: Map<string, CsvData> }>()
   private lastLoaded = new Map<string, number>()
-  private readonly CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+  private readonly CACHE_TTL = 30 * 60 * 1000 // 30 minutes - longer cache since CSV files don't change often
 
   private splitCsvLine(line: string): string[] {
     const out: string[] = []
@@ -126,7 +126,6 @@ class CsvCache {
 // Singleton instance
 export const csvCache = new CsvCache()
 
-// Preload on module initialization in production
-if (process.env.NODE_ENV === 'production') {
-  csvCache.preloadAll()
-}
+// Preload on module initialization in both development and production
+// This prevents the slow loading on first request
+csvCache.preloadAll()
