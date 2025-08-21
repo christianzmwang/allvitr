@@ -5,12 +5,17 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 export const preferredRegion = ['fra1', 'arn1', 'cdg1']
 import { query } from '@/lib/db'
+import * as fs from 'fs'
 
 export async function GET(req: Request) {
   if (!dbConfigured) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
 	const { searchParams } = new URL(req.url)
+	const source = (searchParams.get('source')?.trim() || 'general').toLowerCase()
+	const offset = Math.max(0, parseInt(searchParams.get('offset') || '0', 10) || 0)
+	const skipCount = ['1','true'].includes((searchParams.get('skipCount') || '').toLowerCase())
+	const countOnly = ['1','true'].includes((searchParams.get('countOnly') || '').toLowerCase())
 	const singleIndustry = searchParams.get('industry')?.trim() || ''
 	const industries = [
 		...searchParams.getAll('industries').map((s) => s.trim()).filter(Boolean),
@@ -143,6 +148,8 @@ export async function GET(req: Request) {
 		)
 	`
 
+	const isCsvSource = source === 'accounting' || source === 'consulting'
+
 	const itemsSql = `
 		${baseCte}
 		SELECT
@@ -183,17 +190,140 @@ export async function GET(req: Request) {
 			b."allvitrScore" as "allvitrScore"
 		FROM businesses b
 		ORDER BY b."updatedAt" DESC
-		LIMIT 100
+		${isCsvSource ? '' : `LIMIT 100 OFFSET ${offset}`}
 	`
 
 	const countSql = `
 		${baseCte}
 		SELECT COUNT(*)::int as total FROM businesses
 	`
-	const [itemsRes, countRes] = await Promise.all([
-		query(itemsSql, params),
-		query<{ total: number }>(countSql, params),
-	])
-	const total = countRes.rows?.[0]?.total ?? 0
-	return NextResponse.json({ items: itemsRes.rows, total })
+	let itemsRes: { rows: any[] } = { rows: [] }
+	let total = 0
+
+	if (countOnly) {
+		if (isCsvSource) {
+			// Need full item set to compute CSV-based total
+			itemsRes = await query(itemsSql, params)
+		} else {
+			const countRes = await query<{ total: number }>(countSql, params)
+			total = countRes.rows?.[0]?.total ?? 0
+		}
+	} else {
+		// Normal item fetch always needed
+		itemsRes = await query(itemsSql, params)
+		if (!skipCount) {
+			const countRes = await query<{ total: number }>(countSql, params)
+			total = countRes.rows?.[0]?.total ?? 0
+		}
+	}
+
+	// Optional CSV-based source filtering without touching the database
+	const splitCsvLine = (line: string): string[] => {
+		const out: string[] = []
+		let cur = ''
+		let inQuotes = false
+		for (let i = 0; i < line.length; i++) {
+			const ch = line[i]
+			if (ch === '"') {
+				if (inQuotes && line[i + 1] === '"') {
+					cur += '"'
+					i++
+				} else {
+					inQuotes = !inQuotes
+				}
+			} else if (ch === ',' && !inQuotes) {
+				out.push(cur)
+				cur = ''
+			} else {
+				cur += ch
+			}
+		}
+		out.push(cur)
+		return out
+	}
+
+	const loadOrgNumbers = (csvAbsPath: string): Set<string> => {
+		try {
+			const content = fs.readFileSync(csvAbsPath, 'utf8')
+			const lines = content.split(/\r?\n/).filter(Boolean)
+			if (lines.length === 0) return new Set<string>()
+			const header = lines.shift() as string
+			const columns = splitCsvLine(header)
+			const orgIdx = columns.findIndex((c) => c.trim().toLowerCase() === 'orgnr')
+			const set = new Set<string>()
+			if (orgIdx === -1) return set
+			for (const line of lines) {
+				const cols = splitCsvLine(line)
+				const org = (cols[orgIdx] || '').trim()
+				if (org) set.add(org)
+			}
+			return set
+		} catch {
+			return new Set<string>()
+		}
+	}
+
+	const loadCsvInfo = (csvAbsPath: string): { set: Set<string>; map: Map<string, { recommendation: string | null; rationale: string | null; allvitrScore: number | null }> } => {
+		try {
+			const content = fs.readFileSync(csvAbsPath, 'utf8')
+			const lines = content.split(/\r?\n/).filter(Boolean)
+			if (lines.length === 0) return { set: new Set<string>(), map: new Map() }
+			const header = lines.shift() as string
+			const columns = splitCsvLine(header).map(c => c.trim().toLowerCase())
+			const orgIdx = columns.findIndex((c) => c === 'orgnr')
+			const recIdx = columns.findIndex((c) => c === 'recommendation')
+			const ratIdx = columns.findIndex((c) => c === 'rationale')
+			const scoreIdx = columns.findIndex((c) => c === 'allvitr_score')
+			const set = new Set<string>()
+			const map = new Map<string, { recommendation: string | null; rationale: string | null; allvitrScore: number | null }>()
+			if (orgIdx === -1) return { set, map }
+			for (const line of lines) {
+				const cols = splitCsvLine(line)
+				const org = (cols[orgIdx] || '').trim()
+				if (!org) continue
+				set.add(org)
+				const recommendation = recIdx >= 0 ? (cols[recIdx] || '').trim() : ''
+				const rationale = ratIdx >= 0 ? (cols[ratIdx] || '').trim() : ''
+				const scoreRaw = scoreIdx >= 0 ? (cols[scoreIdx] || '').trim() : ''
+				const allvitrScore = scoreRaw ? Number.parseFloat(scoreRaw) : NaN
+				map.set(org, {
+					recommendation: recommendation || null,
+					rationale: rationale || null,
+					allvitrScore: Number.isFinite(allvitrScore) ? allvitrScore : null,
+				})
+			}
+			return { set, map }
+		} catch {
+			return { set: new Set<string>(), map: new Map() }
+		}
+	}
+
+	let filteredItems = itemsRes.rows as any[]
+	if (isCsvSource) {
+		const contaPath = process.cwd() + '/public/csv/contaData.csv'
+		const konsulentPath = process.cwd() + '/public/csv/konsulentData.csv'
+		const info = source === 'accounting' ? loadCsvInfo(contaPath) : loadCsvInfo(konsulentPath)
+		filteredItems = filteredItems.filter((row) => info.set.has(String(row.orgNumber)))
+		// Merge CSV recommendation, rationale, and score, overriding DB values when CSV has them
+		filteredItems = filteredItems.map((row) => {
+			const org = String(row.orgNumber)
+			const m = info.map.get(org)
+			if (!m) return row
+			const next = { ...row }
+			if (m.recommendation && m.recommendation.trim()) next.recommendation = m.recommendation
+			if (m.rationale && m.rationale.trim()) next.rationale = m.rationale
+			if (m.allvitrScore != null) next.allvitrScore = m.allvitrScore
+			return next
+		})
+	}
+
+	// Apply pagination for CSV sources at response level; general uses SQL LIMIT/OFFSET
+	if (countOnly) {
+		const responseTotal = isCsvSource ? filteredItems.length : total
+		return NextResponse.json({ items: [], total: responseTotal })
+	}
+
+	const responseItems = isCsvSource ? filteredItems.slice(offset, offset + 100) : filteredItems
+	const responseTotal = isCsvSource ? filteredItems.length : total
+	return NextResponse.json({ items: responseItems, total: responseTotal })
 }

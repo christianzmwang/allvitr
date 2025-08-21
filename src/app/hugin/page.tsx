@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 
+const numberFormatter = new Intl.NumberFormat('no-NO')
+
 function useDebounce<T>(value: T, delay = 250) {
 	const [debounced, setDebounced] = useState(value)
 	useEffect(() => {
@@ -53,12 +55,37 @@ export default function BrregPage() {
 	const [total, setTotal] = useState<number>(0)
 	const [loading, setLoading] = useState(true)
 	const [industryQuery, setIndustryQuery] = useState('')
-	const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([])
+	const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>(() => {
+		if (typeof window === 'undefined') return []
+		const sp = new URLSearchParams(window.location.search)
+		const inds = sp.getAll('industries')
+		return inds.map(v => ({ value: v, label: v }))
+	})
 	const [suggestions, setSuggestions] = useState<IndustryOpt[]>([])
-	const [selectedRevenueRange, setSelectedRevenueRange] = useState<string>('')
-	const [selectedRecommendation, setSelectedRecommendation] = useState<string>('')
-	const [selectedScoreRange, setSelectedScoreRange] = useState<string>('')
-	const [sortBy, setSortBy] = useState<string>('updatedAt')
+	const [selectedRevenueRange, setSelectedRevenueRange] = useState<string>(() => {
+		if (typeof window === 'undefined') return ''
+		return new URLSearchParams(window.location.search).get('revenueRange') || ''
+	})
+	const [selectedRecommendation, setSelectedRecommendation] = useState<string>(() => {
+		if (typeof window === 'undefined') return ''
+		return new URLSearchParams(window.location.search).get('recommendation') || ''
+	})
+	const [selectedScoreRange, setSelectedScoreRange] = useState<string>(() => {
+		if (typeof window === 'undefined') return ''
+		return new URLSearchParams(window.location.search).get('scoreRange') || ''
+	})
+	const [selectedSource, setSelectedSource] = useState<'general' | 'accounting' | 'consulting'>(() => {
+		if (typeof window === 'undefined') return 'general'
+		const v = new URLSearchParams(window.location.search).get('source') || 'general'
+		return v === 'general' || v === 'accounting' || v === 'consulting' ? v : 'general'
+	})
+	const [sortBy, setSortBy] = useState<string>(() => {
+		if (typeof window === 'undefined') return 'updatedAt'
+		const v = new URLSearchParams(window.location.search).get('sortBy') || 'updatedAt'
+		const allowed = new Set(['updatedAt', 'allvitrScore', 'allvitrScoreAsc', 'name', 'revenue', 'employees'])
+		return allowed.has(v) ? v : 'updatedAt'
+	})
+	const [offset, setOffset] = useState<number>(0)
 	const debouncedIndustry = useDebounce(industryQuery, 250)
 	const inputRef = useRef<HTMLInputElement | null>(null)
 	const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -78,8 +105,18 @@ export default function BrregPage() {
 		if (selectedScoreRange) {
 			sp.append('scoreRange', selectedScoreRange)
 		}
+		if (selectedSource) {
+			sp.append('source', selectedSource)
+		}
+		if (offset) {
+			sp.append('offset', String(offset))
+		}
+		// On initial industry search changes, show items fast and defer counting
+		if (selectedIndustries.length > 0 && offset === 0) {
+			sp.append('skipCount', '1')
+		}
 		return sp.toString() ? `?${sp.toString()}` : ''
-	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, offset])
 
 	const addSelectedIndustry = (value: string, label?: string) => {
 		const v = value.trim()
@@ -101,15 +138,37 @@ export default function BrregPage() {
 			.then(r => r.json())
 			.then((res: BusinessesResponse | Business[]) => {
 				if (Array.isArray(res)) {
-					setData(res)
+					// Legacy shape
+					setData(prev => (offset > 0 ? [...prev, ...res] : res))
 					setTotal(res.length)
 				} else {
-					setData(res.items)
-					setTotal(res.total)
+					setData(prev => (offset > 0 ? [...prev, ...res.items] : res.items))
+					// If server skipped count, keep current total for snappy UI
+					if (typeof res.total === 'number' && res.total > 0) setTotal(res.total)
 				}
 			})
 			.finally(() => setLoading(false))
 	}, [queryParam])
+
+	// Background count refresh when industries change and we asked server to skip count
+	useEffect(() => {
+		if (selectedIndustries.length === 0) return
+		const sp = new URLSearchParams(queryParam.replace(/^\?/, ''))
+		sp.delete('skipCount')
+		sp.set('countOnly', '1')
+		fetch('/api/businesses?' + sp.toString())
+			.then(r => r.json())
+			.then((res: any) => {
+				if (typeof res.total === 'number') setTotal(res.total)
+			})
+			.catch(() => {})
+	}, [selectedIndustries, queryParam])
+
+	// Reset pagination when filters change
+	useEffect(() => {
+		setOffset(0)
+		setData([])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource])
 
 	useEffect(() => {
 		const url = debouncedIndustry
@@ -154,7 +213,7 @@ export default function BrregPage() {
 		return () => document.removeEventListener('mousedown', handleDown)
 	}, [dropdownOpen])
 
-	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : new Intl.NumberFormat('no-NO').format(Number(v)))
+	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : numberFormatter.format(Number(v)))
 
 	// Sort data based on selected criteria
 	const sortedData = useMemo(() => {
@@ -180,7 +239,7 @@ export default function BrregPage() {
 			{/* Header */}
 			<div className="bg-black border-b border-white/10">
 				<div className="py-4 px-6">
-					<h1 className="text-2xl font-bold">Allvitr / <span className="text-red-600">Hugin</span></h1>
+					<h1 className="text-xl font-bold">Allvitr / <span className="text-red-600">Hugin</span></h1>
 				</div>
 			</div>
 
@@ -189,6 +248,24 @@ export default function BrregPage() {
 				<div className="w-80 bg-black border-r border-white/10 min-h-screen p-6">
 					<div className="sticky top-6">
 						<h2 className="text-xl font-semibold mb-6">Parameters</h2>
+						{/* Source Filter */}
+						<div className="mb-6">
+							<label className="block text-sm font-medium mb-2">Industry</label>
+							<div className="flex flex-col items-start gap-2">
+								<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'general' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+									<input type="radio" name="srcSide" className="sr-only" checked={selectedSource === 'general'} onChange={() => setSelectedSource('general')} />
+									<span>General</span>
+								</label>
+								<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'accounting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+									<input type="radio" name="srcSide" className="sr-only" checked={selectedSource === 'accounting'} onChange={() => setSelectedSource('accounting')} />
+									<span>Accounting</span>
+								</label>
+								<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'consulting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+									<input type="radio" name="srcSide" className="sr-only" checked={selectedSource === 'consulting'} onChange={() => setSelectedSource('consulting')} />
+									<span>Consulting</span>
+								</label>
+							</div>
+						</div>
 						
 						{/* Recommendation Filter */}
 						<div className="mb-6">
@@ -380,6 +457,23 @@ export default function BrregPage() {
 										)}
 									</div>
 								</div>
+								<div className="hidden">
+									<h3 className="text-lg font-semibold mb-4">Source Filter</h3>
+									<div className="flex items-center gap-3">
+										<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'general' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+											<input type="radio" name="src" className="sr-only" checked={selectedSource === 'general'} onChange={() => setSelectedSource('general')} />
+											<span>General</span>
+										</label>
+										<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'accounting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+											<input type="radio" name="src" className="sr-only" checked={selectedSource === 'accounting'} onChange={() => setSelectedSource('accounting')} />
+											<span>Accounting</span>
+										</label>
+										<label className={`px-3 py-2 border cursor-pointer ${selectedSource === 'consulting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}>
+											<input type="radio" name="src" className="sr-only" checked={selectedSource === 'consulting'} onChange={() => setSelectedSource('consulting')} />
+											<span>Consulting</span>
+										</label>
+									</div>
+								</div>
 								<div>
 									<h3 className="text-lg font-semibold mb-4">Revenue Filter</h3>
 									<div>
@@ -426,11 +520,12 @@ export default function BrregPage() {
 						<div className="space-y-4">
 							{sortedData.map(b => (
 								<div key={b.orgNumber} className={`border p-6 transition-all hover:shadow-lg ${
+									(b.allvitrScore != null) ? 'border-white/10 bg-gray-900 hover:bg-gray-800' :
 									b.recommendation === 'Reach out now' ? 'border-green-500 bg-green-900/10 hover:bg-green-900/20' :
 									b.recommendation === 'Warm outreach' ? 'border-blue-500 bg-blue-900/10 hover:bg-blue-900/20' :
 									b.recommendation === 'Monitor' ? 'border-yellow-500 bg-yellow-900/10 hover:bg-yellow-900/20' :
 									'border-white/10 bg-gray-900 hover:bg-gray-800'
-								}`}>
+								}`}> 
 									<div className="flex justify-between items-start mb-4">
 										<div className="flex-1">
 											<h3 className="text-xl font-semibold mb-2">{b.name}</h3>
@@ -466,7 +561,7 @@ export default function BrregPage() {
 													{b.recommendation}
 												</span>
 											)}
-											{b.allvitrScore && (
+											{(b.allvitrScore != null) && (
 												<div className="text-center">
 													<div className="text-2xl font-bold text-yellow-400">
 														{b.allvitrScore.toFixed(2)}
@@ -481,14 +576,15 @@ export default function BrregPage() {
 									{b.recommendation && b.rationale && (
 										<div className="mt-4 pt-4 border-t border-white/10">
 											<div className="text-sm">
-												<span className="font-medium text-gray-300">Rationale:</span>
+												<span className="font-medium text-gray-300 block mb-2">Rationale:</span>
 											{(() => {
 													const all = (b.rationale || '')
 														.split(/\r?\n|;|(?<=\.)\s+/)
 														.map(s => s.trim())
 														.filter(Boolean)
 													const isExpanded = !!expandedRationalOrgs[b.orgNumber]
-													const items = all
+													const source = isExpanded ? all : all.slice(0, 2)
+													const items = source
 														.map((line, idx) => {
 															let cleaned = String(line).replace(/\(n\/a\)/gi, '').trim()
 															let impactDisplay: string | null = null
@@ -501,7 +597,7 @@ export default function BrregPage() {
 																impactDisplay = signed[1].replace(/\s+/g, '')
 																badgeColor = impactDisplay.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
 															} else {
-																const labeled = cleaned.match(/impact\s*direction\s*:?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
+																const labeled = cleaned.match(/impact\s*direction\s*: ?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
 																if (labeled) {
 																	impactRawForRemoval = labeled[1]
 																	const normalized = labeled[1].replace(/\s+/g, '')
@@ -528,7 +624,7 @@ export default function BrregPage() {
 															return { key: idx, text: cleaned, impactDisplay, badgeColor }
 														})
 
-													const rendered = (isExpanded ? items : items.slice(0, 2)).map((it, i) => {
+													const rendered = items.map((it, i) => {
 														const isHalf = !isExpanded && i === 1 && items.length > 1
 														return (
 															<div key={it.key} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
@@ -543,7 +639,7 @@ export default function BrregPage() {
 													return (
 														<>
 															{rendered}
-															{items.length > 2 && (
+															{all.length > 2 && (
 																<button
 																	onClick={() => setExpandedRationalOrgs(prev => ({ ...prev, [b.orgNumber]: !isExpanded }))}
 																	className="mt-2 self-start inline-flex items-center gap-2 px-2 py-1 bg-gray-800 border border-white/10 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-xs"
@@ -561,6 +657,12 @@ export default function BrregPage() {
 							))}
 						</div>
 					)}
+					<div className="mt-8 flex items-center justify-between gap-4">
+						<button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="px-4 py-2 border border-white/10 bg-gray-900 hover:bg-gray-800 text-sm">Go to top</button>
+						{data.length < total && (
+							<button onClick={() => setOffset(prev => prev + 100)} className="ml-auto px-4 py-2 border border-white/10 bg-gray-900 hover:bg-gray-800 text-sm">Load more</button>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
