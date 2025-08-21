@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, memo, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 
 const numberFormatter = new Intl.NumberFormat('no-NO')
@@ -49,6 +49,159 @@ type IndustryOpt = { code: string | null; text: string | null; count: number }
 
 type BusinessesResponse = { items: Business[]; total: number }
 type SelectedIndustry = { value: string; label: string }
+
+// Memoized business card component for better performance
+const BusinessCard = memo(({ 
+	business, 
+	numberFormatter, 
+	expandedRationalOrgs, 
+	setExpandedRationalOrgs 
+}: {
+	business: Business
+	numberFormatter: Intl.NumberFormat
+	expandedRationalOrgs: Record<string, boolean>
+	setExpandedRationalOrgs: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+}) => {
+	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : numberFormatter.format(Number(v)))
+	
+	return (
+		<div className={`border p-6 transition-all hover:shadow-lg ${
+			(business.allvitrScore != null) ? 'border-white/10 bg-gray-900 hover:bg-gray-800' :
+			business.recommendation === 'Reach out now' ? 'border-green-500 bg-green-900/10 hover:bg-green-900/20' :
+			business.recommendation === 'Warm outreach' ? 'border-blue-500 bg-blue-900/10 hover:bg-blue-900/20' :
+			business.recommendation === 'Monitor' ? 'border-yellow-500 bg-yellow-900/10 hover:bg-yellow-900/20' :
+			'border-white/10 bg-gray-900 hover:bg-gray-800'
+		}`}> 
+			<div className="flex justify-between items-start mb-4">
+				<div className="flex-1">
+					<h3 className="text-xl font-semibold mb-2">{business.name}</h3>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+						<div>
+							<div className="mb-2"><span className="font-medium">Org:</span> {business.orgNumber}</div>
+							<div className="mb-2"><span className="font-medium">CEO:</span> {business.ceo || '—'}</div>
+							<div className="mb-2"><span className="font-medium">Employees:</span> {business.employees ?? '—'}</div>
+							<div className="mb-2"><span className="font-medium">Revenue:</span> {business.revenue == null ? '—' : `${fmt(business.revenue)}${business.fiscalYear ? ` (FY ${business.fiscalYear})` : ''}`}</div>
+						</div>
+						<div>
+							<div className="mb-2"><span className="font-medium">Address:</span> {[business.addressStreet, business.addressPostalCode, business.addressCity].filter(Boolean).join(', ') || '—'}</div>
+							<div className="mb-2"><span className="font-medium">Website:</span> {business.website ? (
+								<a className="text-sky-400 underline hover:text-sky-300" href={business.website} target="_blank" rel="noreferrer">
+									{business.website}
+								</a>
+							) : (
+								'—'
+							)}</div>
+							<div className="mb-2"><span className="font-medium">Industry:</span> {business.industryCode1 ? `${business.industryCode1} ${business.industryText1 || ''}`.trim() : '—'}</div>
+							<div className="mb-2"><span className="font-medium">Sector:</span> {business.sectorCode ? `${business.sectorCode} ${business.sectorText || ''}`.trim() : '—'}</div>
+						</div>
+					</div>
+				</div>
+				<div className="ml-6 flex flex-col items-end gap-3">
+					{business.recommendation && (
+						<span className={`px-3 py-2 text-sm font-medium ${
+							business.recommendation === 'Reach out now' ? 'bg-green-600 text-white' :
+							business.recommendation === 'Warm outreach' ? 'bg-blue-600 text-white' :
+							business.recommendation === 'Monitor' ? 'bg-yellow-600 text-white' :
+							'bg-gray-600 text-white'
+						}`}>
+							{business.recommendation}
+						</span>
+					)}
+					{(business.allvitrScore != null) && (
+						<div className="text-center">
+							<div className="text-2xl font-bold text-yellow-400">
+								{business.allvitrScore.toFixed(2)}
+							</div>
+							<div className="text-xs text-yellow-400/70">Hugin Score</div>
+						</div>
+					)}
+				</div>
+			</div>
+			
+			{/* Recommendation Rationale */}
+			{business.recommendation && business.rationale && (
+				<div className="mt-4 pt-4 border-t border-white/10">
+					<div className="text-sm">
+						<span className="font-medium text-gray-300 block mb-2">Rationale:</span>
+					{(() => {
+							const all = (business.rationale || '')
+								.split(/\r?\n|;|(?<=\.)\s+/)
+								.map(s => s.trim())
+								.filter(Boolean)
+							const isExpanded = !!expandedRationalOrgs[business.orgNumber]
+							const source = isExpanded ? all : all.slice(0, 2)
+							const items = source
+								.map((line, idx) => {
+									let cleaned = String(line).replace(/\(n\/a\)/gi, '').trim()
+									let impactDisplay: string | null = null
+									let impactRawForRemoval: string | null = null
+									let badgeColor = 'bg-gray-600'
+
+									const signed = cleaned.match(/([+-]\s*\d+(?:[.,]\d+)?%?)/)
+									if (signed) {
+										impactRawForRemoval = signed[1]
+										impactDisplay = signed[1].replace(/\s+/g, '')
+										badgeColor = impactDisplay.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
+									} else {
+										const labeled = cleaned.match(/impact\s*direction\s*: ?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
+										if (labeled) {
+											impactRawForRemoval = labeled[1]
+											const normalized = labeled[1].replace(/\s+/g, '')
+											if (/^0([.,]0+)?%?$/.test(normalized)) {
+												badgeColor = 'bg-gray-600'
+												impactDisplay = '0'
+											} else {
+												impactDisplay = normalized
+												badgeColor = normalized.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
+											}
+										}
+									}
+
+									cleaned = cleaned.replace(/impact\s*direction\s*:?/i, '').trim()
+									if (impactRawForRemoval) {
+										const esc = impactRawForRemoval.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+										cleaned = cleaned
+											.replace(new RegExp(esc), '')
+											.replace(/\(\s*\)/g, '')
+											.replace(/\s{2,}/g, ' ')
+											.trim()
+									}
+
+									return { key: idx, text: cleaned, impactDisplay, badgeColor }
+								})
+
+							const rendered = items.map((it, i) => {
+								const isHalf = !isExpanded && i === 1 && items.length > 1
+								return (
+									<div key={it.key} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
+										<div className="flex-1 overflow-hidden" style={isHalf ? ({ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as CSSProperties) : undefined}>{it.text}</div>
+										{it.impactDisplay && (
+											<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${it.badgeColor} text-white font-mono`}>{it.impactDisplay}</span>
+										)}
+									</div>
+								)
+							})
+
+							return (
+								<>
+									{rendered}
+									{all.length > 2 && (
+										<button
+											onClick={() => setExpandedRationalOrgs(prev => ({ ...prev, [business.orgNumber]: !isExpanded }))}
+											className="mt-2 self-start inline-flex items-center gap-2 px-2 py-1 bg-gray-800 border border-white/10 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-xs"
+										>
+											{isExpanded ? '▾ Show less' : '▸ Show all'}
+										</button>
+									)}
+								</>
+							)
+						})()}
+					</div>
+				</div>
+			)}
+		</div>
+	)
+})
 
 export default function BrregPage() {
 	const [data, setData] = useState<Business[]>([])
@@ -108,6 +261,9 @@ export default function BrregPage() {
 		if (selectedSource) {
 			sp.append('source', selectedSource)
 		}
+		if (sortBy) {
+			sp.append('sortBy', sortBy)
+		}
 		if (offset) {
 			sp.append('offset', String(offset))
 		}
@@ -162,13 +318,13 @@ export default function BrregPage() {
 				if (typeof res.total === 'number') setTotal(res.total)
 			})
 			.catch(() => {})
-	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, offset])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, sortBy, offset])
 
-	// Reset pagination when filters change
+	// Reset pagination when filters or sorting change
 	useEffect(() => {
 		setOffset(0)
 		setData([])
-	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource])
+	}, [selectedIndustries, selectedRevenueRange, selectedRecommendation, selectedScoreRange, selectedSource, sortBy])
 
 	useEffect(() => {
 		const url = debouncedIndustry
@@ -215,24 +371,8 @@ export default function BrregPage() {
 
 	const fmt = (v: number | string | null | undefined) => (v === null || v === undefined ? '—' : numberFormatter.format(Number(v)))
 
-	// Sort data based on selected criteria
-	const sortedData = useMemo(() => {
-		const sorted = [...data]
-		switch (sortBy) {
-			case 'allvitrScore':
-				return sorted.sort((a, b) => (b.allvitrScore || 0) - (a.allvitrScore || 0))
-			case 'allvitrScoreAsc':
-				return sorted.sort((a, b) => (a.allvitrScore || 0) - (b.allvitrScore || 0))
-			case 'name':
-				return sorted.sort((a, b) => a.name.localeCompare(b.name))
-			case 'revenue':
-				return sorted.sort((a, b) => (Number(b.revenue) || 0) - (Number(a.revenue) || 0))
-			case 'employees':
-				return sorted.sort((a, b) => (b.employees || 0) - (a.employees || 0))
-			default:
-				return sorted
-		}
-	}, [data, sortBy])
+	// Data is now sorted server-side, no need for client-side sorting
+	const sortedData = data
 
 	return (
 		<div className="min-h-screen bg-black text-white">
@@ -518,142 +658,14 @@ export default function BrregPage() {
 						</div>
 					) : (
 						<div className="space-y-4">
-							{sortedData.map(b => (
-								<div key={b.orgNumber} className={`border p-6 transition-all hover:shadow-lg ${
-									(b.allvitrScore != null) ? 'border-white/10 bg-gray-900 hover:bg-gray-800' :
-									b.recommendation === 'Reach out now' ? 'border-green-500 bg-green-900/10 hover:bg-green-900/20' :
-									b.recommendation === 'Warm outreach' ? 'border-blue-500 bg-blue-900/10 hover:bg-blue-900/20' :
-									b.recommendation === 'Monitor' ? 'border-yellow-500 bg-yellow-900/10 hover:bg-yellow-900/20' :
-									'border-white/10 bg-gray-900 hover:bg-gray-800'
-								}`}> 
-									<div className="flex justify-between items-start mb-4">
-										<div className="flex-1">
-											<h3 className="text-xl font-semibold mb-2">{b.name}</h3>
-											<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
-												<div>
-													<div className="mb-2"><span className="font-medium">Org:</span> {b.orgNumber}</div>
-													<div className="mb-2"><span className="font-medium">CEO:</span> {b.ceo || '—'}</div>
-													<div className="mb-2"><span className="font-medium">Employees:</span> {b.employees ?? '—'}</div>
-													<div className="mb-2"><span className="font-medium">Revenue:</span> {b.revenue == null ? '—' : `${fmt(b.revenue)}${b.fiscalYear ? ` (FY ${b.fiscalYear})` : ''}`}</div>
-												</div>
-												<div>
-													<div className="mb-2"><span className="font-medium">Address:</span> {[b.addressStreet, b.addressPostalCode, b.addressCity].filter(Boolean).join(', ') || '—'}</div>
-													<div className="mb-2"><span className="font-medium">Website:</span> {b.website ? (
-														<a className="text-sky-400 underline hover:text-sky-300" href={b.website} target="_blank" rel="noreferrer">
-															{b.website}
-														</a>
-													) : (
-														'—'
-													)}</div>
-													<div className="mb-2"><span className="font-medium">Industry:</span> {b.industryCode1 ? `${b.industryCode1} ${b.industryText1 || ''}`.trim() : '—'}</div>
-													<div className="mb-2"><span className="font-medium">Sector:</span> {b.sectorCode ? `${b.sectorCode} ${b.sectorText || ''}`.trim() : '—'}</div>
-												</div>
-											</div>
-										</div>
-										<div className="ml-6 flex flex-col items-end gap-3">
-											{b.recommendation && (
-												<span className={`px-3 py-2 text-sm font-medium ${
-													b.recommendation === 'Reach out now' ? 'bg-green-600 text-white' :
-													b.recommendation === 'Warm outreach' ? 'bg-blue-600 text-white' :
-													b.recommendation === 'Monitor' ? 'bg-yellow-600 text-white' :
-													'bg-gray-600 text-white'
-												}`}>
-													{b.recommendation}
-												</span>
-											)}
-											{(b.allvitrScore != null) && (
-												<div className="text-center">
-													<div className="text-2xl font-bold text-yellow-400">
-														{b.allvitrScore.toFixed(2)}
-													</div>
-													<div className="text-xs text-yellow-400/70">Hugin Score</div>
-												</div>
-											)}
-										</div>
-									</div>
-									
-									{/* Recommendation Rationale */}
-									{b.recommendation && b.rationale && (
-										<div className="mt-4 pt-4 border-t border-white/10">
-											<div className="text-sm">
-												<span className="font-medium text-gray-300 block mb-2">Rationale:</span>
-											{(() => {
-													const all = (b.rationale || '')
-														.split(/\r?\n|;|(?<=\.)\s+/)
-														.map(s => s.trim())
-														.filter(Boolean)
-													const isExpanded = !!expandedRationalOrgs[b.orgNumber]
-													const source = isExpanded ? all : all.slice(0, 2)
-													const items = source
-														.map((line, idx) => {
-															let cleaned = String(line).replace(/\(n\/a\)/gi, '').trim()
-															let impactDisplay: string | null = null
-															let impactRawForRemoval: string | null = null
-															let badgeColor = 'bg-gray-600'
-
-															const signed = cleaned.match(/([+-]\s*\d+(?:[.,]\d+)?%?)/)
-															if (signed) {
-																impactRawForRemoval = signed[1]
-																impactDisplay = signed[1].replace(/\s+/g, '')
-																badgeColor = impactDisplay.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
-															} else {
-																const labeled = cleaned.match(/impact\s*direction\s*: ?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i)
-																if (labeled) {
-																	impactRawForRemoval = labeled[1]
-																	const normalized = labeled[1].replace(/\s+/g, '')
-																	if (/^0([.,]0+)?%?$/.test(normalized)) {
-																		badgeColor = 'bg-gray-600'
-																		impactDisplay = '0'
-																	} else {
-																		impactDisplay = normalized
-																		badgeColor = normalized.trim().startsWith('-') ? 'bg-red-600' : 'bg-green-600'
-																	}
-																}
-															}
-
-															cleaned = cleaned.replace(/impact\s*direction\s*:?/i, '').trim()
-															if (impactRawForRemoval) {
-																const esc = impactRawForRemoval.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-																cleaned = cleaned
-																	.replace(new RegExp(esc), '')
-																	.replace(/\(\s*\)/g, '')
-																	.replace(/\s{2,}/g, ' ')
-																	.trim()
-															}
-
-															return { key: idx, text: cleaned, impactDisplay, badgeColor }
-														})
-
-													const rendered = items.map((it, i) => {
-														const isHalf = !isExpanded && i === 1 && items.length > 1
-														return (
-															<div key={it.key} className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3">
-																<div className="flex-1 overflow-hidden" style={isHalf ? ({ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as CSSProperties) : undefined}>{it.text}</div>
-																{it.impactDisplay && (
-																	<span className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${it.badgeColor} text-white font-mono`}>{it.impactDisplay}</span>
-																)}
-															</div>
-														)
-													})
-
-													return (
-														<>
-															{rendered}
-															{all.length > 2 && (
-																<button
-																	onClick={() => setExpandedRationalOrgs(prev => ({ ...prev, [b.orgNumber]: !isExpanded }))}
-																	className="mt-2 self-start inline-flex items-center gap-2 px-2 py-1 bg-gray-800 border border-white/10 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-xs"
-																>
-																	{isExpanded ? '▾ Show less' : '▸ Show all'}
-																</button>
-															)}
-														</>
-													)
-												})()}
-											</div>
-										</div>
-									)}
-								</div>
+							{sortedData.map(business => (
+								<BusinessCard
+									key={business.orgNumber}
+									business={business}
+									numberFormatter={numberFormatter}
+									expandedRationalOrgs={expandedRationalOrgs}
+									setExpandedRationalOrgs={setExpandedRationalOrgs}
+								/>
 							))}
 						</div>
 					)}

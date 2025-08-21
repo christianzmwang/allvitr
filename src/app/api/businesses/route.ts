@@ -5,7 +5,8 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 export const preferredRegion = ['fra1', 'arn1', 'cdg1']
 import { query } from '@/lib/db'
-import * as fs from 'fs'
+import { csvCache } from '@/lib/csv-cache'
+import { apiCache } from '@/lib/api-cache'
 
 export async function GET(req: Request) {
   if (!dbConfigured) {
@@ -63,6 +64,13 @@ export async function GET(req: Request) {
 	let scoreClause = ''
 	let scoreParams: number[] = []
 	
+	// Sorting
+	const sortBy = searchParams.get('sortBy')?.trim() || 'updatedAt'
+	const allowedSorts = ['updatedAt', 'allvitrScore', 'allvitrScoreAsc', 'name', 'revenue', 'employees']
+	const validSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updatedAt'
+	
+	const isCsvSource = source === 'accounting' || source === 'consulting'
+	
 	if (scoreRange) {
 		switch (scoreRange) {
 			case '0-50':
@@ -81,6 +89,28 @@ export async function GET(req: Request) {
 				scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN'
 				scoreParams = [200]
 				break
+		}
+	}
+
+	// Create cache key from request parameters
+	const cacheParams = {
+		source,
+		offset,
+		skipCount,
+		countOnly,
+		industries: industries.sort(), // Sort for consistent cache keys
+		revenueRange,
+		recommendation,
+		scoreRange,
+		sortBy: validSortBy
+	}
+	
+	// Check cache first (skip cache for CSV sources with offset > 0 for now)
+	const shouldCache = !isCsvSource || offset === 0
+	if (shouldCache) {
+		const cached = apiCache.get<{ items: Record<string, unknown>[]; total: number }>(cacheParams)
+		if (cached) {
+			return NextResponse.json(cached)
 		}
 	}
 
@@ -115,7 +145,17 @@ export async function GET(req: Request) {
 			.replace('$SCORE_MAX', `$${scoreStartIndex + 1}`)
 	}
 
-	const baseCte = `
+	// Optimized query structure - avoid CTE when possible
+	const baseWhere = `
+		WHERE (COALESCE(b."registeredInForetaksregisteret", false) = true 
+			   OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
+		${industryClause}
+		${recommendationClause}
+		${scoreClause}
+	`
+	
+	// Only use CTE for financial data when revenue filtering is needed
+	const baseCte = revenueClause ? `
 		WITH latest_fin AS (
 			SELECT DISTINCT ON (f."businessId")
 				f."businessId",
@@ -139,19 +179,33 @@ export async function GET(req: Request) {
 				lf."employeesAvg"
 			FROM "Business" b
 			LEFT JOIN latest_fin lf ON lf."businessId" = b.id
-			WHERE
-				(COALESCE(b."registeredInForetaksregisteret", false) = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
-				${industryClause}
-				${revenueClause}
-				${recommendationClause}
-				${scoreClause}
+			${baseWhere}
+			${revenueClause}
+		)
+	` : `
+		WITH businesses AS (
+			SELECT 
+				b.*,
+				NULL::int as "fiscalYear",
+				NULL::bigint as revenue,
+				NULL::bigint as profit,
+				NULL::bigint as "totalAssets",
+				NULL::bigint as equity,
+				NULL::int as "employeesAvg"
+			FROM "Business" b
+			${baseWhere}
 		)
 	`
 
-	const isCsvSource = source === 'accounting' || source === 'consulting'
-
 	const itemsSql = `
-		${baseCte}
+		${baseCte},
+		latest_ceo AS (
+			SELECT DISTINCT ON (c."businessId")
+				c."businessId",
+				c."fullName"
+			FROM "CEO" c
+			ORDER BY c."businessId", c."fromDate" DESC NULLS LAST
+		)
 		SELECT
 			b."orgNumber" as "orgNumber",
 			b.name as "name",
@@ -160,12 +214,7 @@ export async function GET(req: Request) {
 			b."addressStreet" as "addressStreet",
 			b."addressPostalCode" as "addressPostalCode",
 			b."addressCity" as "addressCity",
-			(SELECT c."fullName"
-			 FROM "CEO" c
-			 WHERE c."businessId" = b.id
-			 ORDER BY c."fromDate" DESC NULLS LAST
-			 LIMIT 1
-			) as "ceo",
+			lc."fullName" as "ceo",
 			b."industryCode1" as "industryCode1",
 			b."industryText1" as "industryText1",
 			b."industryCode2" as "industryCode2",
@@ -189,7 +238,23 @@ export async function GET(req: Request) {
 			b.rationale as "rationale",
 			b."allvitrScore" as "allvitrScore"
 		FROM businesses b
-		ORDER BY b."updatedAt" DESC
+		LEFT JOIN latest_ceo lc ON lc."businessId" = b.id
+		ORDER BY ${(() => {
+			switch (validSortBy) {
+				case 'allvitrScore':
+					return 'b."allvitrScore" DESC NULLS LAST'
+				case 'allvitrScoreAsc':
+					return 'b."allvitrScore" ASC NULLS LAST'
+				case 'name':
+					return 'b.name ASC'
+				case 'revenue':
+					return 'b.revenue DESC NULLS LAST'
+				case 'employees':
+					return 'b.employees DESC NULLS LAST'
+				default:
+					return 'b."updatedAt" DESC'
+			}
+		})()}
 		${isCsvSource ? '' : `LIMIT 100 OFFSET ${offset}`}
 	`
 
@@ -217,83 +282,21 @@ export async function GET(req: Request) {
 		}
 	}
 
-	// Optional CSV-based source filtering without touching the database
-	const splitCsvLine = (line: string): string[] => {
-		const out: string[] = []
-		let cur = ''
-		let inQuotes = false
-		for (let i = 0; i < line.length; i++) {
-			const ch = line[i]
-			if (ch === '"') {
-				if (inQuotes && line[i + 1] === '"') {
-					cur += '"'
-					i++
-				} else {
-					inQuotes = !inQuotes
-				}
-			} else if (ch === ',' && !inQuotes) {
-				out.push(cur)
-				cur = ''
-			} else {
-				cur += ch
-			}
-		}
-		out.push(cur)
-		return out
-	}
-
-
-
-	const loadCsvInfo = (csvAbsPath: string): { set: Set<string>; map: Map<string, { recommendation: string | null; rationale: string | null; allvitrScore: number | null }> } => {
-		try {
-			const content = fs.readFileSync(csvAbsPath, 'utf8')
-			const lines = content.split(/\r?\n/).filter(Boolean)
-			if (lines.length === 0) return { set: new Set<string>(), map: new Map() }
-			const header = lines.shift() as string
-			const columns = splitCsvLine(header).map(c => c.trim().toLowerCase())
-			const orgIdx = columns.findIndex((c) => c === 'orgnr')
-			const recIdx = columns.findIndex((c) => c === 'recommendation')
-			const ratIdx = columns.findIndex((c) => c === 'rationale')
-			const scoreIdx = columns.findIndex((c) => c === 'allvitr_score')
-			const set = new Set<string>()
-			const map = new Map<string, { recommendation: string | null; rationale: string | null; allvitrScore: number | null }>()
-			if (orgIdx === -1) return { set, map }
-			for (const line of lines) {
-				const cols = splitCsvLine(line)
-				const org = (cols[orgIdx] || '').trim()
-				if (!org) continue
-				set.add(org)
-				const recommendation = recIdx >= 0 ? (cols[recIdx] || '').trim() : ''
-				const rationale = ratIdx >= 0 ? (cols[ratIdx] || '').trim() : ''
-				const scoreRaw = scoreIdx >= 0 ? (cols[scoreIdx] || '').trim() : ''
-				const allvitrScore = scoreRaw ? Number.parseFloat(scoreRaw) : NaN
-				map.set(org, {
-					recommendation: recommendation || null,
-					rationale: rationale || null,
-					allvitrScore: Number.isFinite(allvitrScore) ? allvitrScore : null,
-				})
-			}
-			return { set, map }
-		} catch {
-			return { set: new Set<string>(), map: new Map() }
-		}
-	}
+	// CSV-based source filtering using cached data
 
 	let filteredItems = itemsRes.rows as Record<string, unknown>[]
 	if (isCsvSource) {
-		const contaPath = process.cwd() + '/public/csv/contaData.csv'
-		const konsulentPath = process.cwd() + '/public/csv/konsulentData.csv'
-		const info = source === 'accounting' ? loadCsvInfo(contaPath) : loadCsvInfo(konsulentPath)
-		filteredItems = filteredItems.filter((row) => info.set.has(String(row.orgNumber)))
+		const csvData = csvCache.getCsvData(source as 'accounting' | 'consulting')
+		filteredItems = filteredItems.filter((row) => csvData.set.has(String(row.orgNumber)))
 		// Merge CSV recommendation, rationale, and score, overriding DB values when CSV has them
 		filteredItems = filteredItems.map((row) => {
 			const org = String(row.orgNumber)
-			const m = info.map.get(org)
-			if (!m) return row
+			const csvInfo = csvData.map.get(org)
+			if (!csvInfo) return row
 			const next = { ...row }
-			if (m.recommendation && m.recommendation.trim()) next.recommendation = m.recommendation
-			if (m.rationale && m.rationale.trim()) next.rationale = m.rationale
-			if (m.allvitrScore != null) next.allvitrScore = m.allvitrScore
+			if (csvInfo.recommendation && csvInfo.recommendation.trim()) next.recommendation = csvInfo.recommendation
+			if (csvInfo.rationale && csvInfo.rationale.trim()) next.rationale = csvInfo.rationale
+			if (csvInfo.allvitrScore != null) next.allvitrScore = csvInfo.allvitrScore
 			return next
 		})
 	}
@@ -301,10 +304,27 @@ export async function GET(req: Request) {
 	// Apply pagination for CSV sources at response level; general uses SQL LIMIT/OFFSET
 	if (countOnly) {
 		const responseTotal = isCsvSource ? filteredItems.length : total
-		return NextResponse.json({ items: [], total: responseTotal })
+		const countResponse = { items: [], total: responseTotal }
+		
+		// Cache count-only responses
+		if (shouldCache) {
+			apiCache.set(cacheParams, countResponse, 30 * 1000) // 30s cache for counts
+		}
+		
+		return NextResponse.json(countResponse)
 	}
 
 	const responseItems = isCsvSource ? filteredItems.slice(offset, offset + 100) : filteredItems
 	const responseTotal = isCsvSource ? filteredItems.length : total
-	return NextResponse.json({ items: responseItems, total: responseTotal })
+	
+	const response = { items: responseItems, total: responseTotal }
+	
+	// Cache the response for future requests
+	if (shouldCache) {
+		// Use shorter TTL for CSV sources since they have dynamic filtering
+		const cacheTtl = isCsvSource ? 30 * 1000 : 2 * 60 * 1000 // 30s vs 2min
+		apiCache.set(cacheParams, response, cacheTtl)
+	}
+	
+	return NextResponse.json(response)
 }
