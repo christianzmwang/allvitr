@@ -79,18 +79,47 @@ const BusinessCard = memo(
     const fmt = (v: number | string | null | undefined) =>
       v === null || v === undefined ? '—' : numberFormatter.format(Number(v))
 
-    // Lazy-load events when a company indicates it has them
+    // Lazy-load events: only when company has events AND the card is in view
   const [events, setEvents] = useState<EventItem[] | null>(null)
   const [eventsLoading, setEventsLoading] = useState(false)
   const [eventsError, setEventsError] = useState<unknown>(null)
     const [showAllEvents, setShowAllEvents] = useState(false)
     const [expandedTitleKeys, setExpandedTitleKeys] = useState<Set<string>>(new Set())
     const [expandedDescKeys, setExpandedDescKeys] = useState<Set<string>>(new Set())
+    const cardRef = useRef<HTMLDivElement | null>(null)
+    const [isInView, setIsInView] = useState(false)
+
+    // Observe visibility for better performance
+    useEffect(() => {
+      const el = cardRef.current
+      if (!el) return
+      const obs = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setIsInView(true)
+              // Once visible, we can stop observing this element
+              obs.unobserve(entry.target)
+            }
+          }
+        },
+        { root: null, rootMargin: '200px', threshold: 0.01 },
+      )
+      obs.observe(el)
+      return () => {
+        try {
+          obs.disconnect()
+        } catch {}
+      }
+    }, [])
 
     const getEventKey = (ev: EventItem, idx: number) =>
       String((ev.id ?? `${business.orgNumber}-${idx}`) as string | number)
+    // Initial lightweight fetch: only the latest event, and only once card is visible
     useEffect(() => {
       if (!business.hasEvents) return
+      if (!isInView) return
+      if (showAllEvents) return
       let cancelled = false
       const load = async () => {
         setEventsLoading(true)
@@ -98,7 +127,7 @@ const BusinessCard = memo(
         try {
           const params = new URLSearchParams()
           params.set('orgNumber', business.orgNumber)
-          params.set('limit', '50')
+          params.set('limit', '1')
           if (selectedEventTypes && selectedEventTypes.length > 0) {
             params.set('eventTypes', selectedEventTypes.join(','))
           }
@@ -128,7 +157,47 @@ const BusinessCard = memo(
       return () => {
         cancelled = true
       }
-    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(',')])
+    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView, showAllEvents])
+
+    // When user asks to show all, fetch the full list once visible
+    useEffect(() => {
+      if (!business.hasEvents) return
+      if (!isInView) return
+      if (!showAllEvents) return
+      let cancelled = false
+      const loadMore = async () => {
+        setEventsLoading(true)
+        setEventsError(null)
+        try {
+          const params = new URLSearchParams()
+          params.set('orgNumber', business.orgNumber)
+          params.set('limit', '50')
+          if (selectedEventTypes && selectedEventTypes.length > 0) {
+            params.set('eventTypes', selectedEventTypes.join(','))
+          }
+          const res = await fetch('/api/events?' + params.toString())
+          const json = (await res.json()) as { items?: EventItem[] } | EventItem[]
+          const items = Array.isArray(json) ? json : json.items || []
+          const filtered =
+            selectedEventTypes && selectedEventTypes.length > 0
+              ? (items || []).filter(
+                  (it) => !!it && !!it.source && selectedEventTypes.includes(it.source as string),
+                )
+              : items
+          if (!cancelled) setEvents(filtered)
+        } catch (e) {
+          if (!cancelled) {
+            setEventsError(e)
+          }
+        } finally {
+          if (!cancelled) setEventsLoading(false)
+        }
+      }
+      loadMore()
+      return () => {
+        cancelled = true
+      }
+    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView, showAllEvents])
 
     // Compute weighted score: sum(weight[event_type] * event.score) for selected types
     const companyScore = useMemo(() => {
@@ -148,7 +217,9 @@ const BusinessCard = memo(
     }, [events, selectedEventTypes.join(','), JSON.stringify(eventWeights)])
 
     return (
-      <div className="border p-6 transition-all hover:shadow-lg border-white/10 bg-gray-900 hover:bg-gray-800">
+  <div ref={cardRef} className={
+        'border p-6 transition-all hover:shadow-lg border-purple-500/40 bg-gray-900 hover:bg-gray-800'
+      }>
   <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
             <h3 className="text-xl font-semibold mb-2">{business.name}</h3>
@@ -422,6 +493,7 @@ export default function BrregPage() {
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [grandTotal, setGrandTotal] = useState<number | null>(null)
+  const [countPending, setCountPending] = useState<boolean>(false)
   const [industryQuery, setIndustryQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<
     SelectedIndustry[]
@@ -470,7 +542,14 @@ export default function BrregPage() {
     if (typeof window === 'undefined') return 'updatedAt'
     const v =
       new URLSearchParams(window.location.search).get('sortBy') || 'updatedAt'
-    const allowed = new Set(['updatedAt', 'name', 'revenue', 'employees'])
+    const allowed = new Set([
+      'updatedAt',
+      'name',
+      'revenue',
+      'employees',
+      'scoreDesc',
+      'scoreAsc',
+    ])
     return allowed.has(v) ? v : 'updatedAt'
   })
   const [offset, setOffset] = useState<number>(0)
@@ -508,8 +587,8 @@ export default function BrregPage() {
     if (offset) {
       sp.append('offset', String(offset))
     }
-    // On initial industry search changes, show items fast and defer counting
-    if (selectedIndustries.length > 0 && offset === 0) {
+    // On first page, show items fast and defer counting for better TTI
+    if (offset === 0) {
       sp.append('skipCount', '1')
     }
     return sp.toString() ? `?${sp.toString()}` : ''
@@ -542,6 +621,8 @@ export default function BrregPage() {
 
   useEffect(() => {
     setLoading(true)
+  // If we asked the server to skip the count, mark it as pending
+  setCountPending(queryParam.includes('skipCount=1'))
     fetch('/api/businesses' + queryParam)
       .then((r) => r.json())
       .then((res: BusinessesResponse | Business[]) => {
@@ -560,9 +641,10 @@ export default function BrregPage() {
       .finally(() => setLoading(false))
   }, [queryParam, offset])
 
-  // Background count refresh when industries change and we asked server to skip count
+  // Background count refresh whenever we used skipCount (first page fast-path)
   useEffect(() => {
-    if (selectedIndustries.length === 0) return
+    const hasSkip = queryParam.includes('skipCount=1')
+    if (!hasSkip) return
     const sp = new URLSearchParams(queryParam.replace(/^\?/, ''))
     sp.delete('skipCount')
     sp.set('countOnly', '1')
@@ -571,9 +653,10 @@ export default function BrregPage() {
       .then((res: { total?: number; grandTotal?: number }) => {
         if (typeof res.total === 'number') setTotal(res.total)
         if (typeof res.grandTotal === 'number') setGrandTotal(res.grandTotal)
-      })
-      .catch(() => {})
-  }, [queryParam, selectedIndustries.length])
+  })
+  .catch(() => {})
+  .finally(() => setCountPending(false))
+  }, [queryParam])
 
   // Reset pagination when filters or sorting change
   useEffect(() => {
@@ -791,23 +874,7 @@ export default function BrregPage() {
             {/* Active Filters Display */}
             {/* Active filters section removed (only recommendation/score previously) */}
 
-            {/* Results Count */}
-            <div className="text-center p-4 bg-gray-900">
-              {(() => {
-                const hasAnyFilter =
-                  selectedIndustries.length > 0 ||
-                  !!selectedRevenueRange ||
-                  !!eventsFilter ||
-                  selectedEventTypes.length > 0
-                const value = hasAnyFilter ? total : (grandTotal ?? total)
-                return (
-                  <>
-                    <div className="text-2xl font-bold">{value}</div>
-                    <div className="text-sm text-gray-400">Businesses Found</div>
-                  </>
-                )
-              })()}
-            </div>
+            {/* Results Count - Hidden per user request */}
           </div>
         </div>
 
@@ -996,6 +1063,8 @@ export default function BrregPage() {
                       <option value="name">Company Name</option>
                       <option value="revenue">Revenue (High to Low)</option>
                       <option value="employees">Employees (High to Low)</option>
+                      <option value="scoreDesc">Score (High to Low)</option>
+                      <option value="scoreAsc">Score (Low to High)</option>
                     </select>
                   </div>
                 </div>
@@ -1031,14 +1100,22 @@ export default function BrregPage() {
               ))}
             </div>
           )}
-          <div className="mt-8 flex items-center justify-between gap-4">
+          {(() => {
+            const hasAnyFilter =
+              selectedIndustries.length > 0 ||
+              !!selectedRevenueRange ||
+              !!eventsFilter ||
+              selectedEventTypes.length > 0
+            const totalForPaging = hasAnyFilter ? total : (grandTotal ?? total)
+            return (
+              <div className="mt-8 flex items-center justify-between gap-4">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="px-4 py-2 border border-white/10 bg-gray-900 hover:bg-gray-800 text-sm"
             >
               Go to top
             </button>
-            {data.length < total && (
+                {data.length < totalForPaging && (
               <button
                 onClick={() => setOffset((prev) => prev + 100)}
                 className="ml-auto px-4 py-2 border border-white/10 bg-gray-900 hover:bg-gray-800 text-sm"
@@ -1046,7 +1123,9 @@ export default function BrregPage() {
                 Load more
               </button>
             )}
-          </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
     </div>

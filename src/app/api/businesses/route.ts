@@ -36,12 +36,6 @@ export async function GET(req: Request) {
     singleIndustry || undefined,
   ].filter(Boolean) as string[]
 
-  // Debug: Log all requests with their parameters
-  const sortByParam = searchParams.get('sortBy')?.trim() || 'updatedAt'
-  console.log(
-    `[businesses] REQUEST: source=${source}, sortBy=${sortByParam}, URL=${req.url}`,
-  )
-
   // Revenue filtering
   const revenueRange = searchParams.get('revenueRange')?.trim()
   let revenueClause = ''
@@ -87,6 +81,12 @@ export async function GET(req: Request) {
     : []
   // eventWeights is a JSON string mapping type -> weight between -10 and 10
   let eventWeights: Record<string, number> = {}
+  
+  // Debug: Log all requests with their parameters
+  const sortByParam = searchParams.get('sortBy')?.trim() || 'updatedAt'
+  console.log(
+    `[businesses] REQUEST: source=${source}, sortBy=${sortByParam}, eventsFilter=${eventsFilter}, eventTypes=${JSON.stringify(eventTypes)}, URL=${req.url}`,
+  )
   const eventWeightsRaw = searchParams.get('eventWeights')
   if (eventWeightsRaw) {
     try {
@@ -108,7 +108,15 @@ export async function GET(req: Request) {
 
   // Sorting
   const sortBy = searchParams.get('sortBy')?.trim() || 'updatedAt'
-  const allowedSorts = ['updatedAt', 'name', 'revenue', 'employees']
+  const allowedSorts = [
+    'updatedAt',
+    'name',
+    'revenue',
+    'employees',
+    // new: score sorting
+    'scoreAsc',
+    'scoreDesc',
+  ]
   const validSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updatedAt'
 
   const isCsvSource = false
@@ -168,7 +176,11 @@ export async function GET(req: Request) {
 
   // Compute parameter indexes for optional event filters/weights
   const eventTypesIdx = eventTypes.length > 0 ? params.length + 1 : null
-  if (eventTypesIdx) params.push(eventTypes)
+  if (eventTypesIdx) {
+    params.push(eventTypes)
+    console.log(`[businesses] Adding eventTypes filter: ${JSON.stringify(eventTypes)} at index ${eventTypesIdx}`)
+    console.log(`[businesses] Full params array: ${JSON.stringify(params)}`)
+  }
   const hasWeights = Object.keys(eventWeights).length > 0
   const weightsIdx = hasWeights ? params.length + 1 : null
   if (weightsIdx) params.push(JSON.stringify(eventWeights))
@@ -216,6 +228,8 @@ export async function GET(req: Request) {
       fLatest."totalAssets" as "totalAssets",
       fLatest.equity as equity,
 			fLatest."employeesAvg" as "employeesAvg",
+      /* Raw and weighted event scores for sorting */
+      evRaw."eventScore",
       ${hasWeights ? 'evScore."eventWeightedScore"' : 'NULL::int as "eventWeightedScore"'},
 			EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber") as "hasEvents"
 		FROM "Business" b
@@ -226,17 +240,43 @@ export async function GET(req: Request) {
       ORDER BY f."fiscalYear" DESC NULLS LAST
       LIMIT 1
     ) fLatest ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT COALESCE(SUM(evr.score), 0) AS "eventScore"
+      FROM public.events_public evr
+      WHERE evr.org_number = b."orgNumber"
+      ${eventTypesIdx ? `AND evr.event_type = ANY($${eventTypesIdx}::text[])` : ''}
+      -- Debug: eventTypesIdx=${eventTypesIdx}, eventTypes=${JSON.stringify(eventTypes)}
+    ) evRaw ON TRUE
     ${hasWeights ? `LEFT JOIN LATERAL (
-      SELECT COALESCE(SUM(NULLIF(($${weightsIdx}::jsonb ->> ev.event_type), '')::int), 0) AS "eventWeightedScore"
+      SELECT COALESCE(SUM(
+        COALESCE(NULLIF(($${weightsIdx}::jsonb ->> ev.event_type), '')::int, 0)
+        * COALESCE(ev.score, 0)
+      ), 0) AS "eventWeightedScore"
       FROM public.events_public ev
       WHERE ev.org_number = b."orgNumber"
       ${eventTypesIdx ? `AND ev.event_type = ANY($${eventTypesIdx}::text[])` : ''}
     ) evScore ON TRUE` : ''}
     ${baseWhere}
     ${revenueClause ? revenueClause.replace(/\bf\./g, 'fLatest.') : ''}
-    ${withEvents ? 'AND EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
-    ${withoutEvents ? 'AND NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
-    ${eventTypesIdx ? `AND EXISTS (SELECT 1 FROM public.events_public e2 WHERE e2.org_number = b."orgNumber" AND e2.event_type = ANY($${eventTypesIdx}::text[]))` : ''}
+    ${(() => {
+      const conditions = []
+      
+      // Event existence filtering
+      if (withoutEvents) {
+        conditions.push('NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")')
+      } else if (withEvents || eventTypesIdx) {
+        // If "with events" is selected OR specific event types are selected, only show companies with events
+        if (eventTypesIdx) {
+          // Only companies with the specific event types
+          conditions.push(`EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber" AND e.event_type = ANY($${eventTypesIdx}::text[]))`)
+        } else {
+          // Only companies with any events
+          conditions.push('EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")')
+        }
+      }
+      
+      return conditions.length > 0 ? 'AND ' + conditions.join(' AND ') : ''
+    })()}
     ORDER BY ${(() => {
       switch (validSortBy) {
         case 'name':
@@ -245,6 +285,11 @@ export async function GET(req: Request) {
           return 'fLatest.revenue DESC NULLS LAST'
         case 'employees':
           return 'b.employees DESC NULLS LAST'
+        case 'scoreAsc':
+          // Prefer weighted when available, otherwise raw eventScore
+          return `${hasWeights ? 'evScore."eventWeightedScore" ASC NULLS FIRST, evRaw."eventScore" ASC NULLS FIRST' : 'evRaw."eventScore" ASC NULLS FIRST'}`
+        case 'scoreDesc':
+          return `${hasWeights ? 'evScore."eventWeightedScore" DESC NULLS LAST, evRaw."eventScore" DESC NULLS LAST' : 'evRaw."eventScore" DESC NULLS LAST'}`
         default:
           return 'b."updatedAt" DESC'
       }
@@ -264,9 +309,25 @@ export async function GET(req: Request) {
     ) fLatest ON TRUE
     ${baseWhere}
     ${revenueClause ? revenueClause.replace(/\bf\./g, 'fLatest.') : ''}
-    ${withEvents ? 'AND EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
-    ${withoutEvents ? 'AND NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
-    ${eventTypesIdx ? `AND EXISTS (SELECT 1 FROM public.events_public e2 WHERE e2.org_number = b."orgNumber" AND e2.event_type = ANY($${eventTypesIdx}::text[]))` : ''}
+    ${(() => {
+      const conditions = []
+      
+      // Event existence filtering
+      if (withoutEvents) {
+        conditions.push('NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")')
+      } else if (withEvents || eventTypesIdx) {
+        // If "with events" is selected OR specific event types are selected, only show companies with events
+        if (eventTypesIdx) {
+          // Only companies with the specific event types
+          conditions.push(`EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber" AND e.event_type = ANY($${eventTypesIdx}::text[]))`)
+        } else {
+          // Only companies with any events
+          conditions.push('EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")')
+        }
+      }
+      
+      return conditions.length > 0 ? 'AND ' + conditions.join(' AND ') : ''
+    })()}
   `
   let itemsRes: { rows: Record<string, unknown>[] } = { rows: [] }
   let total = 0
@@ -371,3 +432,4 @@ export async function GET(req: Request) {
 
   return NextResponse.json(response)
 }
+

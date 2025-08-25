@@ -69,32 +69,24 @@ export async function GET(req: Request) {
   try {
     // If orgNumber provided, use RPC first, then view fallback
     if (orgNumber) {
-      // Primary: RPC
-      const rpc = await query<PublicEvent>(
-        `SELECT *
-				 FROM public.get_events_by_org($1::text, $2::int)
-				 ORDER BY date DESC NULLS LAST, created_at DESC`,
-        [orgNumber, limit],
-      )
-      let rows = rpc.rows
-
-      // Fallback: view (also acts as a secondary source if RPC returns 0)
-      if (!rows || rows.length === 0) {
-        const view = await query<PublicEvent>(
-          `SELECT *
-					 FROM public.events_public
-					 WHERE org_number = $1
-					 ORDER BY date DESC NULLS LAST, created_at DESC
-					 LIMIT $2`,
-          [orgNumber, limit],
-        )
-        rows = view.rows
+      // Apply event type filtering in the SQL query for better performance
+      let baseQuery = `SELECT *
+				 FROM public.events_public
+				 WHERE org_number = $1`
+      let queryParams: (string | number)[] = [orgNumber]
+      
+      if (eventTypes.length > 0) {
+        baseQuery += ` AND event_type = ANY($2::text[])`
+        queryParams.push(eventTypes)
+        baseQuery += ` ORDER BY date DESC NULLS LAST, created_at DESC LIMIT $3`
+        queryParams.push(limit)
+      } else {
+        baseQuery += ` ORDER BY date DESC NULLS LAST, created_at DESC LIMIT $2`
+        queryParams.push(limit)
       }
-
-      // Optional in-memory filter by event types when provided
-      if (eventTypes.length > 0 && rows && rows.length > 0) {
-        rows = rows.filter((r) => !!r.event_type && eventTypes.includes(r.event_type))
-      }
+      
+      const result = await query<PublicEvent>(baseQuery, queryParams)
+      let rows = result.rows
 
       const items: EventItem[] = (rows || []).map(mapToClientItem)
       return NextResponse.json({ items })
