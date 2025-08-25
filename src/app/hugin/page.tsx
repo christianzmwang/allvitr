@@ -41,6 +41,8 @@ type Business = {
   sectorText?: string | null
   // events
   hasEvents?: boolean | null
+  eventScore?: number | null
+  eventWeightedScore?: number | null
   // recommendation, rationale and score removed
 }
 
@@ -115,11 +117,11 @@ const BusinessCard = memo(
 
     const getEventKey = (ev: EventItem, idx: number) =>
       String((ev.id ?? `${business.orgNumber}-${idx}`) as string | number)
-    // Initial lightweight fetch: only the latest event, and only once card is visible
+    
+    // Load all events when card is visible
     useEffect(() => {
       if (!business.hasEvents) return
       if (!isInView) return
-      if (showAllEvents) return
       let cancelled = false
       const load = async () => {
         setEventsLoading(true)
@@ -127,7 +129,7 @@ const BusinessCard = memo(
         try {
           const params = new URLSearchParams()
           params.set('orgNumber', business.orgNumber)
-          params.set('limit', '1')
+          params.set('limit', '50')
           if (selectedEventTypes && selectedEventTypes.length > 0) {
             params.set('eventTypes', selectedEventTypes.join(','))
           }
@@ -157,64 +159,27 @@ const BusinessCard = memo(
       return () => {
         cancelled = true
       }
-    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView, showAllEvents])
+    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView])
 
-    // When user asks to show all, fetch the full list once visible
-    useEffect(() => {
-      if (!business.hasEvents) return
-      if (!isInView) return
-      if (!showAllEvents) return
-      let cancelled = false
-      const loadMore = async () => {
-        setEventsLoading(true)
-        setEventsError(null)
-        try {
-          const params = new URLSearchParams()
-          params.set('orgNumber', business.orgNumber)
-          params.set('limit', '50')
-          if (selectedEventTypes && selectedEventTypes.length > 0) {
-            params.set('eventTypes', selectedEventTypes.join(','))
-          }
-          const res = await fetch('/api/events?' + params.toString())
-          const json = (await res.json()) as { items?: EventItem[] } | EventItem[]
-          const items = Array.isArray(json) ? json : json.items || []
-          const filtered =
-            selectedEventTypes && selectedEventTypes.length > 0
-              ? (items || []).filter(
-                  (it) => !!it && !!it.source && selectedEventTypes.includes(it.source as string),
-                )
-              : items
-          if (!cancelled) setEvents(filtered)
-        } catch (e) {
-          if (!cancelled) {
-            setEventsError(e)
-          }
-        } finally {
-          if (!cancelled) setEventsLoading(false)
-        }
-      }
-      loadMore()
-      return () => {
-        cancelled = true
-      }
-    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView, showAllEvents])
-
-    // Compute weighted score: sum(weight[event_type] * event.score) for selected types
+    // Use backend-calculated weighted score
     const companyScore = useMemo(() => {
-      if (!events || events.length === 0) return 0
+      // If no event types selected, show 0
       if (!selectedEventTypes || selectedEventTypes.length === 0) return 0
-      const setSelected = new Set(selectedEventTypes)
-      let total = 0
-      for (const ev of events) {
-        const type = (ev.source || '') as string
-        if (!type) continue
-        if (setSelected.size > 0 && !setSelected.has(type)) continue
-        const w = eventWeights[type] ?? 0
-        const s = typeof ev.score === 'number' ? ev.score : 0
-        total += w * s
+      
+      // Use the backend-calculated eventWeightedScore when available
+      const backendScore = business.eventWeightedScore
+      if (typeof backendScore === 'number') {
+        return backendScore
       }
-      return total
-    }, [events, selectedEventTypes.join(','), JSON.stringify(eventWeights)])
+      
+      // Fallback to eventScore if no weighted score available
+      const fallbackScore = business.eventScore
+      if (typeof fallbackScore === 'number') {
+        return fallbackScore
+      }
+      
+      return 0
+    }, [business.eventWeightedScore, business.eventScore, selectedEventTypes])
 
     return (
   <div ref={cardRef} className={
@@ -285,42 +250,48 @@ const BusinessCard = memo(
             </div>
           </div>
           <div className="ml-6 flex flex-col items-end gap-3">
-            {business.hasEvents ? (
-              (() => {
-                const hasSelected = selectedEventTypes && selectedEventTypes.length > 0
-                const hasAnyEvents = Array.isArray(events) && events.length > 0
-                const canShowNumber = hasSelected && hasAnyEvents && !eventsLoading
-                if (!canShowNumber) {
-                  return <div className="h-px w-12 bg-white/20" aria-hidden="true" />
-                }
-                const color = companyScore > 0 ? 'text-green-400' : companyScore < 0 ? 'text-red-400' : 'text-gray-300'
-                return (
-                  <span
-                    className={`${color} text-sm font-medium`}
-                    title="Weighted score from selected event types"
-                  >
-                    {numberFormatter.format(companyScore)}
-                  </span>
-                )
-              })()
-            ) : null}
+            {(() => {
+              // Always show consistent spacing/layout regardless of events
+              if (!business.hasEvents) {
+                return <div className="h-px w-12 bg-white/20" aria-hidden="true" />
+              }
+              
+              const hasSelected = selectedEventTypes && selectedEventTypes.length > 0
+              const hasAnyEvents = Array.isArray(events) && events.length > 0
+              const canShowNumber = hasSelected && hasAnyEvents && !eventsLoading
+              if (!canShowNumber) {
+                return <div className="h-px w-12 bg-white/20" aria-hidden="true" />
+              }
+              const color = companyScore > 0 ? 'text-green-400' : companyScore < 0 ? 'text-red-400' : 'text-gray-300'
+              return (
+                <span
+                  className={`${color} text-sm font-medium`}
+                  title="Weighted score from selected event types"
+                >
+                  {numberFormatter.format(companyScore)}
+                </span>
+              )
+            })()}
           </div>
         </div>
 
-        {/* Rationale removed */}
-        {business.hasEvents ? (
-          <div className="mt-4 border-t border-white/10 pt-4">
-            <h4 className="text-lg font-semibold mb-3">Latest events</h4>
-            {eventsLoading && (
-              <div className="text-sm text-gray-400">Loading events…</div>
-            )}
-            {!eventsLoading && !!eventsError && (
-              <div className="text-sm text-red-400">Failed to load events</div>
-            )}
-            {!eventsLoading && (events?.length ?? 0) === 0 && (
-              <div className="text-sm text-gray-400">No recent events</div>
-            )}
-            <ul className="space-y-2">
+        {/* Events section - always shown for consistent styling */}
+        <div className="mt-4 border-t border-white/10 pt-4">
+          <h4 className="text-lg font-semibold mb-3">Latest events</h4>
+          {!business.hasEvents ? (
+            <div className="text-sm text-gray-400">No events available</div>
+          ) : (
+            <>
+              {eventsLoading && (
+                <div className="text-sm text-gray-400">Loading events…</div>
+              )}
+              {!eventsLoading && !!eventsError && (
+                <div className="text-sm text-red-400">Failed to load events</div>
+              )}
+              {!eventsLoading && (events?.length ?? 0) === 0 && (
+                <div className="text-sm text-gray-400">No recent events</div>
+              )}
+              <ul className="space-y-2">
               {(showAllEvents ? events : events?.slice(0, 1))?.map((ev, idx) => (
                 <li
                   key={(ev.id ?? idx) as React.Key}
@@ -429,9 +400,15 @@ const BusinessCard = memo(
                             const s = (ev.source as string) || ''
                             const t = s.replace(/_/g, ' ')
                             const label = t.charAt(0).toUpperCase() + t.slice(1)
+                            const weight = eventWeights[s] ?? 0
+                            const badgeColor = weight > 0 
+                              ? 'border-green-500 bg-green-500/20 text-green-200 hover:bg-green-500/30'
+                              : weight < 0 
+                                ? 'border-red-500 bg-red-500/20 text-red-200 hover:bg-red-500/30'
+                                : 'border-white/30 bg-white/5 text-gray-200 hover:bg-white/10'
                             return (
                               <span
-                                className="inline-block px-2 py-1 text-[11px] leading-none border border-white/30 bg-white/5 text-gray-200 hover:bg-white/10"
+                                className={`inline-block px-2 py-1 text-[11px] leading-none border ${badgeColor}`}
                                 title={label}
                                 aria-label={label}
                               >
@@ -456,31 +433,32 @@ const BusinessCard = memo(
                 </li>
               ))}
             </ul>
-            {!!events && events.length > 1 && (
-              <div className="mt-2">
-                {!showAllEvents ? (
-                  <button
-                    className="text-xs text-sky-400 hover:text-sky-300 underline"
-                    onClick={() => setShowAllEvents(true)}
-                  >
-                    Show {events.length - 1} more
-                  </button>
-                ) : (
-                  <button
-                    className="text-xs text-sky-400 hover:text-sky-300 underline"
-                    onClick={() => {
-                      setShowAllEvents(false)
-                      setExpandedTitleKeys(new Set())
-                      setExpandedDescKeys(new Set())
-                    }}
-                  >
-                    Show less
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        ) : null}
+              {!!events && events.length > 1 && (
+                <div className="mt-2">
+                  {!showAllEvents ? (
+                    <button
+                      className="text-xs text-sky-400 hover:text-sky-300 underline"
+                      onClick={() => setShowAllEvents(true)}
+                    >
+                      Show {events.length - 1} more
+                    </button>
+                  ) : (
+                    <button
+                      className="text-xs text-sky-400 hover:text-sky-300 underline"
+                      onClick={() => {
+                        setShowAllEvents(false)
+                        setExpandedTitleKeys(new Set())
+                        setExpandedDescKeys(new Set())
+                      }}
+                    >
+                      Show less
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     )
   },
@@ -576,7 +554,8 @@ export default function BrregPage() {
     if (selectedEventTypes.length > 0) {
       sp.append('eventTypes', selectedEventTypes.join(','))
     }
-    if (Object.keys(eventWeights).length > 0) {
+    // Always send event weights when event types are selected, even if some weights are 0
+    if (selectedEventTypes.length > 0) {
       sp.append('eventWeights', JSON.stringify(eventWeights))
     }
     // recommendation and score params removed
@@ -623,15 +602,45 @@ export default function BrregPage() {
     setLoading(true)
   // If we asked the server to skip the count, mark it as pending
   setCountPending(queryParam.includes('skipCount=1'))
-    fetch('/api/businesses' + queryParam)
+    
+    // Add random delay (2-4 seconds) when event weights are present
+    const hasEventWeights = Object.keys(eventWeights).length > 0
+    const delay = hasEventWeights ? Math.random() * 2000 + 2000 : 0 // 2000-4000ms
+    
+    const timeoutId = setTimeout(() => {
+      fetch('/api/businesses' + queryParam)
       .then((r) => r.json())
       .then((res: BusinessesResponse | Business[]) => {
         if (Array.isArray(res)) {
           // Legacy shape
-          setData((prev) => (offset > 0 ? [...prev, ...res] : res))
+          setData((prev) => {
+            if (offset > 0) {
+              // Deduplicate by orgNumber when concatenating
+              const combined = [...prev, ...res]
+              const seen = new Set<string>()
+              return combined.filter(business => {
+                if (seen.has(business.orgNumber)) return false
+                seen.add(business.orgNumber)
+                return true
+              })
+            }
+            return res
+          })
           setTotal(res.length)
         } else {
-          setData((prev) => (offset > 0 ? [...prev, ...res.items] : res.items))
+          setData((prev) => {
+            if (offset > 0) {
+              // Deduplicate by orgNumber when concatenating
+              const combined = [...prev, ...res.items]
+              const seen = new Set<string>()
+              return combined.filter(business => {
+                if (seen.has(business.orgNumber)) return false
+                seen.add(business.orgNumber)
+                return true
+              })
+            }
+            return res.items
+          })
           // If server skipped count, keep current total for snappy UI
           if (typeof res.total === 'number' && res.total > 0)
             setTotal(res.total)
@@ -639,7 +648,10 @@ export default function BrregPage() {
         }
       })
       .finally(() => setLoading(false))
-  }, [queryParam, offset])
+    }, delay)
+    
+    return () => clearTimeout(timeoutId)
+  }, [queryParam, offset, eventWeights])
 
   // Background count refresh whenever we used skipCount (first page fast-path)
   useEffect(() => {
@@ -657,6 +669,13 @@ export default function BrregPage() {
   .catch(() => {})
   .finally(() => setCountPending(false))
   }, [queryParam])
+
+  // Auto-reset score sorting when no event types are selected
+  useEffect(() => {
+    if ((sortBy === 'scoreDesc' || sortBy === 'scoreAsc') && selectedEventTypes.length === 0) {
+      setSortBy('updatedAt')
+    }
+  }, [sortBy, selectedEventTypes.length])
 
   // Reset pagination when filters or sorting change
   useEffect(() => {
@@ -832,7 +851,15 @@ export default function BrregPage() {
                     return (
                       <div
                         key={t}
-                        className={`p-3 bg-gray-900 border ${selected ? 'border-red-500' : 'border-white/10'}`}
+                        className={`p-3 bg-gray-900 border ${
+                          selected 
+                            ? weight > 0 
+                              ? 'border-green-500' 
+                              : weight < 0 
+                                ? 'border-red-500' 
+                                : 'border-yellow-500'
+                            : 'border-white/10'
+                        }`}
                         onClick={() => {
                           setSelectedEventTypes((prev) =>
                             prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
@@ -860,7 +887,9 @@ export default function BrregPage() {
                             const val = Number(e.target.value)
                             setEventWeights((prev) => ({ ...prev, [t]: val }))
                             // moving the slider selects the event type if not already selected
-                            setSelectedEventTypes((prev) => (prev.includes(t) ? prev : [...prev, t]))
+                            if (!selectedEventTypes.includes(t)) {
+                              setSelectedEventTypes((prev) => [...prev, t])
+                            }
                           }}
                           className="w-full mt-3 slider-square"
                         />
@@ -1056,15 +1085,35 @@ export default function BrregPage() {
                   <div>
                     <select
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
+                      onChange={(e) => {
+                        const newValue = e.target.value
+                        // If trying to select score sorting but no event types selected, fallback to updatedAt
+                        if ((newValue === 'scoreDesc' || newValue === 'scoreAsc') && selectedEventTypes.length === 0) {
+                          setSortBy('updatedAt')
+                        } else {
+                          setSortBy(newValue)
+                        }
+                      }}
                       className="w-full px-4 py-3 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
                     >
                       <option value="updatedAt">Last Updated</option>
                       <option value="name">Company Name</option>
                       <option value="revenue">Revenue (High to Low)</option>
                       <option value="employees">Employees (High to Low)</option>
-                      <option value="scoreDesc">Score (High to Low)</option>
-                      <option value="scoreAsc">Score (Low to High)</option>
+                      <option 
+                        value="scoreDesc" 
+                        disabled={selectedEventTypes.length === 0}
+                        className={selectedEventTypes.length === 0 ? 'text-gray-500' : ''}
+                      >
+                        Score (High to Low) {selectedEventTypes.length === 0 ? '(Select event types first)' : ''}
+                      </option>
+                      <option 
+                        value="scoreAsc" 
+                        disabled={selectedEventTypes.length === 0}
+                        className={selectedEventTypes.length === 0 ? 'text-gray-500' : ''}
+                      >
+                        Score (Low to High) {selectedEventTypes.length === 0 ? '(Select event types first)' : ''}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -1082,6 +1131,29 @@ export default function BrregPage() {
                 </div>
               </div>
             </div>
+          ) : sortedData.length === 0 ? (
+            (() => {
+              const hasAnyFilter =
+                selectedIndustries.length > 0 ||
+                !!selectedRevenueRange ||
+                !!eventsFilter ||
+                selectedEventTypes.length > 0
+              
+              return (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="text-lg text-gray-400">
+                      {hasAnyFilter ? 'No companies match your current filters' : 'No businesses found'}
+                    </div>
+                    {hasAnyFilter && (
+                      <div className="text-sm text-gray-500 mt-2">
+                        Try adjusting your filters to see more results
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()
           ) : (
             <div className="space-y-4">
               {sortedData.map((business) => (

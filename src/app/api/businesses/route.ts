@@ -81,12 +81,6 @@ export async function GET(req: Request) {
     : []
   // eventWeights is a JSON string mapping type -> weight between -10 and 10
   let eventWeights: Record<string, number> = {}
-  
-  // Debug: Log all requests with their parameters
-  const sortByParam = searchParams.get('sortBy')?.trim() || 'updatedAt'
-  console.log(
-    `[businesses] REQUEST: source=${source}, sortBy=${sortByParam}, eventsFilter=${eventsFilter}, eventTypes=${JSON.stringify(eventTypes)}, URL=${req.url}`,
-  )
   const eventWeightsRaw = searchParams.get('eventWeights')
   if (eventWeightsRaw) {
     try {
@@ -117,7 +111,19 @@ export async function GET(req: Request) {
     'scoreAsc',
     'scoreDesc',
   ]
-  const validSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updatedAt'
+  let validSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updatedAt'
+  
+  // Disable score sorting when no event types are selected
+  if ((validSortBy === 'scoreAsc' || validSortBy === 'scoreDesc') && eventTypes.length === 0) {
+    console.log(`[businesses] Score sorting disabled - no event types selected, falling back to updatedAt`)
+    validSortBy = 'updatedAt'
+  }
+
+  // Debug: Log all requests with their parameters
+  const sortByParam = searchParams.get('sortBy')?.trim() || 'updatedAt'
+  console.log(
+    `[businesses] REQUEST: source=${source}, sortBy=${sortByParam}, validSortBy=${validSortBy}, eventsFilter=${eventsFilter}, eventTypes=${JSON.stringify(eventTypes)}, URL=${req.url}`,
+  )
 
   const isCsvSource = false
 
@@ -143,7 +149,10 @@ export async function GET(req: Request) {
       total: number
     }>(cacheParams)
     if (cached) {
+      console.log(`[businesses] CACHE HIT for sortBy=${validSortBy}`)
       return NextResponse.json(cached)
+    } else {
+      console.log(`[businesses] CACHE MISS for sortBy=${validSortBy}`)
     }
   }
 
@@ -286,10 +295,10 @@ export async function GET(req: Request) {
         case 'employees':
           return 'b.employees DESC NULLS LAST'
         case 'scoreAsc':
-          // Prefer weighted when available, otherwise raw eventScore
-          return `${hasWeights ? 'evScore."eventWeightedScore" ASC NULLS FIRST, evRaw."eventScore" ASC NULLS FIRST' : 'evRaw."eventScore" ASC NULLS FIRST'}`
+          // Always prefer weighted score when event types are selected, as that's what frontend displays
+          return `${hasWeights && eventTypes.length > 0 ? 'evScore."eventWeightedScore" ASC NULLS FIRST' : 'evRaw."eventScore" ASC NULLS FIRST'}`
         case 'scoreDesc':
-          return `${hasWeights ? 'evScore."eventWeightedScore" DESC NULLS LAST, evRaw."eventScore" DESC NULLS LAST' : 'evRaw."eventScore" DESC NULLS LAST'}`
+          return `${hasWeights && eventTypes.length > 0 ? 'evScore."eventWeightedScore" DESC NULLS LAST' : 'evRaw."eventWeightedScore" DESC NULLS LAST'}`
         default:
           return 'b."updatedAt" DESC'
       }
