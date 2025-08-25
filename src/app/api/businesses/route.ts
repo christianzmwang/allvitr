@@ -4,8 +4,8 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 export const preferredRegion = ['fra1', 'arn1', 'cdg1']
-import { query } from '@/lib/db'
-import { csvCache } from '@/lib/csv-cache'
+import { query, type SqlParam } from '@/lib/db'
+
 import { apiCache } from '@/lib/api-cache'
 
 export async function GET(req: Request) {
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     )
   }
   const { searchParams } = new URL(req.url)
-  const source = (searchParams.get('source')?.trim() || 'general').toLowerCase()
+  const source = 'general'
   const offset = Math.max(
     0,
     parseInt(searchParams.get('offset') || '0', 10) || 0,
@@ -71,58 +71,47 @@ export async function GET(req: Request) {
     }
   }
 
-  // Recommendation filtering
-  const recommendation = searchParams.get('recommendation')?.trim()
-  let recommendationClause = ''
-  let recommendationParams: string[] = []
+  // Removed recommendation and score filtering
 
-  if (recommendation) {
-    recommendationClause = 'AND b.recommendation = $RECOMMENDATION'
-    recommendationParams = [recommendation]
+  // Events filtering: events=with|without
+  const eventsFilter = searchParams.get('events')?.trim().toLowerCase()
+  const withEvents = eventsFilter === 'with'
+  const withoutEvents = eventsFilter === 'without'
+  // Advanced event type filtering and weighting
+  const eventTypesCsv = (searchParams.get('eventTypes') || '').trim()
+  const eventTypes = eventTypesCsv
+    ? eventTypesCsv
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : []
+  // eventWeights is a JSON string mapping type -> weight between -10 and 10
+  let eventWeights: Record<string, number> = {}
+  const eventWeightsRaw = searchParams.get('eventWeights')
+  if (eventWeightsRaw) {
+    try {
+      const parsed = JSON.parse(eventWeightsRaw)
+      if (parsed && typeof parsed === 'object') {
+        for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+          const num = Number(v)
+          if (!Number.isNaN(num)) {
+            // clamp to [-10, 10]
+            eventWeights[k] = Math.max(-10, Math.min(10, num))
+          }
+        }
+      }
+    } catch {
+      // ignore malformed input
+      eventWeights = {}
+    }
   }
-
-  // Score range filtering
-  const scoreRange = searchParams.get('scoreRange')?.trim()
-  let scoreClause = ''
-  let scoreParams: number[] = []
 
   // Sorting
   const sortBy = searchParams.get('sortBy')?.trim() || 'updatedAt'
-  const allowedSorts = [
-    'updatedAt',
-    'allvitrScore',
-    'allvitrScoreAsc',
-    'name',
-    'revenue',
-    'employees',
-  ]
+  const allowedSorts = ['updatedAt', 'name', 'revenue', 'employees']
   const validSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updatedAt'
 
-  const isCsvSource = source === 'accounting' || source === 'consulting'
-
-  if (scoreRange) {
-    switch (scoreRange) {
-      case '0-50':
-        scoreClause =
-          'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
-        scoreParams = [0, 50]
-        break
-      case '50-100':
-        scoreClause =
-          'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
-        scoreParams = [50, 100]
-        break
-      case '100-200':
-        scoreClause =
-          'AND b."allvitrScore" >= $SCORE_MIN AND b."allvitrScore" < $SCORE_MAX'
-        scoreParams = [100, 200]
-        break
-      case '200+':
-        scoreClause = 'AND b."allvitrScore" >= $SCORE_MIN'
-        scoreParams = [200]
-        break
-    }
-  }
+  const isCsvSource = false
 
   // Create cache key from request parameters
   const cacheParams = {
@@ -132,15 +121,14 @@ export async function GET(req: Request) {
     countOnly,
     industries: industries.sort(), // Sort for consistent cache keys
     revenueRange,
-    recommendation,
-    scoreRange,
+    eventsFilter: eventsFilter || '',
+  eventTypes: eventTypes,
+  eventWeights,
     sortBy: validSortBy,
   }
 
-  // Check cache first (skip cache for CSV sources with offset > 0 for now)
-  // Also skip cache when sorting by score to ensure fresh results with score filtering
-  const shouldCache =
-    (!isCsvSource || offset === 0) && !validSortBy.includes('allvitrScore')
+  // Check cache first
+  const shouldCache = true
   if (shouldCache) {
     const cached = apiCache.get<{
       items: Record<string, unknown>[]
@@ -161,37 +149,8 @@ export async function GET(req: Request) {
     ? `AND ((${perColumnClause('b."industryCode1"')} ) OR (${perColumnClause('b."industryText1"')}) OR (${perColumnClause('b."industryCode2"')}) OR (${perColumnClause('b."industryText2"')}) OR (${perColumnClause('b."industryCode3"')}) OR (${perColumnClause('b."industryText3"')}))`
     : ''
 
-  // For CSV sources, pre-filter by organization numbers to reduce query size
-  let csvOrgNumbersClause = ''
-  let csvOrgNumbersParams: string[] = []
-  if (isCsvSource) {
-    const csvData = csvCache.getCsvData(source as 'accounting' | 'consulting')
-    const orgNumbers = Array.from(csvData.set)
-
-    if (orgNumbers.length > 0) {
-      // Use batched IN clause for better performance - calculate correct parameter indices
-      const baseParamsCount =
-        industryParams.length +
-        revenueParams.length +
-        (isCsvSource ? 0 : recommendationParams.length) +
-        (isCsvSource ? 0 : scoreParams.length)
-      const placeholders = orgNumbers
-        .map((_, i) => `$${baseParamsCount + i + 1}`)
-        .join(', ')
-      csvOrgNumbersClause = `AND b."orgNumber" IN (${placeholders})`
-      csvOrgNumbersParams = orgNumbers
-    }
-  }
-
-  // Combine all params - industries first, then revenue, recommendation, score, and CSV org numbers
-  // For CSV sources, exclude recommendation and score params since filtering happens after CSV merging
-  const params = [
-    ...industryParams,
-    ...revenueParams,
-    ...(isCsvSource ? [] : recommendationParams),
-    ...(isCsvSource ? [] : scoreParams),
-    ...csvOrgNumbersParams,
-  ]
+  // Combine all params - industries first, then revenue (we'll append event params below)
+  const params: SqlParam[] = [...industryParams, ...revenueParams]
 
   // Update clause placeholders with actual parameter positions
   if (revenueClause) {
@@ -201,331 +160,155 @@ export async function GET(req: Request) {
       .replace('$REVENUE_MAX', `$${revenueStartIndex + 1}`)
   }
 
-  if (recommendationClause && !isCsvSource) {
-    const recommendationIndex = industryParams.length + revenueParams.length + 1
-    recommendationClause = recommendationClause.replace(
-      '$RECOMMENDATION',
-      `$${recommendationIndex}`,
-    )
-  }
-
-  if (scoreClause && !isCsvSource) {
-    const scoreStartIndex =
-      industryParams.length +
-      revenueParams.length +
-      recommendationParams.length +
-      1
-    scoreClause = scoreClause
-      .replace('$SCORE_MIN', `$${scoreStartIndex}`)
-      .replace('$SCORE_MAX', `$${scoreStartIndex + 1}`)
-  }
-
-  // Add score filtering when sorting by score (only show businesses with actual scores, including 0 and negative)
-  let scoreFilterClause = ''
-  if (!isCsvSource && validSortBy.includes('allvitrScore')) {
-    scoreFilterClause = 'AND b."allvitrScore" IS NOT NULL'
-  }
-
-  // Optimized query structure - simplify expensive WHERE conditions
-  // For CSV sources, skip recommendation and score filtering in DB since CSV data overrides these fields
+  // Optimized query structure
   const baseWhere = `
 		WHERE (b."registeredInForetaksregisteret" = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
 		${industryClause}
-		${isCsvSource ? '' : recommendationClause}
-		${isCsvSource ? '' : scoreClause}
-		${csvOrgNumbersClause}
-		${scoreFilterClause}
 	`
 
-  // Much simpler approach - avoid CTEs entirely when possible
-  let itemsSqlDirect = ''
-  if (revenueClause) {
-    // Optimized revenue filtering using correlated subquery instead of CTE
-    itemsSqlDirect = `
-			SELECT
-				b."orgNumber",
-				b.name,
-				b.website,
-				b.employees,
-				b."addressStreet",
-				b."addressPostalCode",
-				b."addressCity",
-				${
-          isCsvSource
-            ? 'NULL'
-            : `(SELECT c."fullName" 
-					 FROM "CEO" c 
-					 WHERE c."businessId" = b.id 
-					 ORDER BY c."fromDate" DESC NULLS LAST 
-					 LIMIT 1)`
-        } as "ceo",
-				b."industryCode1",
-				b."industryText1",
-				b."industryCode2",
-				b."industryText2",
-				b."industryCode3",
-				b."industryText3",
-				b."vatRegistered",
-				b."vatRegisteredDate",
-				b."sectorCode",
-				b."sectorText",
-				b."orgFormCode",
-				b."orgFormText",
-				b."registeredInForetaksregisteret",
-				b."isBankrupt",
-				b."isUnderLiquidation",
-				b."isUnderCompulsory",
-				b."createdAt",
-				b."updatedAt",
-				b.recommendation,
-				b.rationale,
-				b."allvitrScore",
-				(SELECT f."fiscalYear" 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as "fiscalYear",
-				(SELECT f.revenue 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as revenue,
-				(SELECT f.profit 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as profit,
-				(SELECT f."totalAssets" 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as "totalAssets",
-				(SELECT f.equity 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as equity,
-				(SELECT f."employeesAvg" 
-				 FROM "FinancialReport" f 
-				 WHERE f."businessId" = b.id 
-				 ORDER BY f."fiscalYear" DESC 
-				 LIMIT 1) as "employeesAvg"
-			FROM "Business" b
-			WHERE (b."registeredInForetaksregisteret" = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
-			${industryClause}
-			${isCsvSource ? '' : recommendationClause}
-			${isCsvSource ? '' : scoreClause}
-			${csvOrgNumbersClause}
-			${scoreFilterClause}
-			AND EXISTS (
-				SELECT 1 FROM "FinancialReport" f 
-				WHERE f."businessId" = b.id 
-				${revenueClause.replace(/f\./g, 'f.')}
-			)
-			${
+  // Compute parameter indexes for optional event filters/weights
+  const eventTypesIdx = eventTypes.length > 0 ? params.length + 1 : null
+  if (eventTypesIdx) params.push(eventTypes)
+  const hasWeights = Object.keys(eventWeights).length > 0
+  const weightsIdx = hasWeights ? params.length + 1 : null
+  if (weightsIdx) params.push(JSON.stringify(eventWeights))
+
+  // Always join the latest financials so revenue is available for display and sorting
+  const itemsSql = `
+    SELECT
+      b."orgNumber",
+      b.name,
+      b.website,
+      b.employees,
+      b."addressStreet",
+      b."addressPostalCode",
+      b."addressCity",
+      ${
         isCsvSource
-          ? ''
-          : `ORDER BY ${(() => {
-              switch (validSortBy) {
-                case 'allvitrScore':
-                  return 'b."allvitrScore" DESC, b."updatedAt" DESC'
-                case 'allvitrScoreAsc':
-                  return 'b."allvitrScore" ASC, b."updatedAt" DESC'
-                case 'name':
-                  return 'b.name ASC'
-                case 'revenue':
-                  return '(SELECT f.revenue FROM "FinancialReport" f WHERE f."businessId" = b.id ORDER BY f."fiscalYear" DESC LIMIT 1) DESC NULLS LAST'
-                case 'employees':
-                  return 'b.employees DESC NULLS LAST'
-                default:
-                  return 'b."updatedAt" DESC'
-              }
-            })()}`
-      }
-			${isCsvSource ? '' : `LIMIT 100 OFFSET ${offset}`}
-		`
-  } else {
-    // Direct query without CTE for better performance
-    itemsSqlDirect = `
-			SELECT
-				b."orgNumber",
-				b.name,
-				b.website,
-				b.employees,
-				b."addressStreet",
-				b."addressPostalCode",
-				b."addressCity",
-				${
-          isCsvSource
-            ? 'NULL'
-            : `(SELECT c."fullName" 
-					 FROM "CEO" c 
-					 WHERE c."businessId" = b.id 
-					 ORDER BY c."fromDate" DESC NULLS LAST 
-					 LIMIT 1)`
-        } as "ceo",
-				b."industryCode1",
-				b."industryText1",
-				b."industryCode2",
-				b."industryText2",
-				b."industryCode3",
-				b."industryText3",
-				b."vatRegistered",
-				b."vatRegisteredDate",
-				b."sectorCode",
-				b."sectorText",
-				b."orgFormCode",
-				b."orgFormText",
-				b."registeredInForetaksregisteret",
-				b."isBankrupt",
-				b."isUnderLiquidation",
-				b."isUnderCompulsory",
-				b."createdAt",
-				b."updatedAt",
-				b.recommendation,
-				b.rationale,
-				b."allvitrScore",
-				NULL::int as "fiscalYear",
-				NULL::bigint as revenue,
-				NULL::bigint as profit,
-				NULL::bigint as "totalAssets",
-				NULL::bigint as equity,
-				NULL::int as "employeesAvg"
-			FROM "Business" b
-			${baseWhere}
-			${
-        isCsvSource
-          ? ''
-          : `ORDER BY ${(() => {
-              switch (validSortBy) {
-                case 'allvitrScore':
-                  return 'b."allvitrScore" DESC, b."updatedAt" DESC'
-                case 'allvitrScoreAsc':
-                  return 'b."allvitrScore" ASC, b."updatedAt" DESC'
-                case 'name':
-                  return 'b.name ASC'
-                case 'revenue':
-                  return 'b."updatedAt" DESC' // fallback since no revenue data
-                case 'employees':
-                  return 'b.employees DESC NULLS LAST'
-                default:
-                  return 'b."updatedAt" DESC'
-              }
-            })()}`
-      }
-			${isCsvSource ? '' : `LIMIT 100 OFFSET ${offset}`}
-		`
-  }
-
-  const itemsSql = itemsSqlDirect
-
-  const countSql = revenueClause
-    ? `
-		SELECT COUNT(*)::int as total 
+          ? 'NULL'
+          : `(SELECT c."fullName" 
+       FROM "CEO" c 
+       WHERE c."businessId" = b.id 
+       ORDER BY c."fromDate" DESC NULLS LAST 
+       LIMIT 1)`
+      } as "ceo",
+      b."industryCode1",
+      b."industryText1",
+      b."industryCode2",
+      b."industryText2",
+      b."industryCode3",
+      b."industryText3",
+      b."vatRegistered",
+      b."vatRegisteredDate",
+      b."sectorCode",
+      b."sectorText",
+      b."orgFormCode",
+      b."orgFormText",
+      b."registeredInForetaksregisteret",
+      b."isBankrupt",
+      b."isUnderLiquidation",
+      b."isUnderCompulsory",
+      b."createdAt",
+      b."updatedAt",
+			fLatest."fiscalYear" as "fiscalYear",
+      fLatest.revenue as revenue,
+      fLatest.profit as profit,
+      fLatest."totalAssets" as "totalAssets",
+      fLatest.equity as equity,
+			fLatest."employeesAvg" as "employeesAvg",
+      ${hasWeights ? 'evScore."eventWeightedScore"' : 'NULL::int as "eventWeightedScore"'},
+			EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber") as "hasEvents"
 		FROM "Business" b
-		WHERE (b."registeredInForetaksregisteret" = true OR b."orgFormCode" IN ('AS','ASA','ENK','ANS','DA','NUF','SA','SAS','A/S','A/S/ASA'))
-		${industryClause}
-		${isCsvSource ? '' : recommendationClause}
-		${isCsvSource ? '' : scoreClause}
-		${csvOrgNumbersClause}
-		${scoreFilterClause}
-		AND EXISTS (
-			SELECT 1 FROM "FinancialReport" f 
-			WHERE f."businessId" = b.id 
-			${revenueClause.replace(/f\./g, 'f.')}
-		)
-	`
-    : `
-		SELECT COUNT(*)::int as total 
-		FROM "Business" b
-		${baseWhere}
-	`
+    LEFT JOIN LATERAL (
+      SELECT f."fiscalYear", f.revenue, f.profit, f."totalAssets", f.equity, f."employeesAvg"
+      FROM "FinancialReport" f
+      WHERE f."businessId" = b.id
+      ORDER BY f."fiscalYear" DESC NULLS LAST
+      LIMIT 1
+    ) fLatest ON TRUE
+    ${hasWeights ? `LEFT JOIN LATERAL (
+      SELECT COALESCE(SUM(NULLIF(($${weightsIdx}::jsonb ->> ev.event_type), '')::int), 0) AS "eventWeightedScore"
+      FROM public.events_public ev
+      WHERE ev.org_number = b."orgNumber"
+      ${eventTypesIdx ? `AND ev.event_type = ANY($${eventTypesIdx}::text[])` : ''}
+    ) evScore ON TRUE` : ''}
+    ${baseWhere}
+    ${revenueClause ? revenueClause.replace(/\bf\./g, 'fLatest.') : ''}
+    ${withEvents ? 'AND EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
+    ${withoutEvents ? 'AND NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
+    ${eventTypesIdx ? `AND EXISTS (SELECT 1 FROM public.events_public e2 WHERE e2.org_number = b."orgNumber" AND e2.event_type = ANY($${eventTypesIdx}::text[]))` : ''}
+    ORDER BY ${(() => {
+      switch (validSortBy) {
+        case 'name':
+          return 'b.name ASC'
+        case 'revenue':
+          return 'fLatest.revenue DESC NULLS LAST'
+        case 'employees':
+          return 'b.employees DESC NULLS LAST'
+        default:
+          return 'b."updatedAt" DESC'
+      }
+    })()}
+    LIMIT 100 OFFSET ${offset}
+  `
+
+  const countSql = `
+    SELECT COUNT(*)::int as total
+    FROM "Business" b
+    LEFT JOIN LATERAL (
+      SELECT f."fiscalYear", f.revenue
+      FROM "FinancialReport" f
+      WHERE f."businessId" = b.id
+      ORDER BY f."fiscalYear" DESC NULLS LAST
+      LIMIT 1
+    ) fLatest ON TRUE
+    ${baseWhere}
+    ${revenueClause ? revenueClause.replace(/\bf\./g, 'fLatest.') : ''}
+    ${withEvents ? 'AND EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
+    ${withoutEvents ? 'AND NOT EXISTS (SELECT 1 FROM public.events_public e WHERE e.org_number = b."orgNumber")' : ''}
+    ${eventTypesIdx ? `AND EXISTS (SELECT 1 FROM public.events_public e2 WHERE e2.org_number = b."orgNumber" AND e2.event_type = ANY($${eventTypesIdx}::text[]))` : ''}
+  `
   let itemsRes: { rows: Record<string, unknown>[] } = { rows: [] }
   let total = 0
+  let grandTotal = 0
 
   if (countOnly) {
-    if (isCsvSource) {
-      // Need full item set to compute CSV-based total
-      const start = Date.now()
-      try {
-        itemsRes = await query(itemsSql, params)
-        console.log(`[businesses] CSV items query took ${Date.now() - start}ms`)
-      } catch (error) {
-        console.error(`[businesses] CSV items query failed:`, error)
-        console.error(`[businesses] Query was:`, itemsSql)
-        console.error(`[businesses] Params:`, params)
-        throw error
+    const start = Date.now()
+    try {
+      const countRes = await query<{ total: number }>(countSql, params)
+      console.log(`[businesses] Count query took ${Date.now() - start}ms`)
+      total = countRes.rows?.[0]?.total ?? 0
+    } catch (error) {
+      console.error(`[businesses] Count query failed:`, error)
+      console.error(`[businesses] Count query was:`, countSql)
+      console.error(`[businesses] Params:`, params)
+      throw error
+    }
+    // Also fetch the unfiltered grand total (with lightweight caching via apiCache)
+    try {
+      const gtCacheKey = { metric: 'grandTotalBusinesses' }
+      const cachedGT = apiCache.get<{ total: number }>(gtCacheKey)
+      if (cachedGT) {
+        grandTotal = cachedGT.total
+      } else {
+        const gtRes = await query<{ total: number }>(
+          'SELECT COUNT(*)::int as total FROM "Business"',
+        )
+        grandTotal = gtRes.rows?.[0]?.total ?? 0
+        apiCache.set(gtCacheKey, { total: grandTotal }, 2 * 60 * 1000) // cache 2 minutes
       }
-    } else {
-      const start = Date.now()
-      try {
-        const countRes = await query<{ total: number }>(countSql, params)
-        console.log(`[businesses] Count query took ${Date.now() - start}ms`)
-        total = countRes.rows?.[0]?.total ?? 0
-      } catch (error) {
-        console.error(`[businesses] Count query failed:`, error)
-        console.error(`[businesses] Count query was:`, countSql)
-        console.error(`[businesses] Params:`, params)
-        throw error
-      }
+    } catch (error) {
+      console.error('[businesses] Grand total query failed:', error)
     }
   } else {
     // Normal item fetch always needed
     const start = Date.now()
-
-    // Debug: Log SQL when sorting by score
-    if (source === 'general' && validSortBy.includes('allvitrScore')) {
-      console.log(
-        `[businesses] Executing score sort query:`,
-        itemsSql.substring(0, 500) + '...',
-      )
-      console.log(`[businesses] Params:`, params)
-      console.log(`[businesses] scoreFilterClause:`, scoreFilterClause)
-      console.log(`[businesses] revenueClause:`, revenueClause)
-      console.log(`[businesses] baseWhere:`, baseWhere)
-      console.log(
-        `[businesses] Full query contains scoreFilter:`,
-        itemsSql.includes('IS NOT NULL'),
-      )
-    }
 
     try {
       itemsRes = await query(itemsSql, params)
       console.log(
         `[businesses] Items query took ${Date.now() - start}ms (revenue: ${!!revenueClause}) - ${itemsRes.rows.length} rows returned for sortBy=${validSortBy}, source=${source}`,
       )
-
-      // Debug: Always log when sortBy includes allvitrScore
-      if (validSortBy.includes('allvitrScore')) {
-        console.log(
-          `[businesses] SCORE SORTING DEBUG: sortBy=${validSortBy}, source=${source}, rows=${itemsRes.rows.length}`,
-        )
-      }
-
-      // Debug: Log score distribution for general source when sorting by score
-      if (source === 'general' && validSortBy.includes('allvitrScore')) {
-        const withPositiveScores = itemsRes.rows.filter(
-          (row) => row.allvitrScore && Number(row.allvitrScore) > 0,
-        ).length
-        const withZeroScores = itemsRes.rows.filter(
-          (row) => row.allvitrScore !== null && Number(row.allvitrScore) === 0,
-        ).length
-        const withNegativeScores = itemsRes.rows.filter(
-          (row) => row.allvitrScore && Number(row.allvitrScore) < 0,
-        ).length
-        const nullScores = itemsRes.rows.filter(
-          (row) => row.allvitrScore === null || row.allvitrScore === undefined,
-        ).length
-        console.log(
-          `[businesses] Score distribution: ${withPositiveScores} positive, ${withZeroScores} zero, ${withNegativeScores} negative, ${nullScores} NULL scores`,
-        )
-
-        // Log first few scores to see what we're getting
-        const firstFewScores = itemsRes.rows
-          .slice(0, 5)
-          .map((row) => ({ name: row.name, score: row.allvitrScore }))
-        console.log(`[businesses] First few results:`, firstFewScores)
-      }
     } catch (error) {
       console.error(`[businesses] Items query failed:`, error)
       console.error(`[businesses] Query was:`, itemsSql)
@@ -547,110 +330,29 @@ export async function GET(req: Request) {
         throw error
       }
     }
-  }
 
-  // CSV-based source filtering using cached data
-
-  let filteredItems = itemsRes.rows as Record<string, unknown>[]
-  if (isCsvSource) {
-    const csvData = csvCache.getCsvData(source as 'accounting' | 'consulting')
-
-    // No need to filter by orgNumber anymore since we filter at DB level
-    // filteredItems already contains only CSV organizations
-    // Merge CSV recommendation, rationale, and score, overriding DB values when CSV has them
-    filteredItems = filteredItems.map((row) => {
-      const org = String(row.orgNumber)
-      const csvInfo = csvData.map.get(org)
-      if (!csvInfo) return row
-      const next = { ...row }
-      if (csvInfo.recommendation && csvInfo.recommendation.trim())
-        next.recommendation = csvInfo.recommendation
-      if (csvInfo.rationale && csvInfo.rationale.trim())
-        next.rationale = csvInfo.rationale
-      if (csvInfo.allvitrScore != null) next.allvitrScore = csvInfo.allvitrScore
-      return next
-    })
-
-    // Apply recommendation filter after CSV data merging (since CSV overrides DB recommendation)
-    if (recommendation) {
-      filteredItems = filteredItems.filter(
-        (row) => String(row.recommendation) === recommendation,
-      )
-    }
-
-    // Apply score range filter after CSV data merging (since CSV overrides DB score)
-    if (scoreRange) {
-      filteredItems = filteredItems.filter((row) => {
-        const score = Number(row.allvitrScore)
-        if (isNaN(score)) return false
-
-        switch (scoreRange) {
-          case '0-50':
-            return score >= 0 && score < 50
-          case '50-100':
-            return score >= 50 && score < 100
-          case '100-200':
-            return score >= 100 && score < 200
-          case '200+':
-            return score >= 200
-          default:
-            return true
-        }
-      })
-    }
-  }
-
-  // Apply sorting for CSV sources after filtering (since CSV data overrides sort fields)
-  if (isCsvSource && filteredItems.length > 0) {
-    console.log(
-      `[businesses] Sorting ${filteredItems.length} CSV items by ${validSortBy}`,
-    )
-    filteredItems.sort((a, b) => {
-      switch (validSortBy) {
-        case 'allvitrScore': {
-          const scoreA = Number(a.allvitrScore) || 0
-          const scoreB = Number(b.allvitrScore) || 0
-          // Prioritize items with actual scores over 0
-          if (scoreA > 0 && scoreB === 0) return -1
-          if (scoreB > 0 && scoreA === 0) return 1
-          return scoreB - scoreA
-        }
-        case 'allvitrScoreAsc': {
-          const scoreA = Number(a.allvitrScore) || 0
-          const scoreB = Number(b.allvitrScore) || 0
-          // Prioritize items with actual scores over 0
-          if (scoreA > 0 && scoreB === 0) return -1
-          if (scoreB > 0 && scoreA === 0) return 1
-          return scoreA - scoreB
-        }
-        case 'name':
-          return String(a.name || '').localeCompare(String(b.name || ''))
-        case 'revenue':
-          return (Number(b.revenue) || 0) - (Number(a.revenue) || 0)
-        case 'employees':
-          return (Number(b.employees) || 0) - (Number(a.employees) || 0)
-        default:
-          // Sort by updatedAt - assume it's a string timestamp
-          return String(b.updatedAt || '').localeCompare(
-            String(a.updatedAt || ''),
-          )
+    // Fetch unfiltered grand total once per request (from cache if available)
+    try {
+      const gtCacheKey = { metric: 'grandTotalBusinesses' }
+      const cachedGT = apiCache.get<{ total: number }>(gtCacheKey)
+      if (cachedGT) {
+        grandTotal = cachedGT.total
+      } else {
+        const gtRes = await query<{ total: number }>(
+          'SELECT COUNT(*)::int as total FROM "Business"',
+        )
+        grandTotal = gtRes.rows?.[0]?.total ?? 0
+        apiCache.set(gtCacheKey, { total: grandTotal }, 2 * 60 * 1000)
       }
-    })
-
-    if (validSortBy.includes('allvitrScore')) {
-      const withScores = filteredItems.filter(
-        (item) => Number(item.allvitrScore) > 0,
-      ).length
-      console.log(
-        `[businesses] After score sorting: ${withScores} items have scores > 0`,
-      )
+    } catch (error) {
+      console.error('[businesses] Grand total query failed:', error)
     }
   }
 
-  // Apply pagination for CSV sources at response level; general uses SQL LIMIT/OFFSET
+  const filteredItems = itemsRes.rows as Array<Record<string, unknown>>
+
   if (countOnly) {
-    const responseTotal = isCsvSource ? filteredItems.length : total
-    const countResponse = { items: [], total: responseTotal }
+    const countResponse = { items: [], total, grandTotal }
 
     // Cache count-only responses
     if (shouldCache) {
@@ -660,18 +362,11 @@ export async function GET(req: Request) {
     return NextResponse.json(countResponse)
   }
 
-  const responseItems = isCsvSource
-    ? filteredItems.slice(offset, offset + 100)
-    : filteredItems
-  const responseTotal = isCsvSource ? filteredItems.length : total
-
-  const response = { items: responseItems, total: responseTotal }
+  const response = { items: filteredItems, total, grandTotal }
 
   // Cache the response for future requests
   if (shouldCache) {
-    // Use shorter TTL for CSV sources since they have dynamic filtering
-    const cacheTtl = isCsvSource ? 30 * 1000 : 2 * 60 * 1000 // 30s vs 2min
-    apiCache.set(cacheParams, response, cacheTtl)
+    apiCache.set(cacheParams, response, 2 * 60 * 1000) // 2min cache
   }
 
   return NextResponse.json(response)

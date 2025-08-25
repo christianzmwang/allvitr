@@ -33,7 +33,15 @@ export const pool: import('pg').Pool | null = connectionString
     })
   : null
 
-type SqlParam = string | number | boolean | null | Date | Buffer
+export type SqlParam =
+  | string
+  | number
+  | boolean
+  | null
+  | Date
+  | Buffer
+  | string[]
+  | number[]
 
 export async function query<T = unknown>(
   text: string,

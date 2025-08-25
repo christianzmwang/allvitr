@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  memo,
-  type CSSProperties,
-} from 'react'
+import { useEffect, useMemo, useRef, useState, memo } from 'react'
 import { createPortal } from 'react-dom'
 
 const numberFormatter = new Intl.NumberFormat('no-NO')
@@ -46,15 +39,28 @@ type Business = {
   vatRegisteredDate?: string | null
   sectorCode?: string | null
   sectorText?: string | null
-  // Added: CSV recommendation data
-  recommendation?: string | null
-  rationale?: string | null
-  allvitrScore?: number | null
+  // events
+  hasEvents?: boolean | null
+  // recommendation, rationale and score removed
+}
+
+type EventItem = {
+  id?: string | number
+  title?: string | null
+  description?: string | null
+  date?: string | null
+  url?: string | null
+  source?: string | null
+  score?: number | null
 }
 
 type IndustryOpt = { code: string | null; text: string | null; count: number }
 
-type BusinessesResponse = { items: Business[]; total: number }
+type BusinessesResponse = {
+  items: Business[]
+  total: number
+  grandTotal?: number
+}
 type SelectedIndustry = { value: string; label: string }
 
 // Memoized business card component for better performance
@@ -62,34 +68,88 @@ const BusinessCard = memo(
   ({
     business,
     numberFormatter,
-    expandedRationalOrgs,
-    setExpandedRationalOrgs,
+  selectedEventTypes,
+  eventWeights,
   }: {
     business: Business
     numberFormatter: Intl.NumberFormat
-    expandedRationalOrgs: Record<string, boolean>
-    setExpandedRationalOrgs: React.Dispatch<
-      React.SetStateAction<Record<string, boolean>>
-    >
+  selectedEventTypes: string[]
+  eventWeights: Record<string, number>
   }) => {
     const fmt = (v: number | string | null | undefined) =>
       v === null || v === undefined ? '—' : numberFormatter.format(Number(v))
 
+    // Lazy-load events when a company indicates it has them
+  const [events, setEvents] = useState<EventItem[] | null>(null)
+  const [eventsLoading, setEventsLoading] = useState(false)
+  const [eventsError, setEventsError] = useState<unknown>(null)
+    const [showAllEvents, setShowAllEvents] = useState(false)
+    const [expandedTitleKeys, setExpandedTitleKeys] = useState<Set<string>>(new Set())
+    const [expandedDescKeys, setExpandedDescKeys] = useState<Set<string>>(new Set())
+
+    const getEventKey = (ev: EventItem, idx: number) =>
+      String((ev.id ?? `${business.orgNumber}-${idx}`) as string | number)
+    useEffect(() => {
+      if (!business.hasEvents) return
+      let cancelled = false
+      const load = async () => {
+        setEventsLoading(true)
+        setEventsError(null)
+        try {
+          const params = new URLSearchParams()
+          params.set('orgNumber', business.orgNumber)
+          params.set('limit', '50')
+          if (selectedEventTypes && selectedEventTypes.length > 0) {
+            params.set('eventTypes', selectedEventTypes.join(','))
+          }
+          const res = await fetch('/api/events?' + params.toString())
+          const json = (await res.json()) as
+            | { items?: EventItem[] }
+            | EventItem[]
+          const items = Array.isArray(json) ? json : json.items || []
+          const filtered =
+            selectedEventTypes && selectedEventTypes.length > 0
+              ? (items || []).filter(
+                  (it) => !!it && !!it.source && selectedEventTypes.includes(it.source as string),
+                )
+              : items
+          if (!cancelled) setEvents(filtered)
+        } catch (e) {
+          if (!cancelled) {
+            setEventsError(e)
+            setEvents([])
+          }
+        } finally {
+          if (!cancelled) setEventsLoading(false)
+        }
+      }
+      // fire-and-forget
+      load()
+      return () => {
+        cancelled = true
+      }
+    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(',')])
+
+    // Compute weighted score: sum(weight[event_type] * event.score) for selected types
+    const companyScore = useMemo(() => {
+      if (!events || events.length === 0) return 0
+      if (!selectedEventTypes || selectedEventTypes.length === 0) return 0
+      const setSelected = new Set(selectedEventTypes)
+      let total = 0
+      for (const ev of events) {
+        const type = (ev.source || '') as string
+        if (!type) continue
+        if (setSelected.size > 0 && !setSelected.has(type)) continue
+        const w = eventWeights[type] ?? 0
+        const s = typeof ev.score === 'number' ? ev.score : 0
+        total += w * s
+      }
+      return total
+    }, [events, selectedEventTypes.join(','), JSON.stringify(eventWeights)])
+
     return (
-      <div
-        className={`border p-6 transition-all hover:shadow-lg ${
-          business.allvitrScore != null
-            ? 'border-white/10 bg-gray-900 hover:bg-gray-800'
-            : business.recommendation === 'Reach out now'
-              ? 'border-green-500 bg-green-900/10 hover:bg-green-900/20'
-              : business.recommendation === 'Warm outreach'
-                ? 'border-blue-500 bg-blue-900/10 hover:bg-blue-900/20'
-                : business.recommendation === 'Monitor'
-                  ? 'border-yellow-500 bg-yellow-900/10 hover:bg-yellow-900/20'
-                  : 'border-white/10 bg-gray-900 hover:bg-gray-800'
-        }`}
-      >
-        <div className="flex justify-between items-start mb-4">
+      <div className="border p-6 transition-all hover:shadow-lg border-white/10 bg-gray-900 hover:bg-gray-800">
+  <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
             <h3 className="text-xl font-semibold mb-2">{business.name}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
@@ -154,152 +214,202 @@ const BusinessCard = memo(
             </div>
           </div>
           <div className="ml-6 flex flex-col items-end gap-3">
-            {business.recommendation && (
-              <span
-                className={`px-3 py-2 text-sm font-medium ${
-                  business.recommendation === 'Reach out now'
-                    ? 'bg-green-600 text-white'
-                    : business.recommendation === 'Warm outreach'
-                      ? 'bg-blue-600 text-white'
-                      : business.recommendation === 'Monitor'
-                        ? 'bg-yellow-600 text-white'
-                        : 'bg-gray-600 text-white'
-                }`}
-              >
-                {business.recommendation}
-              </span>
-            )}
-            {business.allvitrScore != null && (
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-400">
-                  {business.allvitrScore.toFixed(2)}
-                </div>
-                <div className="text-xs text-yellow-400/70">Hugin Score</div>
-              </div>
-            )}
+            {business.hasEvents ? (
+              (() => {
+                const hasSelected = selectedEventTypes && selectedEventTypes.length > 0
+                const hasAnyEvents = Array.isArray(events) && events.length > 0
+                const canShowNumber = hasSelected && hasAnyEvents && !eventsLoading
+                if (!canShowNumber) {
+                  return <div className="h-px w-12 bg-white/20" aria-hidden="true" />
+                }
+                const color = companyScore > 0 ? 'text-green-400' : companyScore < 0 ? 'text-red-400' : 'text-gray-300'
+                return (
+                  <span
+                    className={`${color} text-sm font-medium`}
+                    title="Weighted score from selected event types"
+                  >
+                    {numberFormatter.format(companyScore)}
+                  </span>
+                )
+              })()
+            ) : null}
           </div>
         </div>
 
-        {/* Recommendation Rationale */}
-        {business.recommendation && business.rationale && (
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <div className="text-sm">
-              <span className="font-medium text-gray-300 block mb-2">
-                Rationale:
-              </span>
-              {(() => {
-                const all = (business.rationale || '')
-                  .split(/\r?\n|;|(?<=\.)\s+/)
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-                const isExpanded = !!expandedRationalOrgs[business.orgNumber]
-                const source = isExpanded ? all : all.slice(0, 2)
-                const items = source.map((line, idx) => {
-                  let cleaned = String(line)
-                    .replace(/\(n\/a\)/gi, '')
-                    .trim()
-                  let impactDisplay: string | null = null
-                  let impactRawForRemoval: string | null = null
-                  let badgeColor = 'bg-gray-600'
-
-                  const signed = cleaned.match(/([+-]\s*\d+(?:[.,]\d+)?%?)/)
-                  if (signed) {
-                    impactRawForRemoval = signed[1]
-                    impactDisplay = signed[1].replace(/\s+/g, '')
-                    badgeColor = impactDisplay.trim().startsWith('-')
-                      ? 'bg-red-600'
-                      : 'bg-green-600'
-                  } else {
-                    const labeled = cleaned.match(
-                      /impact\s*direction\s*: ?\s*([+-]?\s*\d+(?:[.,]\d+)?%?)/i,
-                    )
-                    if (labeled) {
-                      impactRawForRemoval = labeled[1]
-                      const normalized = labeled[1].replace(/\s+/g, '')
-                      if (/^0([.,]0+)?%?$/.test(normalized)) {
-                        badgeColor = 'bg-gray-600'
-                        impactDisplay = '0'
-                      } else {
-                        impactDisplay = normalized
-                        badgeColor = normalized.trim().startsWith('-')
-                          ? 'bg-red-600'
-                          : 'bg-green-600'
-                      }
-                    }
-                  }
-
-                  cleaned = cleaned
-                    .replace(/impact\s*direction\s*:?/i, '')
-                    .trim()
-                  if (impactRawForRemoval) {
-                    const esc = impactRawForRemoval.replace(
-                      /[.*+?^${}()|[\]\\]/g,
-                      '\\$&',
-                    )
-                    cleaned = cleaned
-                      .replace(new RegExp(esc), '')
-                      .replace(/\(\s*\)/g, '')
-                      .replace(/\s{2,}/g, ' ')
-                      .trim()
-                  }
-
-                  return { key: idx, text: cleaned, impactDisplay, badgeColor }
-                })
-
-                const rendered = items.map((it, i) => {
-                  const isHalf = !isExpanded && i === 1 && items.length > 1
-                  return (
-                    <div
-                      key={it.key}
-                      className="p-3 bg-gray-800 border border-white/10 whitespace-pre-wrap flex items-start justify-between gap-3"
-                    >
-                      <div
-                        className="flex-1 overflow-hidden"
-                        style={
-                          isHalf
-                            ? ({
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                              } as CSSProperties)
-                            : undefined
-                        }
-                      >
-                        {it.text}
+        {/* Rationale removed */}
+        {business.hasEvents ? (
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <h4 className="text-lg font-semibold mb-3">Latest events</h4>
+            {eventsLoading && (
+              <div className="text-sm text-gray-400">Loading events…</div>
+            )}
+            {!eventsLoading && !!eventsError && (
+              <div className="text-sm text-red-400">Failed to load events</div>
+            )}
+            {!eventsLoading && (events?.length ?? 0) === 0 && (
+              <div className="text-sm text-gray-400">No recent events</div>
+            )}
+            <ul className="space-y-2">
+              {(showAllEvents ? events : events?.slice(0, 1))?.map((ev, idx) => (
+                <li
+                  key={(ev.id ?? idx) as React.Key}
+                  className="text-sm text-gray-200"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1">
+                      <div className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
+                        {(() => {
+                          const fullTitle = ev.title || 'Untitled event'
+                          const key = getEventKey(ev, idx)
+                          const isExpanded = expandedTitleKeys.has(key)
+                          const limit = 80
+                          const needsTruncate = fullTitle.length > limit
+                          if (!needsTruncate) return fullTitle
+                          if (isExpanded) {
+                            return (
+                              <>
+                                {fullTitle}{' '}
+                                <button
+                                  className="text-sky-400 hover:text-sky-300 underline text-xs"
+                                  style={{ display: 'inline-block' }}
+                                  onClick={() =>
+                                    setExpandedTitleKeys((prev) => {
+                                      const next = new Set(prev)
+                                      next.delete(key)
+                                      return next
+                                    })
+                                  }
+                                >
+                                  Less
+                                </button>
+                              </>
+                            )
+                          }
+                          return (
+                            <>
+                              {fullTitle.slice(0, limit)}…{' '}
+                              <button
+                                className="text-sky-400 hover:text-sky-300 underline text-xs"
+                                style={{ display: 'inline-block' }}
+                                onClick={() =>
+                                  setExpandedTitleKeys((prev) => new Set(prev).add(key))
+                                }
+                              >
+                                More
+                              </button>
+                            </>
+                          )
+                        })()}
                       </div>
-                      {it.impactDisplay && (
-                        <span
-                          className={`shrink-0 inline-flex items-center justify-center w-16 py-1 text-sm font-semibold ${it.badgeColor} text-white font-mono`}
-                        >
-                          {it.impactDisplay}
-                        </span>
+                      {ev.description && (
+                        <div className="text-gray-400 mt-1" style={{ whiteSpace: 'pre-wrap' }}>
+                          {(() => {
+                            const full = ev.description as string
+                            const key = getEventKey(ev, idx)
+                            const isExpanded = expandedDescKeys.has(key)
+                            const limit = 160
+                            const needsTruncate = full.length > limit
+                            if (!needsTruncate) return full
+                            if (isExpanded) {
+                              return (
+                                <>
+                                  {full}{' '}
+                                  <button
+                                    className="text-sky-400 hover:text-sky-300 underline"
+                                    style={{ display: 'inline-block' }}
+                                    onClick={() => {
+                                      setExpandedDescKeys((prev) => {
+                                        const next = new Set(prev)
+                                        next.delete(key)
+                                        return next
+                                      })
+                                    }}
+                                  >
+                                    Less
+                                  </button>
+                                </>
+                              )
+                            }
+                            return (
+                              <>
+                                {full.slice(0, limit)}…{' '}
+                                <button
+                                  className="text-sky-400 hover:text-sky-300 underline"
+                                  style={{ display: 'inline-block' }}
+                                  onClick={() => {
+                                    setExpandedDescKeys((prev) => new Set(prev).add(key))
+                                  }}
+                                >
+                                  More
+                                </button>
+                              </>
+                            )
+                          })()}
+                        </div>
                       )}
                     </div>
-                  )
-                })
-
-                return (
-                  <>
-                    {rendered}
-                    {all.length > 2 && (
-                      <button
-                        onClick={() =>
-                          setExpandedRationalOrgs((prev) => ({
-                            ...prev,
-                            [business.orgNumber]: !isExpanded,
-                          }))
-                        }
-                        className="mt-2 self-start inline-flex items-center gap-2 px-2 py-1 bg-gray-800 border border-white/10 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-xs"
-                      >
-                        {isExpanded ? '▾ Show less' : '▸ Show all'}
-                      </button>
-                    )}
-                  </>
-                )
-              })()}
-            </div>
+                    <div className="text-right ml-auto">
+                      <div className="text-xs text-gray-400 whitespace-nowrap">
+                        {ev.date ? new Date(ev.date).toLocaleDateString() : ''}
+                      </div>
+                      {ev.source ? (
+                        <div className="mt-1 flex justify-end">
+                          {(() => {
+                            const s = (ev.source as string) || ''
+                            const t = s.replace(/_/g, ' ')
+                            const label = t.charAt(0).toUpperCase() + t.slice(1)
+                            return (
+                              <span
+                                className="inline-block px-2 py-1 text-[11px] leading-none border border-white/30 bg-white/5 text-gray-200 hover:bg-white/10"
+                                title={label}
+                                aria-label={label}
+                              >
+                                {label}
+                              </span>
+                            )
+                          })()}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  {ev.url && (
+                    <a
+                      href={ev.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-sky-400 hover:text-sky-300 underline"
+                    >
+                      Source
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {!!events && events.length > 1 && (
+              <div className="mt-2">
+                {!showAllEvents ? (
+                  <button
+                    className="text-xs text-sky-400 hover:text-sky-300 underline"
+                    onClick={() => setShowAllEvents(true)}
+                  >
+                    Show {events.length - 1} more
+                  </button>
+                ) : (
+                  <button
+                    className="text-xs text-sky-400 hover:text-sky-300 underline"
+                    onClick={() => {
+                      setShowAllEvents(false)
+                      setExpandedTitleKeys(new Set())
+                      setExpandedDescKeys(new Set())
+                    }}
+                  >
+                    Show less
+                  </button>
+                )}
+              </div>
+            )}
           </div>
-        )}
+        ) : null}
       </div>
     )
   },
@@ -311,6 +421,7 @@ export default function BrregPage() {
   const [data, setData] = useState<Business[]>([])
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
+  const [grandTotal, setGrandTotal] = useState<number | null>(null)
   const [industryQuery, setIndustryQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<
     SelectedIndustry[]
@@ -330,40 +441,36 @@ export default function BrregPage() {
       )
     },
   )
-  const [selectedRecommendation, setSelectedRecommendation] = useState<string>(
-    () => {
-      if (typeof window === 'undefined') return ''
-      return (
-        new URLSearchParams(window.location.search).get('recommendation') || ''
-      )
-    },
-  )
-  const [selectedScoreRange, setSelectedScoreRange] = useState<string>(() => {
+  const [eventsFilter, setEventsFilter] = useState<string>(() => {
     if (typeof window === 'undefined') return ''
-    return new URLSearchParams(window.location.search).get('scoreRange') || ''
+    return new URLSearchParams(window.location.search).get('events') || ''
   })
-  const [selectedSource, setSelectedSource] = useState<
-    'general' | 'accounting' | 'consulting'
-  >(() => {
-    if (typeof window === 'undefined') return 'general'
-    const v =
-      new URLSearchParams(window.location.search).get('source') || 'general'
-    return v === 'general' || v === 'accounting' || v === 'consulting'
-      ? v
-      : 'general'
+  // Event type filtering & weighting
+  const [availableEventTypes, setAvailableEventTypes] = useState<string[]>([])
+  const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    const sp = new URLSearchParams(window.location.search)
+    const csv = sp.get('eventTypes') || ''
+    return csv ? csv.split(',').map((s) => s.trim()).filter(Boolean) : []
   })
+  const [eventWeights, setEventWeights] = useState<Record<string, number>>(() => {
+    if (typeof window === 'undefined') return {}
+    const sp = new URLSearchParams(window.location.search)
+    try {
+      const raw = sp.get('eventWeights')
+      if (!raw) return {}
+      const obj = JSON.parse(raw)
+      if (obj && typeof obj === 'object') return obj as Record<string, number>
+    } catch {}
+    return {}
+  })
+  // recommendation and score filters removed
+  const selectedSource = 'general'
   const [sortBy, setSortBy] = useState<string>(() => {
     if (typeof window === 'undefined') return 'updatedAt'
     const v =
       new URLSearchParams(window.location.search).get('sortBy') || 'updatedAt'
-    const allowed = new Set([
-      'updatedAt',
-      'allvitrScore',
-      'allvitrScoreAsc',
-      'name',
-      'revenue',
-      'employees',
-    ])
+    const allowed = new Set(['updatedAt', 'name', 'revenue', 'employees'])
     return allowed.has(v) ? v : 'updatedAt'
   })
   const [offset, setOffset] = useState<number>(0)
@@ -376,9 +483,7 @@ export default function BrregPage() {
     width: number
   } | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [expandedRationalOrgs, setExpandedRationalOrgs] = useState<
-    Record<string, boolean>
-  >({})
+  // Removed rationale expand/collapse state
 
   const queryParam = useMemo(() => {
     const sp = new URLSearchParams()
@@ -386,15 +491,17 @@ export default function BrregPage() {
     if (selectedRevenueRange) {
       sp.append('revenueRange', selectedRevenueRange)
     }
-    if (selectedRecommendation) {
-      sp.append('recommendation', selectedRecommendation)
+    if (eventsFilter) {
+      sp.append('events', eventsFilter)
     }
-    if (selectedScoreRange) {
-      sp.append('scoreRange', selectedScoreRange)
+    if (selectedEventTypes.length > 0) {
+      sp.append('eventTypes', selectedEventTypes.join(','))
     }
-    if (selectedSource) {
-      sp.append('source', selectedSource)
+    if (Object.keys(eventWeights).length > 0) {
+      sp.append('eventWeights', JSON.stringify(eventWeights))
     }
+    // recommendation and score params removed
+    sp.append('source', selectedSource)
     if (sortBy) {
       sp.append('sortBy', sortBy)
     }
@@ -409,9 +516,10 @@ export default function BrregPage() {
   }, [
     selectedIndustries,
     selectedRevenueRange,
-    selectedRecommendation,
-    selectedScoreRange,
-    selectedSource,
+    eventsFilter,
+    selectedEventTypes.length,
+    JSON.stringify(eventWeights),
+    // removed recommendation and score dependencies
     sortBy,
     offset,
   ])
@@ -446,6 +554,7 @@ export default function BrregPage() {
           // If server skipped count, keep current total for snappy UI
           if (typeof res.total === 'number' && res.total > 0)
             setTotal(res.total)
+          if (typeof res.grandTotal === 'number') setGrandTotal(res.grandTotal)
         }
       })
       .finally(() => setLoading(false))
@@ -459,8 +568,9 @@ export default function BrregPage() {
     sp.set('countOnly', '1')
     fetch('/api/businesses?' + sp.toString())
       .then((r) => r.json())
-      .then((res: { total?: number }) => {
+      .then((res: { total?: number; grandTotal?: number }) => {
         if (typeof res.total === 'number') setTotal(res.total)
+        if (typeof res.grandTotal === 'number') setGrandTotal(res.grandTotal)
       })
       .catch(() => {})
   }, [queryParam, selectedIndustries.length])
@@ -472,9 +582,10 @@ export default function BrregPage() {
   }, [
     selectedIndustries,
     selectedRevenueRange,
-    selectedRecommendation,
-    selectedScoreRange,
-    selectedSource,
+    eventsFilter,
+  selectedEventTypes.length,
+  JSON.stringify(eventWeights),
+    // removed recommendation and score
     sortBy,
   ])
 
@@ -490,6 +601,14 @@ export default function BrregPage() {
         setAllIndustries([])
         setSuggestions([])
       })
+  }, [])
+
+  // Load available event types on mount
+  useEffect(() => {
+    fetch('/api/events/types')
+      .then((r) => r.json())
+      .then((res: { items?: string[] }) => setAvailableEventTypes(res.items || []))
+      .catch(() => setAvailableEventTypes([]))
   }, [])
 
   // Client-side filtering for instant results
@@ -577,168 +696,117 @@ export default function BrregPage() {
       {/* Header */}
       <div className="bg-black border-b border-white/10">
         <div className="py-4 px-6">
-          <h1 className="text-xl font-bold">
-            Allvitr / <span className="text-red-600">Hugin</span>
-          </h1>
+          <h1 className="text-xl font-bold">Allvitr / <span className='text-red-600'>Hugin</span></h1>
         </div>
       </div>
 
       <div className="flex">
-        {/* Left Sidebar - Recommendation & Score Filters */}
-        <div className="w-80 bg-black border-r border-white/10 min-h-screen p-6">
+  {/* Left Sidebar - Signals */}
+  <div className="w-96 bg-black border-r border-white/10 min-h-screen p-6">
           <div className="sticky top-6">
-            <h2 className="text-xl font-semibold mb-6">Parameters</h2>
-            {/* Source Filter */}
+            <h2 className="text-xl font-semibold mb-6">Signals</h2>
+
+            {/* Recommendation and Score filters removed */}
+
+            {/* Events Filter moved from top panel */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Industry</label>
-              <div className="flex flex-col items-start gap-2">
-                <label
-                  className={`px-3 py-2 border cursor-pointer ${selectedSource === 'general' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                >
-                  <input
-                    type="radio"
-                    name="srcSide"
-                    className="sr-only"
-                    checked={selectedSource === 'general'}
-                    onChange={() => setSelectedSource('general')}
-                  />
-                  <span>General</span>
-                </label>
-                <label
-                  className={`px-3 py-2 border cursor-pointer ${selectedSource === 'accounting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                >
-                  <input
-                    type="radio"
-                    name="srcSide"
-                    className="sr-only"
-                    checked={selectedSource === 'accounting'}
-                    onChange={() => setSelectedSource('accounting')}
-                  />
-                  <span>Accounting</span>
-                </label>
-                <label
-                  className={`px-3 py-2 border cursor-pointer ${selectedSource === 'consulting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                >
-                  <input
-                    type="radio"
-                    name="srcSide"
-                    className="sr-only"
-                    checked={selectedSource === 'consulting'}
-                    onChange={() => setSelectedSource('consulting')}
-                  />
-                  <span>Consulting</span>
-                </label>
+              <label className="block text-sm font-medium mb-2">Events</label>
+              <select
+                value={eventsFilter}
+                onChange={(e) => setEventsFilter(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+              >
+                <option value="">All companies</option>
+                <option value="with">With events</option>
+                <option value="without">Without events</option>
+              </select>
+              {eventsFilter && (
+                <div className="mt-3 flex items-center gap-3">
+                  <span className="text-sm text-gray-400">Events filter:</span>
+                  <span className="inline-flex items-center gap-2 bg-purple-600 px-3 py-1 text-sm">
+                    <span className="font-medium">
+                      {eventsFilter === 'with' ? 'With events' : 'Without events'}
+                    </span>
+                    <button
+                      className="opacity-80 hover:opacity-100"
+                      onClick={() => setEventsFilter('')}
+                    >
+                      ×
+                    </button>
+                  </span>
+                </div>
+              )}
+              {/* Event types list with per-type weight and selection border */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium mb-2">Event types</label>
+                <div className="max-h-[28rem] overflow-auto space-y-3 pr-1">
+                  {availableEventTypes.map((raw) => {
+                    const t = raw
+                    const selected = selectedEventTypes.includes(t)
+                    const weight = eventWeights[t] ?? 0
+                    const display = (t || '').replace(/_/g, ' ')
+                    const displayCap = display.charAt(0).toUpperCase() + display.slice(1)
+                    return (
+                      <div
+                        key={t}
+                        className={`p-3 bg-gray-900 border ${selected ? 'border-red-500' : 'border-white/10'}`}
+                        onClick={() => {
+                          setSelectedEventTypes((prev) =>
+                            prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+                          )
+                          // When deselecting, reset weight to 0
+                          if (selected) {
+                            setEventWeights((prev) => ({ ...prev, [t]: 0 }))
+                          } else if (eventWeights[t] === undefined) {
+                            setEventWeights((prev) => ({ ...prev, [t]: 0 }))
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm">{displayCap}</span>
+                          <span className="text-xs text-gray-400">{weight}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={-10}
+                          max={10}
+                          step={1}
+                          value={weight}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => {
+                            const val = Number(e.target.value)
+                            setEventWeights((prev) => ({ ...prev, [t]: val }))
+                            // moving the slider selects the event type if not already selected
+                            setSelectedEventTypes((prev) => (prev.includes(t) ? prev : [...prev, t]))
+                          }}
+                          className="w-full mt-3 slider-square"
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-
-            {/* Recommendation Filter */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Recommendation Priority
-              </label>
-              <select
-                value={selectedRecommendation}
-                onChange={(e) => setSelectedRecommendation(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-              >
-                <option value="">All recommendations</option>
-                <option value="Reach out now">Reach out now</option>
-                <option value="Monitor">Monitor</option>
-                <option value="Warm outreach">Warm outreach</option>
-              </select>
-            </div>
-
-            {/* Score Range Filter */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Hugin Score Range
-              </label>
-              <select
-                value={selectedScoreRange}
-                onChange={(e) => setSelectedScoreRange(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-              >
-                <option value="">All score ranges</option>
-                <option value="0-50">0 - 50 (Low Priority)</option>
-                <option value="50-100">50 - 100 (Medium Priority)</option>
-                <option value="100-200">100 - 200 (High Priority)</option>
-                <option value="200+">200+ (Top Priority)</option>
-              </select>
-            </div>
-
-            {/* Sort Options */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Sort By</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-              >
-                <option value="updatedAt">Last Updated</option>
-                <option value="allvitrScore">Score (High to Low)</option>
-                <option value="allvitrScoreAsc">Score (Low to High)</option>
-                <option value="name">Company Name</option>
-                <option value="revenue">Revenue (High to Low)</option>
-                <option value="employees">Employees (High to Low)</option>
-              </select>
             </div>
 
             {/* Active Filters Display */}
-            {(selectedRecommendation || selectedScoreRange) && (
-              <div className="mb-6 p-4 bg-gray-900 border border-white/10">
-                <h3 className="text-sm font-medium mb-3 text-gray-300">
-                  Active Filters
-                </h3>
-                <div className="space-y-2">
-                  {selectedRecommendation && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Recommendation:</span>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-green-600 text-white text-xs">
-                          {selectedRecommendation}
-                        </span>
-                        <button
-                          onClick={() => setSelectedRecommendation('')}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  {selectedScoreRange && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Score Range:</span>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-blue-600 text-white text-xs">
-                          {selectedScoreRange}
-                        </span>
-                        <button
-                          onClick={() => setSelectedScoreRange('')}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedRecommendation('')
-                    setSelectedScoreRange('')
-                  }}
-                  className="w-full mt-3 px-3 py-2 text-sm bg-red-600 hover:bg-red-700 transition-colors"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            )}
+            {/* Active filters section removed (only recommendation/score previously) */}
 
             {/* Results Count */}
             <div className="text-center p-4 bg-gray-900">
-              <div className="text-2xl font-bold">{total}</div>
-              <div className="text-sm text-gray-400">Businesses Found</div>
+              {(() => {
+                const hasAnyFilter =
+                  selectedIndustries.length > 0 ||
+                  !!selectedRevenueRange ||
+                  !!eventsFilter ||
+                  selectedEventTypes.length > 0
+                const value = hasAnyFilter ? total : (grandTotal ?? total)
+                return (
+                  <>
+                    <div className="text-2xl font-bold">{value}</div>
+                    <div className="text-sm text-gray-400">Businesses Found</div>
+                  </>
+                )
+              })()}
             </div>
           </div>
         </div>
@@ -749,7 +817,7 @@ export default function BrregPage() {
           <div className="mb-8 space-y-6">
             {/* Combined Industry & Revenue Filters */}
             <div className="bg-gray-900 border border-white/10 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">
                     Industry Filter
@@ -872,47 +940,7 @@ export default function BrregPage() {
                     )}
                   </div>
                 </div>
-                <div className="hidden">
-                  <h3 className="text-lg font-semibold mb-4">Source Filter</h3>
-                  <div className="flex items-center gap-3">
-                    <label
-                      className={`px-3 py-2 border cursor-pointer ${selectedSource === 'general' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="src"
-                        className="sr-only"
-                        checked={selectedSource === 'general'}
-                        onChange={() => setSelectedSource('general')}
-                      />
-                      <span>General</span>
-                    </label>
-                    <label
-                      className={`px-3 py-2 border cursor-pointer ${selectedSource === 'accounting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="src"
-                        className="sr-only"
-                        checked={selectedSource === 'accounting'}
-                        onChange={() => setSelectedSource('accounting')}
-                      />
-                      <span>Accounting</span>
-                    </label>
-                    <label
-                      className={`px-3 py-2 border cursor-pointer ${selectedSource === 'consulting' ? 'bg-white/10 border-white/40' : 'border-white/10'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="src"
-                        className="sr-only"
-                        checked={selectedSource === 'consulting'}
-                        onChange={() => setSelectedSource('consulting')}
-                      />
-                      <span>Consulting</span>
-                    </label>
-                  </div>
-                </div>
+
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Revenue Filter</h3>
                   <div>
@@ -955,6 +983,22 @@ export default function BrregPage() {
                     )}
                   </div>
                 </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Sort By</h3>
+                  <div>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-900 text-white border border-white/10 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                    >
+                      <option value="updatedAt">Last Updated</option>
+                      <option value="name">Company Name</option>
+                      <option value="revenue">Revenue (High to Low)</option>
+                      <option value="employees">Employees (High to Low)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -974,10 +1018,15 @@ export default function BrregPage() {
               {sortedData.map((business) => (
                 <BusinessCard
                   key={business.orgNumber}
-                  business={business}
+                  business={{
+                    ...business,
+                    // If filtering by 'with', hard-enable hasEvents to ensure UI loads them
+                    hasEvents:
+                      eventsFilter === 'with' ? true : business.hasEvents,
+                  }}
                   numberFormatter={numberFormatter}
-                  expandedRationalOrgs={expandedRationalOrgs}
-                  setExpandedRationalOrgs={setExpandedRationalOrgs}
+                  selectedEventTypes={selectedEventTypes}
+                  eventWeights={eventWeights}
                 />
               ))}
             </div>
