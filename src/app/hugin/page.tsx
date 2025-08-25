@@ -159,7 +159,7 @@ const BusinessCard = memo(
       return () => {
         cancelled = true
       }
-    }, [business.orgNumber, business.hasEvents, selectedEventTypes.join(','), isInView])
+    }, [business.orgNumber, business.hasEvents, selectedEventTypes, isInView])
 
     // Use backend-calculated weighted score
     const companyScore = useMemo(() => {
@@ -471,7 +471,7 @@ export default function BrregPage() {
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [grandTotal, setGrandTotal] = useState<number | null>(null)
-  const [countPending, setCountPending] = useState<boolean>(false)
+  const [, setCountPending] = useState<boolean>(false)
   const [industryQuery, setIndustryQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<
     SelectedIndustry[]
@@ -575,8 +575,8 @@ export default function BrregPage() {
     selectedIndustries,
     selectedRevenueRange,
     eventsFilter,
-    selectedEventTypes.length,
-    JSON.stringify(eventWeights),
+    selectedEventTypes,
+    eventWeights,
     // removed recommendation and score dependencies
     sortBy,
     offset,
@@ -685,8 +685,8 @@ export default function BrregPage() {
     selectedIndustries,
     selectedRevenueRange,
     eventsFilter,
-  selectedEventTypes.length,
-  JSON.stringify(eventWeights),
+    selectedEventTypes,
+    eventWeights,
     // removed recommendation and score
     sortBy,
   ])

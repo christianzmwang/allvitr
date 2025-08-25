@@ -46,9 +46,9 @@ export async function GET(req: Request) {
   ]
 
   try {
-    const res = await query<any>(sql, params)
+    const res = await query<Record<string, unknown>>(sql, params)
     if (explain) {
-      const plan = res.rows.map((r: any) => r['QUERY PLAN'] || Object.values(r)[0]).join('\n')
+      const plan = res.rows.map((r: Record<string, unknown>) => r['QUERY PLAN'] || Object.values(r)[0]).join('\n')
       const tookMs = Date.now() - start
       console.log(`[businesses] instant count explain took ${tookMs}ms`)
       return NextResponse.json(

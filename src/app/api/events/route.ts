@@ -73,7 +73,7 @@ export async function GET(req: Request) {
       let baseQuery = `SELECT *
 				 FROM public.events_public
 				 WHERE org_number = $1`
-      let queryParams: (string | number)[] = [orgNumber]
+              const queryParams: (string | number | string[])[] = [orgNumber]
       
       if (eventTypes.length > 0) {
         baseQuery += ` AND event_type = ANY($2::text[])`
@@ -86,7 +86,7 @@ export async function GET(req: Request) {
       }
       
       const result = await query<PublicEvent>(baseQuery, queryParams)
-      let rows = result.rows
+      const rows = result.rows
 
       const items: EventItem[] = (rows || []).map(mapToClientItem)
       return NextResponse.json({ items })

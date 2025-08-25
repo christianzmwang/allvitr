@@ -77,7 +77,7 @@ export function useBusinessesInstant(p: Params) {
     return JSON.stringify(k)
   }, [p.sortBy, p.order, p.limit, p.industryCode || null, p.sectorCode || null, p.orgFormCode || null, p.city || null, p.revenueBucket || null, p.employeeBucket || null, typeof p.vatRegistered === 'boolean' ? p.vatRegistered : null, p.search || null])
 
-  const [items, setItems] = useState<any[]>([])
+  const [items, setItems] = useState<Record<string, unknown>[]>([])
   const [listTookMs, setListTook] = useState<number | null>(null)
   const [total, setTotal] = useState<number | null>(null)
   const [countTookMs, setCountTook] = useState<number | null>(null)
@@ -105,7 +105,7 @@ export function useBusinessesInstant(p: Params) {
       try {
         const listPromise = fetch(listUrl, { signal: ctl.signal }).then((r) => r.json())
 
-        let countPromise: Promise<any> | null = null
+        let countPromise: Promise<{ total?: number; tookMs?: number }> | null = null
         if (!p.cursor) {
           const sp = buildQuery(p)
           // remove list-specific fields for count
@@ -134,7 +134,7 @@ export function useBusinessesInstant(p: Params) {
             })
         }
       } catch (e) {
-        if ((e as any)?.name === 'AbortError') return
+        if ((e as Error)?.name === 'AbortError') return
         setItems([])
         if (!p.cursor) setTotal((t) => t ?? null)
       } finally {

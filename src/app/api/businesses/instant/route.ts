@@ -176,10 +176,10 @@ export async function GET(req: Request) {
   const explainSql = explain ? `EXPLAIN (ANALYZE, BUFFERS, TIMING) ${selectSql}` : null
 
   try {
-    const res = await query<any>(explain ? (explainSql as string) : selectSql, params)
+    const res = await query<Record<string, unknown>>(explain ? (explainSql as string) : selectSql, params)
     if (explain) {
       // Return plan for diagnostics in dev
-      const plan = res.rows.map((r: any) => r['QUERY PLAN'] || Object.values(r)[0]).join('\n')
+      const plan = res.rows.map((r: Record<string, unknown>) => r['QUERY PLAN'] || Object.values(r)[0]).join('\n')
       const tookMs = Date.now() - start
       console.log(`[businesses] instant explain took ${tookMs}ms`)
       return NextResponse.json({ explain: plan, tookMs }, {
