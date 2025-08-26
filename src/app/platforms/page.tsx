@@ -1,4 +1,5 @@
 import NavBar from '../components/NavBar'
+import RedDotWave from '../components/RedDotWave'
 import Image from 'next/image'
 import wave from '../../../public/wave.png'
 
@@ -185,7 +186,7 @@ export default function PlatformsPage() {
             </div>
 
             {/* Signal Types Section */}
-            <div className="min-h-screen flex items-center py-20 md:py-32">
+            <div className="min-h-screen flex items-center">
               <div className="w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                   {/* Left: Signal Cards Grid */}
@@ -255,7 +256,22 @@ export default function PlatformsPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
+        {/* RedDotWave Visualization Section - Full Width */}
+        <div className="w-full -mt-56">
+          <RedDotWave 
+            initialCameraPosition={[20, 15, 20]}
+            initialCameraTarget={[0, 0, 0]}
+            color="#ef4444"
+            showControls={false}
+            amplitude={3}
+            speed={0.4}
+          />
+        </div>
+        <div className="min-h-[80vh] flex items-center">
+          <div className="container-95">
             {/* How It Works Section */}
             <div className="mt-24">
               <div className="text-center mb-36">

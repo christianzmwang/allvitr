@@ -585,10 +585,16 @@ export default function BrregPage() {
   const addSelectedIndustry = (value: string, label?: string) => {
     const v = value.trim()
     if (!v) return
+    console.log('🏭 Adding industry:', { value: v, label: label ?? v })
     setSelectedIndustries((prev) => {
       const exists = prev.some((p) => p.value.toLowerCase() === v.toLowerCase())
-      if (exists) return prev
-      return [...prev, { value: v, label: (label ?? v).trim() }]
+      if (exists) {
+        console.log('🏭 Industry already exists:', v)
+        return prev
+      }
+      const newIndustries = [...prev, { value: v, label: (label ?? v).trim() }]
+      console.log('🏭 Updated selectedIndustries:', newIndustries)
+      return newIndustries
     })
   }
 
@@ -599,6 +605,8 @@ export default function BrregPage() {
   }
 
   useEffect(() => {
+    console.log('🔄 API call triggered with queryParam:', queryParam)
+    console.log('🔄 Selected industries:', selectedIndustries)
     setLoading(true)
   // If we asked the server to skip the count, mark it as pending
   setCountPending(queryParam.includes('skipCount=1'))
@@ -608,6 +616,7 @@ export default function BrregPage() {
     const delay = hasEventWeights ? Math.random() * 2000 + 2000 : 0 // 2000-4000ms
     
     const timeoutId = setTimeout(() => {
+      console.log('🌐 Making API request to:', '/api/businesses' + queryParam)
       fetch('/api/businesses' + queryParam)
       .then((r) => r.json())
       .then((res: BusinessesResponse | Business[]) => {
@@ -925,6 +934,7 @@ export default function BrregPage() {
                       onChange={(e) => setIndustryQuery(e.target.value)}
                       ref={inputRef}
                       onFocus={() => {
+                        console.log('🎯 Industry input focused, showing dropdown')
                         // Show all suggestions if no query, otherwise show filtered results
                         if (!industryQuery.trim() && allIndustries.length > 0) {
                           setSuggestions(allIndustries)
@@ -990,6 +1000,7 @@ export default function BrregPage() {
                               <button
                                 key={idx}
                                 onClick={() => {
+                                  console.log('🖱️ Industry dropdown clicked:', { term, label })
                                   addSelectedIndustry(term, label)
                                   setIndustryQuery('')
                                   setSuggestions([])
