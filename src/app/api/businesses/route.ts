@@ -157,14 +157,40 @@ export async function GET(req: Request) {
   }
 
   const hasIndustries = industries.length > 0
-  const industryParams = industries.map((v) => `%${v}%`)
-  const perColumnClause = (col: string) =>
-    industries.length > 0
-      ? industries.map((_, i) => `${col} ILIKE $${i + 1}`).join(' OR ')
-      : ''
-  const industryClause = hasIndustries
-    ? `AND ((${perColumnClause('b."industryCode1"')} ) OR (${perColumnClause('b."industryText1"')}) OR (${perColumnClause('b."industryCode2"')}) OR (${perColumnClause('b."industryText2"')}) OR (${perColumnClause('b."industryCode3"')}) OR (${perColumnClause('b."industryText3"')}))`
-    : ''
+  
+  // Build industry filtering logic with exact matches for codes and precise text matching
+  let industryClause = ''
+  const industryParams: string[] = []
+  
+  if (hasIndustries) {
+    const industryConditions: string[] = []
+    
+    for (const industry of industries) {
+      const trimmed = industry.trim()
+      if (!trimmed) continue
+      
+      // Check if this looks like an industry code (starts with digits, contains dots, etc.)
+      const looksLikeCode = /^[0-9]{1,2}(\.[0-9]{1,3})*$/.test(trimmed) || /^[A-Z][0-9]/.test(trimmed)
+      
+      if (looksLikeCode) {
+        // For industry codes, use exact matches on code fields
+        industryParams.push(trimmed)
+        const paramIdx = industryParams.length
+        industryConditions.push(`(b."industryCode1" = $${paramIdx} OR b."industryCode2" = $${paramIdx} OR b."industryCode3" = $${paramIdx})`)
+      } else {
+        // For text searches, use exact matches first, then partial matches on text fields only
+        industryParams.push(trimmed)
+        industryParams.push(`%${trimmed}%`)
+        const exactParamIdx = industryParams.length - 1
+        const partialParamIdx = industryParams.length
+        industryConditions.push(`(b."industryText1" = $${exactParamIdx} OR b."industryText2" = $${exactParamIdx} OR b."industryText3" = $${exactParamIdx} OR b."industryText1" ILIKE $${partialParamIdx} OR b."industryText2" ILIKE $${partialParamIdx} OR b."industryText3" ILIKE $${partialParamIdx})`)
+      }
+    }
+    
+    if (industryConditions.length > 0) {
+      industryClause = `AND (${industryConditions.join(' OR ')})`
+    }
+  }
 
   // Combine all params - industries first, then revenue (we'll append event params below)
   const params: SqlParam[] = [...industryParams, ...revenueParams]

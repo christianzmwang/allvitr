@@ -103,16 +103,29 @@ export default function Home() {
       {/* Hero Section */}
       <section
         data-nav-theme="dark"
-        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[90vh] p-4 md:p-8 overflow-hidden"
+        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[90vh] py-4 md:py-8 px-0 overflow-hidden"
       >
-        <div className="relative z-10 max-w-2xl w-full text-center pt-24">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
-            Allvitr
-          </h1>
-          <p className="text-base md:text-lg text-gray-400 mb-8">
-            We turn information overload into clarity, building software that
-            amplifies human insight and enables autonomous decision-making.
-          </p>
+        <div className="relative z-10 w-screen max-w-none pt-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-full min-h-[50vh] w-screen">
+            {/* Left side - Allvitr title */}
+            <div className="w-full h-full flex items-center justify-center p-8 md:p-12">
+              <div className="w-full flex justify-center">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-center">
+                  Allvitr
+                </h1>
+              </div>
+            </div>
+            
+            {/* Right side - Description text */}
+            <div className="glass w-full h-full flex items-center justify-center p-8 md:p-12">
+              <div className="w-full flex justify-center">
+                <p className="text-lg md:text-xl lg:text-xl text-gray-300 text-center leading-relaxed">
+                  We turn information overload into clarity, building software that
+                  amplifies human insight and enables autonomous decision-making.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
