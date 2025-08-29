@@ -16,6 +16,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Allvitr',
   description: 'Amplifying Human Insight',
+  icons: {
+    icon: '/favicon2.ico',
+  },
 }
 
 export const viewport: Viewport = {
