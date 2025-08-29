@@ -105,9 +105,9 @@ export default function NavBar() {
             <Image
               src="/WebAllvitr.png"
               alt="Allvitr Logo"
-              width={48}
-              height={48}
-              className={`w-12 h-12 absolute transition-all duration-500 ease-in-out ${
+              width={40}
+              height={40}
+              className={`w-10 h-10 absolute transition-all duration-500 ease-in-out ${
                 scrolled
                   ? 'opacity-100 scale-100 delay-[1000ms]'
                   : 'opacity-0 scale-75'
