@@ -151,7 +151,7 @@ export default function PlatformsPage() {
                   {/* Top: Human Connection Heading */}
                   <div>
                     <h3 className="text-3xl md:text-4xl font-bold text-white mb-8">
-                      Human connection
+                      Human Connection
                     </h3>
                   </div>
 
@@ -242,7 +242,7 @@ export default function PlatformsPage() {
                       >
                         <span className="relative z-10">Choose Signals</span>
                         <div
-                          className="absolute top-1/2 left-46 right-12 h-1 bg-white -translate-y-1/2"
+                          className="absolute top-1/2 left-46 right-8 h-1 bg-white -translate-y-1/2"
                           style={{
                             backgroundImage:
                               'repeating-linear-gradient(to right, white 0, white 4px, transparent 4px, transparent 8px)',
@@ -273,7 +273,7 @@ export default function PlatformsPage() {
         <div className="min-h-[80vh] flex items-center">
           <div className="container-95">
             {/* How It Works Section */}
-            <div className="mt-24">
+
               <div className="text-center mb-36">
                 <h3 className="text-6xl md:text-8xl font-extrabold text-transparent mb-4 heading-outline-light">
                   Automated for you to Act
@@ -308,7 +308,7 @@ export default function PlatformsPage() {
                   />
                 </div>
               </div>
-            </div>
+            
           </div>
         </div>
       </section>
