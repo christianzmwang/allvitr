@@ -257,7 +257,7 @@ export default function PlatformsPage() {
                       </p>
                       <a
                         href="/contact"
-                        className="btn border-2 border-white hover:border-green-500 text-white bg-transparent relative overflow-hidden group"
+                        className="btn border-2 border-white hover:border-red-600 text-white bg-transparent relative overflow-hidden group"
                       >
                         <span className="relative z-10">Choose Signals</span>
                         <div
@@ -267,7 +267,7 @@ export default function PlatformsPage() {
                               'repeating-linear-gradient(to right, white 0, white 4px, transparent 4px, transparent 8px)',
                           }}
                         >
-                          <div className="absolute top-0 left-0 w-0 h-full bg-green-500 group-hover:w-full transition-all duration-1000 ease-in"></div>
+                          <div className="absolute top-0 left-0 w-0 h-full bg-red-600 group-hover:w-full transition-all duration-1000 ease-in"></div>
                         </div>
                       </a>
                     </div>
