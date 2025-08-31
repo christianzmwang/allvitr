@@ -2,8 +2,22 @@ import NavBar from '../components/NavBar'
 import { sendContactToSlack } from '../actions/sendContactToSlack'
 
 export const metadata = {
-  title: 'Contact | Allvitr',
-  description: 'Get in touch with Allvitr',
+  title: 'Contact Us - Request a Demo',
+  description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms. Contact our team to discuss how we can automate your market research and data analytics.',
+  keywords: ['contact allvitr', 'demo request', 'business intelligence demo', 'market research consultation', 'AI platform demo'],
+  openGraph: {
+    title: 'Contact Allvitr - Request a Demo',
+    description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms.',
+    url: 'https://allvitr.com/contact',
+    type: 'website',
+  },
+  twitter: {
+    title: 'Contact Allvitr - Request a Demo',
+    description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms.',
+  },
+  alternates: {
+    canonical: 'https://allvitr.com/contact',
+  },
 }
 
 export default async function ContactPage({
@@ -24,9 +38,9 @@ export default async function ContactPage({
       >
         <div className="container-95">
           <div className="max-w-4xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Get in touch
-            </h2>
+            </h1>
             <p className="text-gray-700 mb-6 text-base md:text-lg">
               Have a question or want a demo? We’d love to hear from you.
             </p>

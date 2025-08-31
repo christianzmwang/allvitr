@@ -1,6 +1,25 @@
 import Link from 'next/link'
 import NavBar from '../components/NavBar'
 
+export const metadata = {
+  title: 'Pricing - Custom AI Platform Solutions',
+  description: 'Get custom pricing for Allvitr\'s AI-powered business intelligence platforms. Contact us to discuss your specific automation needs and get a tailored demo.',
+  keywords: ['allvitr pricing', 'AI platform pricing', 'business intelligence cost', 'custom solutions', 'enterprise pricing'],
+  openGraph: {
+    title: 'Allvitr Pricing - Custom AI Platform Solutions',
+    description: 'Get custom pricing for Allvitr\'s AI-powered business intelligence platforms. Contact us for a tailored demo.',
+    url: 'https://allvitr.com/pricing',
+    type: 'website',
+  },
+  twitter: {
+    title: 'Allvitr Pricing - Custom AI Platform Solutions',
+    description: 'Get custom pricing for Allvitr\'s AI-powered business intelligence platforms. Contact us for a tailored demo.',
+  },
+  alternates: {
+    canonical: 'https://allvitr.com/pricing',
+  },
+}
+
 export default async function PricingPage({
   searchParams,
 }: {

@@ -3,6 +3,25 @@ import RedDotWave from '../components/RedDotWave'
 import Image from 'next/image'
 import wave from '../../../public/wave.png'
 
+export const metadata = {
+  title: 'AI Platforms - Hugin, Munin & Odin',
+  description: 'Explore Allvitr\'s AI-powered platforms: Hugin for real-time market research, Munin for secure data analytics, and Odin for executive dashboards. Automate signal discovery and decision-making.',
+  keywords: ['hugin platform', 'munin analytics', 'odin dashboard', 'AI platforms', 'market research automation', 'business intelligence platforms', 'real-time insights'],
+  openGraph: {
+    title: 'Allvitr AI Platforms - Hugin, Munin & Odin',
+    description: 'Explore our AI-powered platforms for market research, data analytics, and executive dashboards. Automate signal discovery and decision-making.',
+    url: 'https://allvitr.com/platforms',
+    type: 'website',
+  },
+  twitter: {
+    title: 'Allvitr AI Platforms - Hugin, Munin & Odin',
+    description: 'Explore our AI-powered platforms for market research, data analytics, and executive dashboards.',
+  },
+  alternates: {
+    canonical: 'https://allvitr.com/platforms',
+  },
+}
+
 // Reusable components to reduce duplication
 function SignalCard({
   title,
@@ -275,9 +294,9 @@ export default function PlatformsPage() {
             {/* How It Works Section */}
 
               <div className="text-center mb-36">
-                <h3 className="text-6xl md:text-8xl font-extrabold text-transparent mb-4 heading-outline-light">
+                <h2 className="text-6xl md:text-8xl font-extrabold text-transparent mb-4 heading-outline-light">
                   Automated for you to Act
-                </h3>
+                </h2>
               </div>
               <div className="border border-white p-10 px-10 md:px-16">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-12">

@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://allvitr.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin and api routes (if any)
+Disallow: /api/
+
+# Allow all important pages
+Allow: /
+Allow: /platforms
+Allow: /contact
+Allow: /pricing

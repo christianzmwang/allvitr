@@ -2,6 +2,25 @@ import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
 
+export const metadata = {
+  title: 'AI-Powered Business Intelligence & Market Research',
+  description: 'Turn information overload into clarity with Allvitr\'s AI-powered platforms. Real-time market research, secure data analytics, and executive dashboards for autonomous decision-making.',
+  keywords: ['AI business intelligence', 'market research automation', 'real-time insights', 'data analytics', 'executive dashboard', 'autonomous decision making', 'allvitr'],
+  openGraph: {
+    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
+    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research, secure data analytics, and executive dashboards.',
+    url: 'https://allvitr.com',
+    type: 'website',
+  },
+  twitter: {
+    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
+    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research and data analytics.',
+  },
+  alternates: {
+    canonical: 'https://allvitr.com',
+  },
+}
+
 // Extracted constants for better maintainability
 const PLATFORMS = [
   {
