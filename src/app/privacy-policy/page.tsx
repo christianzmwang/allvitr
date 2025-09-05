@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-2xl font-bold mt-12 mb-4 text-white">Definitions</h2>
           <p><strong>Account</strong> means a unique account created for You to access our Service or parts of our Service.</p>
           <p><strong>Affiliate</strong> means an entity that controls, is controlled by or is under common control with a party, where “control” means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</p>
-          <p><strong>Company</strong> (referred to as either “the Company”, “We”, “Us” or “Our” in this Agreement) refers to Allvitr AS (legal entity name, street address, postal code and city), Norway</p>
+          <p><strong>Company</strong> (referred to as either “the Company”, “We”, “Us” or “Our” in this Agreement) refers to Allvitr AS (legal entity name, street address, postal code and city), Norway.</p>
           <p><strong>Cookies</strong> are small files that are placed on Your computer, mobile device or any other device by a website, containing the details of Your browsing history on that website among its many uses.</p>
           <p><strong>Country</strong> refers to: Norway</p>
           <p><strong>Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.</p>
