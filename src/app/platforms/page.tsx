@@ -31,7 +31,7 @@ function SignalCard({
   description: string
 }) {
   return (
-    <div className="bg-gray-600 p-8 border-1 border-red-600 transition-all duration-200 hover:shadow-[inset_0_0_100px_rgba(255,0,0,0.8)]">
+    <div className="bg-[rgb(50,50,50)] p-8 border-1 border-red-600 transition-all duration-200 hover:shadow-[inset_0_0_100px_rgba(255,0,0,0.8)]">
       <h4 className="text-xl font-semibold text-white mb-4">{title}</h4>
       <p className="text-gray-300 text-base">{description}</p>
     </div>
@@ -102,7 +102,7 @@ export default function PlatformsPage() {
       {/* Hero */}
       <section
         data-nav-theme="dark"
-        className="min-h-screen flex items-center justify-center bg-gray-600 relative"
+  className="min-h-screen flex items-center justify-center bg-[rgb(50,50,50)] relative"
       >
         {/* Accent bars */}
           {/* Centered vertical blocks (now interactive) */}
@@ -196,7 +196,7 @@ export default function PlatformsPage() {
               <div className="order-2 md:order-2 text-left mt-12 flex flex-col justify-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 flex items-center gap-3">
                   <span>Hugin</span>
-                  <span className="text-[10px] md:text-xs uppercase tracking-widest px-2.5 py-1 border-1 border-red-600 bg-gray-600 text-white ml-5">
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest px-2.5 py-1 border-1 border-red-600 bg-[rgb(50,50,50)] text-white ml-5">
                     powered by AI-Agents
                   </span>
                 </h2>
@@ -209,7 +209,7 @@ export default function PlatformsPage() {
             </div>
 
             {/* Core Benefits Grid */}
-            <div className="bg-gray-600 p-10 md:p-16 mb-24 border-1 border-red-600">
+            <div className="bg-[rgb(50,50,50)] p-10 md:p-16 mb-24 border-1 border-red-600">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
                 {/* Left: Human Connection - Heading at top, text at bottom */}
                 <div className="text-left flex flex-col justify-between h-full">

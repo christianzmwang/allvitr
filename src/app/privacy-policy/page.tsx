@@ -110,11 +110,8 @@ export default function PrivacyPolicyPage() {
           <p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes are effective when they are posted on this page.</p>
 
           <h2 className="text-2xl font-bold mt-12 mb-4 text-white">Contact Us</h2>
-          <p>If you have any questions about this Privacy Policy, You can contact us:</p>
-          <ul className="list-disc list-inside pl-1 mt-2 space-y-1">
-            <li>By email: privacy@allvitr.com</li>
-            <li>By mail: Allvitr AS (postal address)</li>
-          </ul>
+          <p>If you have any questions about this Privacy Policy, You can contact by email: privacy@allvitr.com</p>
+  
           </div>
           {/* Vertical text chain on right side (tight stacked) */}
           <div aria-hidden className="hidden md:flex flex-col items-center text-[11px] text-gray-500/60 font-semibold select-none leading-none">
