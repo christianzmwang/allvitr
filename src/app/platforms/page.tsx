@@ -102,23 +102,69 @@ export default function PlatformsPage() {
       {/* Hero */}
       <section
         data-nav-theme="dark"
-        className="min-h-screen flex items-center justify-center bg-gray-600"
+        className="min-h-screen flex items-center justify-center bg-gray-600 relative"
       >
-        <div className="container-95 h-full flex items-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full">
-            <div className="text-center pl-4 md:pl-18">
-              <h1 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-light">
-                <span>Platforms</span>
-              </h1>
-            </div>
-            <div className="flex justify-center">
-              <div className="text-left text-white max-w-xl md:max-w-2xl w-100">
-                <p className="text-lg md:text-xl font-bold text-gray-400">
-                  Automation of signal discovery, data analysis, and
-                  decision-making.
-                </p>
+        {/* Accent bars */}
+          {/* Centered vertical blocks (now interactive) */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex flex-col items-start gap-3 md:gap-4">
+              {/* Hugin bar */}
+              <div className="relative group flex items-center">
+                <a
+                  href="#hugin"
+                  aria-label="Jump to Hugin section"
+                  className="block bg-red-600 h-12 w-3 md:h-20 md:w-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
+                />
+                <span
+                  className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 text-white text-xs md:text-sm font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap"
+                >
+                  Hugin
+                </span>
+              </div>
+              {/* Munin bar */}
+              <div className="relative group flex items-center">
+                <a
+                  href="#munin"
+                  aria-label="Jump to Munin section"
+                  className="block bg-sky-400 h-12 w-3 md:h-20 md:w-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
+                />
+                <span
+                  className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 text-white text-xs md:text-sm font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap"
+                >
+                  Munin
+                </span>
+              </div>
+              {/* Odin bar */}
+              <div className="relative group flex items-center">
+                <a
+                  href="#odin"
+                  aria-label="Jump to Odin section"
+                  className="block bg-gray-900 h-12 w-3 md:h-20 md:w-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
+                />
+                <span
+                  className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 text-gray-200 text-xs md:text-sm font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap"
+                >
+                  Odin
+                </span>
               </div>
             </div>
+          </div>
+        {/* Bottom-left horizontal info (inside hero) */}
+        <div
+          aria-hidden
+          className="flex items-center gap-3 absolute bottom-6 left-4 md:left-10 text-[11px] font-semibold tracking-widest select-none text-gray-300/70 z-10"
+        >
+          <span className="text-white/80">PLATFORMS</span>
+          <span className="h-4 w-px bg-gray-400/40" />
+          <span className="text-gray-300/70">Generate alpha</span>
+        </div>
+  {/* Vertical text chain removed */}
+        <div className="container-95 h-full flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full">
+              <div className="text-center pl-4 md:pl-18 relative" />
+              <div className="flex justify-center">
+                <div className="text-left text-white max-w-xl md:max-w-2xl w-100" />
+              </div>
           </div>
         </div>
       </section>
@@ -293,12 +339,12 @@ export default function PlatformsPage() {
           <div className="container-95">
             {/* How It Works Section */}
 
-              <div className="text-center mb-36">
-                <h2 className="text-6xl md:text-8xl font-extrabold text-transparent mb-4 heading-outline-light">
+              <div className="text-center mb-24">
+                <h2 className="text-6xl md:text-8xl font-extrabold text-transparent heading-outline-light">
                   Automated for you to Act
                 </h2>
               </div>
-              <div className="border border-white p-10 px-10 md:px-16">
+              <div className="border border-white p-10">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-12">
                   <ProcessStep
                     title="Monitor"
