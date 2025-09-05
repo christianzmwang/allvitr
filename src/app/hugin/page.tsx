@@ -660,7 +660,8 @@ export default function BrregPage() {
     }, delay)
     
     return () => clearTimeout(timeoutId)
-  }, [queryParam, offset, eventWeights])
+  // Added selectedIndustries to satisfy exhaustive-deps (queryParam already encodes it, but explicit for clarity)
+  }, [queryParam, offset, eventWeights, selectedIndustries])
 
   // Background count refresh whenever we used skipCount (first page fast-path)
   useEffect(() => {

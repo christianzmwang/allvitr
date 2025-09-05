@@ -1,5 +1,4 @@
 import NavBar from '../components/NavBar'
-import dynamic from 'next/dynamic'
 
 
 export const metadata = {
@@ -108,7 +107,7 @@ export default function PrivacyPolicyPage() {
           <p>Our Service may contain links to other websites that are not operated by Us. If You click on a third-party link, You will be directed to that site. We strongly advise You to review the Privacy Policy of every site You visit. We have no control over and assume no responsibility for the content, privacy policies or practices of any third-party sites or services.</p>
 
           <h2 className="text-2xl font-bold mt-12 mb-4 text-white">Changes to this Privacy Policy</h2>
-          <p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes are effective when they are posted on this page.</p>
+          <p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes are effective when they are posted on this page.</p>
 
           <h2 className="text-2xl font-bold mt-12 mb-4 text-white">Contact Us</h2>
           <p>If you have any questions about this Privacy Policy, You can contact us:</p>

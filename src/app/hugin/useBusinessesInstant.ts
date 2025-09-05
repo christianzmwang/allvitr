@@ -65,17 +65,29 @@ export function useBusinessesInstant(p: Params) {
       sortBy: p.sortBy,
       order: p.order,
       limit: p.limit,
-      industryCode: p.industryCode || null,
-      sectorCode: p.sectorCode || null,
-      orgFormCode: p.orgFormCode || null,
-      city: p.city || null,
-      revenueBucket: p.revenueBucket || null,
-      employeeBucket: p.employeeBucket || null,
+      industryCode: p.industryCode ?? null,
+      sectorCode: p.sectorCode ?? null,
+      orgFormCode: p.orgFormCode ?? null,
+      city: p.city ?? null,
+      revenueBucket: p.revenueBucket ?? null,
+      employeeBucket: p.employeeBucket ?? null,
       vatRegistered: typeof p.vatRegistered === 'boolean' ? p.vatRegistered : null,
-      search: p.search || null,
+      search: p.search ?? null,
     }
     return JSON.stringify(k)
-  }, [p.sortBy, p.order, p.limit, p.industryCode || null, p.sectorCode || null, p.orgFormCode || null, p.city || null, p.revenueBucket || null, p.employeeBucket || null, typeof p.vatRegistered === 'boolean' ? p.vatRegistered : null, p.search || null])
+  }, [
+    p.sortBy,
+    p.order,
+    p.limit,
+    p.industryCode,
+    p.sectorCode,
+    p.orgFormCode,
+    p.city,
+    p.revenueBucket,
+    p.employeeBucket,
+    p.vatRegistered,
+    p.search,
+  ])
 
   const [items, setItems] = useState<Record<string, unknown>[]>([])
   const [listTookMs, setListTook] = useState<number | null>(null)

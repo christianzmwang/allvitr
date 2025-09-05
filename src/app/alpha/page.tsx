@@ -53,7 +53,7 @@ export default function AlphaPage() {
               Generate<br className="hidden md:block" /> Autonomous Advantage
             </h1>
             <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-2xl leading-relaxed">
-              Generating alpha isn't about incremental efficiency. It's about
+              Generating alpha isn&apos;t about incremental efficiency. It&apos;s about
               compounding insight: perceiving change early, fusing internal and
               external context, and compressing the loop from signal → decision → action.
             </p>
@@ -171,7 +171,7 @@ export default function AlphaPage() {
             Start Generating Alpha
           </h2>
           <p className="mt-6 text-lg text-gray-300 max-w-2xl leading-relaxed">
-            If you're pushing beyond passive dashboards toward proactive,
+            If you&apos;re pushing beyond passive dashboards toward proactive,
             compounding intelligence, we can help architect the foundation:
             ingestion, fusion, narrative surfacing, and action orchestration.
           </p>
@@ -181,7 +181,7 @@ export default function AlphaPage() {
           >
             Contact Us
           </Link>
-          <p className="mt-4 text-xs text-gray-500">Let's discuss your data environment & priority decisions.</p>
+          <p className="mt-4 text-xs text-gray-500">Let&apos;s discuss your data environment & priority decisions.</p>
         </div>
       </section>
     </div>
