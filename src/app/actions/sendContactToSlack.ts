@@ -3,6 +3,32 @@ import { redirect } from 'next/navigation'
 export async function sendContactToSlack(formData: FormData) {
   'use server'
 
+  // Verify Cloudflare Turnstile (invisible)
+  try {
+    const token = (formData.get('cf-turnstile-response') || '').toString()
+    const secret = process.env.TURNSTILE_SECRET_KEY || process.env['turnstile_secret_key']
+    if (secret) {
+      if (!token) {
+        console.warn('Missing Turnstile token')
+        return redirect('/contact?sent=0')
+      }
+      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, response: token }),
+        cache: 'no-store',
+      })
+      const verifyJson = await verifyRes.json()
+      if (!verifyJson.success) {
+        console.warn('Turnstile verification failed', verifyJson)
+        return redirect('/contact?sent=0')
+      }
+    }
+  } catch (e) {
+    console.error('Turnstile verification error', e)
+    return redirect('/contact?sent=0')
+  }
+
   const name = (formData.get('name') || '').toString().trim()
   const email = (formData.get('email') || '').toString().trim()
   const phone = (formData.get('phone') || '').toString().trim()

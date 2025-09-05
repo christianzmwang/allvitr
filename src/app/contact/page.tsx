@@ -1,5 +1,6 @@
 import NavBar from '../components/NavBar'
 import { sendContactToSlack } from '../actions/sendContactToSlack'
+import Script from 'next/script'
 
 export const metadata = {
   title: 'Contact Us - Request a Demo',
@@ -29,122 +30,106 @@ export default async function ContactPage({
   const isSent = (resolvedSearchParams?.sent || '') === '1'
 
   return (
-    <div className="bg-gray-300">
+    <div className="bg-black">
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+      />
       <NavBar />
-      <section
-        id="contact"
-        data-nav-theme="light"
-        className="pt-28 md:pt-36 pb-16 md:pb-24 pad-section bg-gray-300 scroll-mt-24 md:scroll-mt-32 min-h-screen"
-      >
-        <div className="container-95">
+    <section
+      id="contact"
+      data-nav-theme="dark"
+      className="pad-section bg-black scroll-mt-24 md:scroll-mt-32 min-h-screen flex"
+    >
+        <div className="container-95 flex flex-col justify-center py-24 md:py-32">
           <div className="max-w-4xl">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Get in touch
-            </h1>
-            <p className="text-gray-700 mb-6 text-base md:text-lg">
-              Have a question or want a demo? We’d love to hear from you.
-            </p>
+      <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Contact</h1>
           </div>
           {isSent && (
-            <div className="mt-4 mb-2 rounded-md border border-green-600/30 bg-green-100/50 text-green-900 p-3 max-w-xl">
-              Thanks! Your message was sent. We’ll be in touch shortly.
-            </div>
+      <div className="mt-4 mb-2 rounded-md border border-green-500/30 bg-green-900/30 text-green-200 p-3 max-w-xl">Your message was sent. We’ll be in touch shortly.</div>
           )}
           <form
             action={sendContactToSlack}
-            className="mt-6 md:mt-8 grid grid-cols-1 gap-6 md:gap-8"
+            className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8"
           >
             <input type="hidden" name="origin" value="/contact" />
-            <div>
-              <label htmlFor="name" className="label">
-                Name
-              </label>
+            <div className="md:col-span-4">
               <input
                 id="name"
                 name="name"
                 type="text"
                 required
-                className="input-underline"
-                placeholder="Jane Doe"
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Name"
               />
             </div>
-            <div>
-              <label htmlFor="email" className="label">
-                Email
-              </label>
+            <div className="md:col-span-8">
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="input-underline"
-                placeholder="jane@company.com"
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Email"
               />
             </div>
-            <div>
-              <label htmlFor="phone" className="label">
-                Phone
-              </label>
+      <div className="md:col-span-4">
               <input
                 id="phone"
                 name="phone"
                 type="tel"
-                className="input-underline"
-                placeholder="+1 555 123 4567"
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Phone"
               />
             </div>
-            <div>
-              <label htmlFor="company" className="label">
-                Company
-              </label>
+      <div className="md:col-span-8">
               <input
                 id="company"
                 name="company"
                 type="text"
-                className="input-underline"
-                placeholder="Acme Inc."
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Company"
               />
             </div>
-            <div>
-              <label htmlFor="title" className="label">
-                Job Title
-              </label>
+            <div className="md:col-span-8">
               <input
                 id="title"
                 name="title"
                 type="text"
-                className="input-underline"
-                placeholder="Head of Sales"
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Job Title"
               />
             </div>
-            <div>
-              <label htmlFor="country" className="label">
-                Country
-              </label>
+            <div className="md:col-span-4">
               <input
                 id="country"
                 name="country"
                 type="text"
-                className="input-underline"
-                placeholder="United States"
+                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="Country"
               />
             </div>
-            <div className="md:col-span-3">
-              <label htmlFor="message" className="label mb-4">
-                Message
-              </label>
+            <div className="md:col-span-12 mt-4">
               <textarea
                 id="message"
                 name="message"
                 rows={5}
-                className="textarea-base"
-                placeholder="What would you like to explore?"
+                className="w-full bg-transparent border border-gray-500 text-gray-200 placeholder-gray-500 px-3 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
+                placeholder="What parts of your business would you like to automate?"
               />
             </div>
-            <div className="md:col-span-3 flex justify-start">
+            <div className="md:col-span-12 flex justify-start">
+              {/* Cloudflare Turnstile Invisible Widget */}
+              <div
+                className="cf-turnstile"
+                data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                data-size="invisible"
+                data-theme="dark"
+              />
               <button
                 type="submit"
-                className="btn btn-primary hover:border-gray-600"
+                className="px-6 py-3 font-semibold border border-gray-500 text-gray-500 hover:border-red-600/90 hover:text-red-600/90 focus:border-red-600/90 focus:text-red-600/90 transition-colors"
               >
                 Send
               </button>
