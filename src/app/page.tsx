@@ -214,7 +214,7 @@ export default function Home() {
         <div className="container-95">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-dark">
+              <h2 className="text-5xl md:text-8xl text-left font-extrabold mb-6 flex flex-col gap-2 md:gap-15 heading-glow-red">
                 <span>Age</span>
                 <span>Of</span>
                 <span>Autonomy</span>
@@ -261,7 +261,7 @@ export default function Home() {
             <div className="container-95 w-full">
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold text-transparent leading-tight text-center gap-4 md:gap-6 heading-outline-light">
+                  <h2 className="text-4xl md:text-6xl font-extrabold leading-tight text-center gap-4 md:gap-6 text-white">
                     AI Integration
                   </h2>
                 </div>
@@ -283,15 +283,15 @@ export default function Home() {
       <section data-nav-theme="light" className="py-4 md:py-6 bg-gray-300">
         <div className="w-full flex justify-center">
           <div className="inline-block text-center py-8 md:py-12">
-            <h2 className="text-3xl md:text-9xl font-extrabold text-transparent heading-outline-dark mb-10 md:mb-12">
+            <h2 className="text-3xl md:text-9xl font-bold text-gray-900 mb-10 md:mb-12">
               Let&apos;s Get To Work
             </h2>
             <div className="mt-6 flex justify-end">
-              <div className="flex flex-col items-end gap-4 w-56 md:w-64">
-                <Link href="/contact" className="btn btn-primary w-full">
+              <div className="flex flex-row items-center gap-4">
+                <Link href="/contact" className="btn btn-primary">
                   Demo Request
                 </Link>
-                <Link href="/platforms" className="btn btn-outline w-full">
+                <Link href="/platforms" className="btn btn-outline">
                   Explore Platforms
                 </Link>
               </div>

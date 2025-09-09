@@ -194,6 +194,28 @@ a,
     @apply text-white transition-colors duration-200 hover:text-red-600 md:group-data-[glass=dark]:hover:text-sky-400;
   }
 
+  /* Minimal fixed cubic mesh texture for hero sections */
+  .mesh-bg {
+    background-color: rgb(50, 50, 50);
+    /* Two orthogonal repeating gradients create a square mesh */
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.05) 0 1px,
+        transparent 1px 32px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 0 1px,
+        transparent 1px 32px
+      );
+    background-size: 32px 32px, 32px 32px;
+    background-position: center center;
+    background-attachment: fixed; /* fixed texture for subtle parallax */
+    /* Very mild vignette to keep edges calm */
+    box-shadow: inset 0 0 160px rgba(0, 0, 0, 0.18);
+  }
+
   /* Context-aware button hover borders based on section background theme */
   [data-nav-theme='light'] .btn:hover {
     @apply border-gray-900; /* dark border on light backgrounds */
@@ -225,6 +247,53 @@ a,
   @media (min-width: 768px) {
     .heading-outline-light {
       -webkit-text-stroke-width: 2px;
+    }
+  }
+  /* Filled heading with red glow (used for Age Of Autonomy) */
+  .heading-glow-red {
+    /* Match section background (gray-300) so only glow is visually prominent */
+    color: #d1d5db; /* Tailwind gray-300 */
+    /* Multi-layer black glow */
+    text-shadow:
+      0 0 2px rgba(0,0,0,0.75),
+      0 0 6px rgba(0,0,0,0.6),
+      0 0 14px rgba(0,0,0,0.45),
+      0 0 28px rgba(0,0,0,0.35),
+      0 0 56px rgba(0,0,0,0.30),
+      0 0 90px rgba(0,0,0,0.25);
+  }
+  @media (min-width: 768px) {
+    .heading-glow-red {
+      text-shadow:
+        0 0 3px rgba(0,0,0,0.8),
+        0 0 10px rgba(0,0,0,0.6),
+        0 0 24px rgba(0,0,0,0.5),
+        0 0 48px rgba(0,0,0,0.4),
+        0 0 96px rgba(0,0,0,0.35),
+        0 0 140px rgba(0,0,0,0.3);
+    }
+  }
+
+  /* Variant: red glow (used for AI Integration heading). Name distinct to avoid changing existing black glow usage. */
+  .heading-glow-red-bright {
+    color: #d1d5db; /* gray-300 to blend with gray background */
+    text-shadow:
+      0 0 2px rgba(239, 68, 68, 0.9),
+      0 0 6px rgba(239, 68, 68, 0.75),
+      0 0 14px rgba(239, 68, 68, 0.6),
+      0 0 28px rgba(239, 68, 68, 0.5),
+      0 0 56px rgba(239, 68, 68, 0.4),
+      0 0 90px rgba(239, 68, 68, 0.35);
+  }
+  @media (min-width: 768px) {
+    .heading-glow-red-bright {
+      text-shadow:
+        0 0 3px rgba(239, 68, 68, 0.95),
+        0 0 10px rgba(239, 68, 68, 0.8),
+        0 0 24px rgba(239, 68, 68, 0.65),
+        0 0 48px rgba(239, 68, 68, 0.55),
+        0 0 96px rgba(239, 68, 68, 0.45),
+        0 0 140px rgba(239, 68, 68, 0.4);
     }
   }
 }

@@ -102,7 +102,7 @@ export default function PlatformsPage() {
       {/* Hero */}
       <section
         data-nav-theme="dark"
-  className="min-h-screen flex items-center justify-center bg-[rgb(50,50,50)] relative"
+        className="min-h-screen flex items-center justify-center bg-[rgb(50,50,50)] mesh-bg relative"
       >
         {/* Accent bars */}
           {/* Centered vertical blocks (now interactive) */}
@@ -173,8 +173,9 @@ export default function PlatformsPage() {
       <section
         id="hugin"
         data-nav-theme="dark"
-        className="scroll-mt-32 min-h-screen bg-black overflow-hidden border-t border-red-600"
+        className="scroll-mt-32 min-h-screen bg-black overflow-hidden border-t border-red-600 relative"
       >
+        {/* Decorative side wave image (left-centered) */}
         <div className="min-h-[80vh] flex items-center py-20 md:py-32">
           <div className="container-95">
             {/* Header + Image two-column layout */}
