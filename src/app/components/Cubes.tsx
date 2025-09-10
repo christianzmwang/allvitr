@@ -42,7 +42,7 @@ const Cubes: React.FC<CubesProps> = ({
   duration = { enter: 0.3, leave: 0.6 },
   cellGap,
   borderStyle = '1px solid #fff',
-  faceColor = '#000000ff',
+  faceColor = '#060010',
   shadow = false,
   autoAnimate = true,
   rippleOnClick = true,
@@ -83,7 +83,7 @@ const Cubes: React.FC<CubesProps> = ({
         if (dist <= radius) {
           const pct = 1 - dist / radius
           const angle = pct * maxAngle
-            ;(gsap as any).to(cube, {
+            gsap.to(cube, {
             duration: enterDur,
             ease: easing,
             overwrite: true,
@@ -91,7 +91,7 @@ const Cubes: React.FC<CubesProps> = ({
             rotateY: angle,
           })
         } else {
-          ;(gsap as any).to(cube, {
+          gsap.to(cube, {
             duration: leaveDur,
             ease: 'power3.out',
             overwrite: true,
@@ -128,7 +128,7 @@ const Cubes: React.FC<CubesProps> = ({
   const resetAll = useCallback(() => {
     if (!sceneRef.current) return
     sceneRef.current.querySelectorAll<HTMLDivElement>('.cube').forEach((cube) =>
-      (gsap as any).to(cube, {
+      gsap.to(cube, {
         duration: leaveDur,
         rotateX: 0,
         rotateY: 0,
@@ -214,13 +214,13 @@ const Cubes: React.FC<CubesProps> = ({
             Array.from(cube.querySelectorAll<HTMLElement>('.cube-face'))
           )
 
-          ;(gsap as any).to(faces, {
+          gsap.to(faces, {
             backgroundColor: rippleColor,
             duration: animDuration,
             delay,
             ease: 'power3.out',
           })
-          ;(gsap as any).to(faces, {
+          gsap.to(faces, {
             backgroundColor: faceColor,
             duration: animDuration,
             delay: delay + animDuration + holdTime,
