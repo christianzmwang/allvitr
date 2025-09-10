@@ -2,6 +2,7 @@ import NavBar from '../components/NavBar'
 import RedDotWave from '../components/RedDotWave'
 import Image from 'next/image'
 import wave from '../../../public/wave.png'
+import Cubes from '../components/Cubes'
 
 export const metadata = {
   title: 'AI Platforms - Hugin, Munin & Odin',
@@ -31,7 +32,8 @@ function SignalCard({
   description: string
 }) {
   return (
-    <div className="bg-[rgb(50,50,50)] p-8 border-1 border-red-600 transition-all duration-200 hover:shadow-[inset_0_0_100px_rgba(255,0,0,0.8)]">
+    <div className="bg-[rgb(50,50,50)] mesh-bg p-8 border-1 border-red-600 transition-all duration-200 hover:shadow-[inset_0_0_100px_rgba(255,0,0,0.8)]">
+      {/* Added mesh-bg for consistent grid pattern with hero */}
       <h4 className="text-xl font-semibold text-white mb-4">{title}</h4>
       <p className="text-gray-300 text-base">{description}</p>
     </div>
@@ -197,7 +199,8 @@ export default function PlatformsPage() {
               <div className="order-2 md:order-2 text-left mt-12 flex flex-col justify-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 flex items-center gap-3">
                   <span>Hugin</span>
-                  <span className="text-[10px] md:text-xs uppercase tracking-widest px-2.5 py-1 border-1 border-red-600 bg-[rgb(50,50,50)] text-white ml-5">
+                  {/* Added mesh-bg to badge for visual consistency */}
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest px-2.5 py-1 border-1 border-red-600 bg-[rgb(50,50,50)] mesh-bg text-white ml-5">
                     powered by AI-Agents
                   </span>
                 </h2>
@@ -210,7 +213,8 @@ export default function PlatformsPage() {
             </div>
 
             {/* Core Benefits Grid */}
-            <div className="bg-[rgb(50,50,50)] p-10 md:p-16 mb-24 border-1 border-red-600">
+            {/* Added mesh-bg for consistent grid background */}
+            <div className="bg-[rgb(50,50,50)] mesh-bg p-10 md:p-16 mb-24 border-1 border-red-600">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
                 {/* Left: Human Connection - Heading at top, text at bottom */}
                 <div className="text-left flex flex-col justify-between h-full">
@@ -414,10 +418,10 @@ export default function PlatformsPage() {
       >
         <div className="mt-[10vh] min-h-[80vh] flex items-center py-20 md:py-36">
           <div className="container-95">
-            {/* Header + Image two-column layout */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
+            {/* Header + Cubes two-column layout (50/50) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               {/* Right: Headline and description */}
-              <div className="md:col-span-3 order-2 md:order-2">
+              <div className="order-2 md:order-2">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
                   Munin
                 </h2>
@@ -432,17 +436,21 @@ export default function PlatformsPage() {
                 </div>
               </div>
 
-              {/* Left: Product image */}
-              <div className="md:col-span-2 order-1 md:order-1">
-                <div className="relative group max-w-[420px] mx-auto md:mx-0">
-                  <div className="relative aspect-[1/1] w-full overflow-hidden">
-                    <Image
-                      src="/glassSquare.png"
-                      alt="Munin visualization"
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 900px"
-                      className="object-contain"
+              {/* Left: Cubes animation */}
+              <div className="order-1 md:order-1 w-full">
+                <div className="relative w-full max-w-[520px] mx-auto aspect-square">
+                  <div className="absolute inset-0">
+                    <Cubes
+                      gridSize={12}
+                      maxAngle={360}
+                      radius={4}
+                      borderStyle="1px solid rgb(56, 189, 248)"
+                      faceColor="#000000ff"
+                      rippleColor="rgb(56, 189, 248)"
+                      rippleSpeed={1}
+                      autoAnimate={true}
+                      rippleOnClick={true}
+                      cellGap={32}
                     />
                   </div>
                 </div>
