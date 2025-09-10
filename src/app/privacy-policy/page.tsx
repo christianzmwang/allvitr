@@ -23,7 +23,6 @@ export default function PrivacyPolicyPage() {
               animateOn="view"
               sequential
               revealDirection="center"
-              speed={36}
               cyclesPerChar={6}
               className="text-white"
               encryptedClassName="opacity-50"
