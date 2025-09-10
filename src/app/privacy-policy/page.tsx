@@ -1,4 +1,5 @@
 import NavBar from '../components/NavBar'
+import DecryptedText from '../components/DecryptedText'
 
 
 export const metadata = {
@@ -16,7 +17,19 @@ export default function PrivacyPolicyPage() {
       <main className="min-h-screen pt-24 md:pt-32 pb-16 pad-section relative z-10">
         <div className="container-95 relative md:grid md:grid-cols-[minmax(0,1fr)_32px] md:gap-6">
           <div data-privacy-content className="w-full md:max-w-[55%] text-gray-200 text-base md:text-lg leading-relaxed p-6 md:p-8 relative">
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-white">Privacy Policy</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-white">
+            <DecryptedText
+              text="Privacy Policy"
+              animateOn="view"
+              sequential
+              revealDirection="center"
+              speed={50}
+              cyclesPerChar={6}
+              className="text-white"
+              encryptedClassName="opacity-50"
+              parentClassName=""
+            />
+          </h1>
           <p className="text-sm uppercase tracking-wide text-gray-400 mb-8"><strong>Last updated: August 31, 2025</strong></p>
           <p className="mb-6">This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You. We use your Personal Data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
 
