@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
+import Script from 'next/script'
 
 export const metadata = {
   title: 'AI-Powered Business Intelligence & Market Research',
@@ -107,8 +108,44 @@ function PlatformStack({
 }
 
 export default function Home() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is Allvitr?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Allvitr provides AI-powered platforms (Hugin, Munin, and Odin) that transform raw data, web signals, and company knowledge into actionable market intelligence and executive insight.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'How does Hugin surface market signals?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Hugin continuously monitors trusted sources and the public web, applies AI-based entity, event, and intent extraction, and ranks emerging signals so teams can act earlier.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Who is Allvitr for?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Revenue, strategy, product, and intelligence teams who need faster visibility into market shifts, customer needs, internal knowledge, and performance KPIs.'
+        }
+      }
+    ]
+  }
+
   return (
-    <div className="page">
+    <div className="page" itemScope itemType="https://schema.org/WebPage">
+      <Script
+        id="home-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <DotsLayer
         targetId="section-2"
         showWhenInView={false}
@@ -129,7 +166,7 @@ export default function Home() {
             {/* Left side - Allvitr title */}
             <div className="w-full h-full flex items-center justify-center p-8 md:p-12">
               <div className="w-full flex justify-center">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-center">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-center" itemProp="headline">
                   Allvitr
                 </h1>
               </div>
@@ -138,7 +175,7 @@ export default function Home() {
             {/* Right side - Description text */}
             <div className="glass w-full h-full flex items-center justify-center p-8 md:p-12">
               <div className="w-full flex justify-center">
-                <p className="text-lg md:text-xl lg:text-xl text-gray-300 text-center leading-relaxed">
+                <p className="text-lg md:text-xl lg:text-xl text-gray-300 text-center leading-relaxed" itemProp="description">
                   We turn information overload into clarity, building software that
                   amplifies human insight and enables autonomous decision-making.
                 </p>
@@ -157,7 +194,7 @@ export default function Home() {
           <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
             {/* Left: Textual content */}
             <div className="text-left md:col-span-2">
-              <h2 className="text-3xl font-bold text-white mb-3">
+              <h2 className="text-3xl font-bold text-white mb-3" id="platforms-overview">
                 Our Platforms
               </h2>
               <p className="text-lg text-gray-300 mb-6 max-w-lg">
@@ -174,7 +211,7 @@ export default function Home() {
                 ))}
               </div>
               <div className="mt-16 md:mt-15">
-                <Link href="/platforms" className="btn btn-primary">
+                <Link href="/platforms" className="btn btn-primary" aria-label="Explore Allvitr Platforms">
                   Explore Platforms
                 </Link>
               </div>
@@ -214,7 +251,7 @@ export default function Home() {
         <div className="container-95">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-5xl md:text-8xl text-left font-extrabold mb-6 flex flex-col gap-2 md:gap-15 heading-glow-red">
+              <h2 className="text-5xl md:text-8xl text-left font-extrabold mb-6 flex flex-col gap-2 md:gap-15 heading-glow-red" id="mission">
                 <span>Age</span>
                 <span>Of</span>
                 <span>Autonomy</span>
@@ -261,7 +298,7 @@ export default function Home() {
             <div className="container-95 w-full">
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold leading-tight text-center gap-4 md:gap-6 text-white">
+                  <h2 className="text-4xl md:text-6xl font-extrabold leading-tight text-center gap-4 md:gap-6 text-white" id="ai-integration">
                     AI Integration
                   </h2>
                 </div>
@@ -283,7 +320,7 @@ export default function Home() {
       <section data-nav-theme="light" className="py-4 md:py-6 bg-gray-300">
         <div className="w-full flex justify-center">
           <div className="inline-block text-center py-8 md:py-12">
-            <h2 className="text-3xl md:text-9xl font-bold text-gray-900 mb-10 md:mb-12">
+            <h2 className="text-3xl md:text-9xl font-bold text-gray-900 mb-10 md:mb-12" id="get-to-work">
               Let&apos;s Get To Work
             </h2>
             <div className="mt-6 flex justify-end">

@@ -100,17 +100,48 @@ export default function RootLayout({
       {
         '@type': 'Service',
         name: 'Hugin',
-        description: 'Real-time market research platform with AI-powered insights'
-      },
-      {
-        '@type': 'Service', 
-        name: 'Munin',
-        description: 'Secure data storage and analytics platform'
+        serviceType: 'Real-time market research & signal detection',
+        url: 'https://allvitr.com/platforms#hugin',
+        description: 'Real-time market research platform that indexes trusted sources and the public web to surface only high-signal market, product, and buying intent events.',
+        areaServed: 'Global',
+        termsOfService: 'https://allvitr.com/privacy-policy'
       },
       {
         '@type': 'Service',
-        name: 'Odin', 
-        description: 'Executive metrics dashboard for real-time KPIs'
+        name: 'Munin',
+        serviceType: 'Secure knowledge base & analytics',
+        url: 'https://allvitr.com/platforms#munin',
+        description: 'Secure data & knowledge consolidation with governed access, RAG-ready search, and analytics.',
+        areaServed: 'Global',
+        termsOfService: 'https://allvitr.com/privacy-policy'
+      },
+      {
+        '@type': 'Service',
+        name: 'Odin',
+        serviceType: 'Executive KPI dashboard',
+        url: 'https://allvitr.com/platforms#odin',
+        description: 'Executive metrics & anomaly detection with unified revenue, product, and operations visibility.',
+        areaServed: 'Global',
+        termsOfService: 'https://allvitr.com/privacy-policy'
+      }
+    ],
+    hasPart: [
+      { '@type': 'WebPage', '@id': 'https://allvitr.com/platforms', name: 'Platforms' },
+      { '@type': 'WebPage', '@id': 'https://allvitr.com/pricing', name: 'Pricing' },
+      { '@type': 'WebPage', '@id': 'https://allvitr.com/contact', name: 'Contact' }
+    ]
+  }
+
+  // Minimal BreadcrumbList (root level) – page-level breadcrumbs can extend this if needed
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://allvitr.com'
       }
     ]
   }
@@ -121,6 +152,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
       <body

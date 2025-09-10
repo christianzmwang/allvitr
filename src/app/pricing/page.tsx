@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import NavBar from '../components/NavBar'
+import Script from 'next/script'
 
 export const metadata = {
   title: 'Pricing - Custom AI Platform Solutions',
@@ -33,6 +34,42 @@ export default async function PricingPage({
       <NavBar />
       <main className="flex-1 pad-section min-h-screen flex items-center justify-start">
         <div className="container-80 text-left">
+          <Script
+            id="pricing-faq-schema"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: [
+                  {
+                    '@type': 'Question',
+                    name: 'How is Allvitr priced?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Pricing is customized based on the mix of platforms (Hugin, Munin, Odin), data volume, seats, and deployment requirements. We scope a tailored demo first.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Do you offer pilots or proofs of concept?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Yes. We deploy a targeted pilot aligned to your automation or intelligence use case so you can validate impact quickly.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Is enterprise security supported?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Yes. We support secure data handling, governance, and can align to your compliance review process.'
+                    }
+                  }
+                ]
+              })
+            }}
+          />
           <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
             Pricing
           </h1>
