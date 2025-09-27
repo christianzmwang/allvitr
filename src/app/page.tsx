@@ -1,64 +1,12 @@
 import Link from 'next/link'
 import NavBar from './components/NavBar'
 import DotsLayer from './components/DotsLayer'
-import Script from 'next/script'
+// Contact form moved to dedicated /contact page
 
-export const metadata = {
-  title: 'AI-Powered Business Intelligence & Market Research',
-  description: 'Turn information overload into clarity with Allvitr\'s AI-powered platforms. Real-time market research, secure data analytics, and executive dashboards for autonomous decision-making.',
-  keywords: ['AI business intelligence', 'market research automation', 'real-time insights', 'data analytics', 'executive dashboard', 'autonomous decision making', 'allvitr'],
-  openGraph: {
-    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
-    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research, secure data analytics, and executive dashboards.',
-    url: 'https://allvitr.com',
-    type: 'website',
-  },
-  twitter: {
-    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
-    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research and data analytics.',
-  },
-  alternates: {
-    canonical: 'https://allvitr.com',
-  },
-}
-
-// Extracted constants for better maintainability
-const PLATFORMS = [
-  {
-    key: 'hugin',
-    title: 'Hugin',
-    subtitle: 'Real time market research',
-    href: '/platforms#hugin',
-    gradient: 'from-red-500/80 to-red-700/80',
-    description:
-      'Real time market research. Indexes internet data to provide real time insights about your market.',
-  },
-  {
-    key: 'munin',
-    title: 'Munin',
-    subtitle: 'Secure data and analytics',
-    href: '/platforms#munin',
-    gradient: 'from-sky-300/80 to-sky-500/80',
-    description:
-      'Secure data storage and powerful analytics with ontology to drive deeper insights.',
-  },
-  {
-    key: 'odin',
-    title: 'Odin',
-    subtitle: 'Executive metrics dashboard',
-    href: '/platforms#odin',
-    gradient: 'from-gray-800/80 to-gray-950/80',
-    backGradient: 'from-gray-500/70 to-gray-600/70',
-    description:
-      "An executive dashboard offering a unified view of your company's key metrics in real time.",
-  },
-] as const
-
-// Simplified PlatformStack component with better performance
 function PlatformStack({
   title,
   subtitle,
-  href = '#',
+  href,
   gradient,
   backGradient,
 }: {
@@ -68,27 +16,24 @@ function PlatformStack({
   gradient: string
   backGradient?: string
 }) {
-  const backGrad = backGradient || gradient
-
   return (
     <Link
-      href={href}
-      aria-label={`${title} platform`}
+      href={href || '#'}
       className="group relative block w-44 md:w-52 h-56 md:h-64 focus:outline-none"
     >
-      {/* Glow effect */}
+      {/* Glow */}
       <div
         className={`pointer-events-none absolute -inset-2 blur-3xl opacity-50 transition duration-500 ease-out group-hover:opacity-95 group-hover:scale-105 ${gradient}`}
       />
 
       {/* Bottom layer */}
       <div
-        className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGrad} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`}
+        className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGradient || gradient} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`}
       />
 
       {/* Middle layer */}
       <div
-        className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGrad} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`}
+        className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGradient || gradient} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`}
       />
 
       {/* Top content card */}
@@ -108,44 +53,8 @@ function PlatformStack({
 }
 
 export default function Home() {
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What is Allvitr?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Allvitr provides AI-powered platforms (Hugin, Munin, and Odin) that transform raw data, web signals, and company knowledge into actionable market intelligence and executive insight.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How does Hugin surface market signals?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Hugin continuously monitors trusted sources and the public web, applies AI-based entity, event, and intent extraction, and ranks emerging signals so teams can act earlier.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Who is Allvitr for?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Revenue, strategy, product, and intelligence teams who need faster visibility into market shifts, customer needs, internal knowledge, and performance KPIs.'
-        }
-      }
-    ]
-  }
-
   return (
-    <div className="page" itemScope itemType="https://schema.org/WebPage">
-      <Script
-        id="home-faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+    <div className="page">
       <DotsLayer
         targetId="section-2"
         showWhenInView={false}
@@ -155,64 +64,75 @@ export default function Home() {
         alwaysVisible
       />
       <NavBar />
-
       {/* Hero Section */}
       <section
         data-nav-theme="dark"
-        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[90vh] py-4 md:py-8 px-0 overflow-hidden"
+        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[85vh] p-4 md:p-8 overflow-hidden"
       >
-        <div className="relative z-10 w-screen max-w-none pt-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-full min-h-[50vh] w-screen">
-            {/* Left side - Allvitr title */}
-            <div className="w-full h-full flex items-center justify-center p-8 md:p-12">
-              <div className="w-full flex justify-center">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-center" itemProp="headline">
-                  Allvitr
-                </h1>
-              </div>
-            </div>
-            
-            {/* Right side - Description text */}
-            <div className="glass w-full h-full flex items-center justify-center p-8 md:p-12">
-              <div className="w-full flex justify-center">
-                <p className="text-lg md:text-xl lg:text-xl text-gray-300 text-center leading-relaxed" itemProp="description">
-                  We turn information overload into clarity, building software that
-                  amplifies human insight and enables autonomous decision-making.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="relative z-10 max-w-2xl w-full text-center">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
+            Allvitr
+          </h1>
+          <p className="text-base md:text-lg text-gray-400 mb-8">
+            We turn information overload into clarity, building software that
+            amplify human insight and enable autonomous decision-making.
+          </p>
         </div>
       </section>
 
-      {/* Section 1: Platforms */}
+      {/* Section 1 */}
       <section
         data-nav-theme="dark"
         className="min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 overflow-hidden"
       >
+        {/* Center within non-gradient area (below top 20% gradient) */}
         <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
           <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
             {/* Left: Textual content */}
             <div className="text-left md:col-span-2">
-              <h2 className="text-3xl font-bold text-white mb-3" id="platforms-overview">
+              <h2 className="text-3xl font-bold text-white mb-3">
                 Our Platforms
               </h2>
               <p className="text-lg text-gray-300 mb-6 max-w-lg">
                 Software that turns data into insights.
               </p>
               <div className="space-y-5">
-                {PLATFORMS.map(({ key, title, description }) => (
-                  <div key={key}>
-                    <h3 className="text-xl font-semibold text-white">
-                      {title}
-                    </h3>
-                    <p className="text-gray-300">{description}</p>
-                  </div>
-                ))}
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Hugin</h3>
+                  <p className="text-gray-300">
+                    Real time market research. Indexes internet data to provide
+                    real time insights about your market.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Munin</h3>
+                  <p className="text-gray-300">
+                    Secure data storage and powerful analytics to drive
+                    smarter business decisions.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Odin</h3>
+                  <p className="text-gray-300">
+                    An executive dashboard offering a unified view of your
+                    company’s key metrics in real time.
+                  </p>
+                </div>
               </div>
               <div className="mt-16 md:mt-15">
-                <Link href="/platforms" className="btn btn-primary" aria-label="Explore Allvitr Platforms">
-                  Explore Platforms
+                <Link href="/platforms" className="group btn btn-primary inline-flex items-center gap-2">
+                  <span>Explore Platforms</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                    className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
             </div>
@@ -220,27 +140,32 @@ export default function Home() {
             {/* Right: Three interactive stacks */}
             <div className="relative md:col-span-3">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
-                {PLATFORMS.map((platform) => (
-                  <PlatformStack
-                    key={platform.key}
-                    title={platform.title}
-                    subtitle={platform.subtitle}
-                    href={platform.href}
-                    gradient={platform.gradient}
-                    backGradient={
-                      'backGradient' in platform
-                        ? platform.backGradient
-                        : undefined
-                    }
-                  />
-                ))}
+                <PlatformStack
+                  title="Hugin"
+                  subtitle="Real time market research"
+                  href="/platforms#hugin"
+                  gradient="from-red-500/80 to-red-700/80"
+                />
+                <PlatformStack
+                  title="Munin"
+                  subtitle="Secure data and analytics"
+                  href="/platforms#munin"
+                  gradient="from-sky-300/80 to-sky-500/80"
+                />
+                <PlatformStack
+                  title="Odin"
+                  subtitle="Executive metrics dashboard"
+                  href="/platforms#odin"
+                  gradient="from-gray-800/80 to-gray-950/80"
+                  backGradient="from-gray-500/70 to-gray-600/70"
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Spacer */}
+      {/* Spacer to ensure navbar is dark in the space between section 1 and 2 */}
       <div data-nav-theme="dark" aria-hidden className="w-full h-20 md:h-28" />
 
       {/* Section 2: Mission */}
@@ -251,7 +176,7 @@ export default function Home() {
         <div className="container-95">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-5xl md:text-8xl text-left font-extrabold mb-6 flex flex-col gap-2 md:gap-15 heading-glow-red" id="mission">
+              <h2 className="text-5xl md:text-8xl text-left font-extrabold text-transparent mb-6 flex flex-col gap-2 md:gap-15 heading-outline-dark">
                 <span>Age</span>
                 <span>Of</span>
                 <span>Autonomy</span>
@@ -259,17 +184,10 @@ export default function Home() {
             </div>
             <div className="flex justify-center">
               <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
-                <p className="text-lg md:text-xl font-bold">
-                  Autonomy is inevitable.
-                </p>
-                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">
-                  Deploy now, advance tomorrow.
-                </p>
+                <p className="text-lg md:text-xl font-bold">Autonomy is inevitable.</p>
+                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">Deploy now, advance tomorrow.</p>
                 <p className="text-lg md:text-xl">
-                  We deploy autonomous platforms
-                  <br />
-                  that deliver AI-powered insights: enabling rapid, clear, and
-                  autonomous decision-making.
+                We deploy autonomous platforms<br />that deliver AI-powered insights: enabling rapid, clear, and autonomous decision-making.
                 </p>
               </div>
             </div>
@@ -277,7 +195,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 3: AI Integration */}
+      {/* Section 3*/}
       <section
         data-nav-theme="light"
         id="section-2"
@@ -298,7 +216,7 @@ export default function Home() {
             <div className="container-95 w-full">
               <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold leading-tight text-center gap-4 md:gap-6 text-white" id="ai-integration">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-transparent leading-tight text-center gap-4 md:gap-6 heading-outline-light">
                     AI Integration
                   </h2>
                 </div>
@@ -317,22 +235,37 @@ export default function Home() {
       </section>
 
       {/* Section 4: CTA */}
-      <section data-nav-theme="light" className="py-4 md:py-6 bg-gray-300">
-        <div className="w-full flex justify-center">
-          <div className="inline-block text-center py-8 md:py-12">
-            <h2 className="text-3xl md:text-9xl font-bold text-gray-900 mb-10 md:mb-12" id="get-to-work">
-              Let&apos;s Get To Work
-            </h2>
-            <div className="mt-6 flex justify-end">
-              <div className="flex flex-row items-center gap-4">
-                <Link href="/contact" className="btn btn-primary">
-                  Demo Request
-                </Link>
-                <Link href="/platforms" className="btn btn-outline">
-                  Explore Platforms
-                </Link>
-              </div>
-            </div>
+      <section data-nav-theme="light" className="py-4 md:py-5 bg-gray-300">
+        <div className="container-95 flex items-center justify-center">
+          <div className="flex w-full flex-col md:flex-row items-stretch gap-6">
+            <Link href="/contact" className="group btn btn-primary cta-button-large w-full md:flex-1">
+              <span>Work with us</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link href="/platforms" className="group btn btn-outline cta-button-large w-full md:flex-1">
+              <span>Explore Platforms</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+                className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
