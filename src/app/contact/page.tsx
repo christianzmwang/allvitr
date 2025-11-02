@@ -1,142 +1,164 @@
-import NavBar from '../components/NavBar'
-import { sendContactToSlack } from '../actions/sendContactToSlack'
+import Link from 'next/link'
 import Script from 'next/script'
+import Footer from '../components/Footer'
+import { sendContactToSlack } from '../actions/sendContactToSlack'
 
 export const metadata = {
   title: 'Contact Us - Request a Demo',
-  description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms. Contact our team to discuss how we can automate your market research and data analytics.',
-  keywords: ['contact allvitr', 'demo request', 'business intelligence demo', 'market research consultation', 'AI platform demo'],
-  openGraph: {
-    title: 'Contact Allvitr - Request a Demo',
-    description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms.',
-    url: 'https://allvitr.com/contact',
-    type: 'website',
-  },
-  twitter: {
-    title: 'Contact Allvitr - Request a Demo',
-    description: 'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms.',
-  },
-  alternates: {
-    canonical: 'https://allvitr.com/contact',
-  },
+  description:
+    'Get in touch with Allvitr for a personalized demo of our AI-powered business intelligence platforms.',
 }
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>
-}) {
-  const resolvedSearchParams = await searchParams
-  const isSent = (resolvedSearchParams?.sent || '') === '1'
+type ContactPageProps = {
+  searchParams?: Record<string, string | string[] | undefined>
+}
+
+export default function ContactPage({ searchParams }: ContactPageProps) {
+  const isSent = (Array.isArray(searchParams?.sent) ? searchParams?.sent[0] : searchParams?.sent) === '1'
 
   return (
-    <div className="bg-black">
-      <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-        defer
-      />
-      <NavBar />
-    <section
-      id="contact"
-      data-nav-theme="dark"
-      className="pad-section bg-black scroll-mt-24 md:scroll-mt-32 min-h-screen flex"
-    >
-        <div className="container-95 flex flex-col justify-center py-24 md:py-32">
-          <div className="max-w-4xl">
-      <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Contact</h1>
-          </div>
-          {isSent && (
-      <div className="mt-4 mb-2 rounded-md border border-green-500/30 bg-green-900/30 text-green-200 p-3 max-w-xl">Your message was sent. We’ll be in touch shortly.</div>
-          )}
-          <form
-            action={sendContactToSlack}
-            className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8"
-          >
-            <input type="hidden" name="origin" value="/contact" />
-            <div className="md:col-span-4">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Name"
-              />
-            </div>
-            <div className="md:col-span-8">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Email"
-              />
-            </div>
-      <div className="md:col-span-4">
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Phone"
-              />
-            </div>
-      <div className="md:col-span-8">
-              <input
-                id="company"
-                name="company"
-                type="text"
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Company"
-              />
-            </div>
-            <div className="md:col-span-8">
-              <input
-                id="title"
-                name="title"
-                type="text"
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Job Title"
-              />
-            </div>
-            <div className="md:col-span-4">
-              <input
-                id="country"
-                name="country"
-                type="text"
-                className="w-full bg-transparent border-0 border-b border-gray-500 text-gray-200 placeholder-gray-500 px-0 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="Country"
-              />
-            </div>
-            <div className="md:col-span-12 mt-4">
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                className="w-full bg-transparent border border-gray-500 text-gray-200 placeholder-gray-500 px-3 py-3 focus:outline-none focus:ring-0 focus:border-red-600/90 hover:border-red-600/90 transition-colors"
-                placeholder="What parts of your business would you like to automate?"
-              />
-            </div>
-            <div className="md:col-span-12 flex justify-start">
-              {/* Cloudflare Turnstile Invisible Widget */}
-              <div
-                className="cf-turnstile"
-                data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
-                data-size="invisible"
-                data-theme="dark"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 font-semibold border border-gray-500 text-gray-500 hover:border-red-600/90 hover:text-red-600/90 focus:border-red-600/90 focus:text-red-600/90 transition-colors"
-              >
-                Send
-              </button>
-            </div>
-          </form>
+    <div className="bg-white text-black flex flex-col min-h-screen">
+      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      <div className="flex flex-col flex-1">
+        <div className="flex justify-between items-start p-8">
+          <Link href="/" className="text-2xl font-bold hover:opacity-70 transition-opacity">
+            ALLVITR
+          </Link>
+          <Link href="/contact" className="text-xl hover:underline">
+            Contact
+          </Link>
         </div>
-      </section>
+
+        <section className="flex flex-grow overflow-y-auto px-8 pb-12">
+          <div className="flex w-full flex-col justify-center gap-10">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Contact</h1>
+              <p className="mt-3 text-base md:text-lg text-neutral-600">
+                Reach out to explore how Allvitr can automate your market research and deliver actionable intelligence.
+              </p>
+            </div>
+
+            {isSent && (
+              <div className="rounded-md border border-green-500/40 bg-green-100 text-green-900 px-4 py-3">
+                Your message was sent. We’ll be in touch shortly.
+              </div>
+            )}
+
+            <form className="grid w-full grid-cols-1 gap-6 md:grid-cols-12" action={sendContactToSlack}>
+              <input type="hidden" name="origin" value="/contact" />
+
+              <div className="md:col-span-4">
+                <label htmlFor="name" className="sr-only">
+                  Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Name"
+                />
+              </div>
+
+              <div className="md:col-span-8">
+                <label htmlFor="email" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Email"
+                />
+              </div>
+
+              <div className="md:col-span-4">
+                <label htmlFor="phone" className="sr-only">
+                  Phone
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Phone"
+                />
+              </div>
+
+              <div className="md:col-span-8">
+                <label htmlFor="company" className="sr-only">
+                  Company
+                </label>
+                <input
+                  id="company"
+                  name="company"
+                  type="text"
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Company"
+                />
+              </div>
+
+              <div className="md:col-span-8">
+                <label htmlFor="title" className="sr-only">
+                  Job Title
+                </label>
+                <input
+                  id="title"
+                  name="title"
+                  type="text"
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Job Title"
+                />
+              </div>
+
+              <div className="md:col-span-4">
+                <label htmlFor="country" className="sr-only">
+                  Country
+                </label>
+                <input
+                  id="country"
+                  name="country"
+                  type="text"
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="Country"
+                />
+              </div>
+
+              <div className="md:col-span-12">
+                <label htmlFor="message" className="sr-only">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  className="w-full border border-neutral-300 bg-white px-3 py-3 text-sm md:text-base focus:border-black focus:outline-none focus:ring-0 transition"
+                  placeholder="What parts of your business would you like to automate?"
+                />
+              </div>
+
+              <div className="md:col-span-12 flex flex-col gap-4">
+                <div
+                  className="cf-turnstile"
+                  data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                  data-size="invisible"
+                  data-theme="light"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3 font-semibold border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition"
+                >
+                  Send
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+      <Footer />
     </div>
   )
 }

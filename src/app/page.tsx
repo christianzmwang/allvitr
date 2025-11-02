@@ -1,341 +1,37 @@
 import Link from 'next/link'
-import NavBar from './components/NavBar'
-import DotsLayer from './components/DotsLayer'
-import Script from 'next/script'
-
-export const metadata = {
-  title: 'AI-Powered Business Intelligence & Market Research',
-  description: 'Turn information overload into clarity with Allvitr\'s AI-powered platforms. Real-time market research, secure data analytics, and executive dashboards for autonomous decision-making.',
-  keywords: ['AI business intelligence', 'market research automation', 'real-time insights', 'data analytics', 'executive dashboard', 'autonomous decision making', 'allvitr'],
-  openGraph: {
-    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
-    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research, secure data analytics, and executive dashboards.',
-    url: 'https://allvitr.com',
-    type: 'website',
-  },
-  twitter: {
-    title: 'Allvitr - AI-Powered Business Intelligence & Market Research',
-    description: 'Turn information overload into clarity with AI-powered platforms for real-time market research and data analytics.',
-  },
-  alternates: {
-    canonical: 'https://allvitr.com',
-  },
-}
-
-// Extracted constants for better maintainability
-const PLATFORMS = [
-  {
-    key: 'hugin',
-    title: 'Hugin',
-    subtitle: 'Real time market research',
-    href: '/platforms#hugin',
-    gradient: 'from-red-500/80 to-red-700/80',
-    description:
-      'Real time market research. Indexes internet data to provide real time insights about your market.',
-  },
-  {
-    key: 'munin',
-    title: 'Munin',
-    subtitle: 'Secure data and analytics',
-    href: '/platforms#munin',
-    gradient: 'from-sky-300/80 to-sky-500/80',
-    description:
-      'Secure data storage and powerful analytics with ontology to drive deeper insights.',
-  },
-  {
-    key: 'odin',
-    title: 'Odin',
-    subtitle: 'Executive metrics dashboard',
-    href: '/platforms#odin',
-    gradient: 'from-gray-800/80 to-gray-950/80',
-    backGradient: 'from-gray-500/70 to-gray-600/70',
-    description:
-      "An executive dashboard offering a unified view of your company's key metrics in real time.",
-  },
-] as const
-
-// Simplified PlatformStack component with better performance
-function PlatformStack({
-  title,
-  subtitle,
-  href = '#',
-  gradient,
-  backGradient,
-}: {
-  title: string
-  subtitle: string
-  href?: string
-  gradient: string
-  backGradient?: string
-}) {
-  const backGrad = backGradient || gradient
-
-  return (
-    <Link
-      href={href}
-      aria-label={`${title} platform`}
-      className="group relative block w-44 md:w-52 h-56 md:h-64 focus:outline-none"
-    >
-      {/* Glow effect */}
-      <div
-        className={`pointer-events-none absolute -inset-2 blur-3xl opacity-50 transition duration-500 ease-out group-hover:opacity-95 group-hover:scale-105 ${gradient}`}
-      />
-
-      {/* Bottom layer */}
-      <div
-        className={`absolute inset-0 translate-y-4 rotate-3 scale-[0.96] bg-gradient-to-br ${backGrad} opacity-20 ring-1 ring-white/5 transition-all duration-500 ease-out group-hover:translate-y-8 group-hover:rotate-12 group-hover:scale-100`}
-      />
-
-      {/* Middle layer */}
-      <div
-        className={`absolute inset-0 translate-y-2 -rotate-2 scale-[0.98] bg-gradient-to-br ${backGrad} opacity-30 ring-1 ring-white/10 transition-all duration-500 ease-out group-hover:translate-y-4 group-hover:-rotate-6 group-hover:scale-[1.02]`}
-      />
-
-      {/* Top content card */}
-      <div
-        className={`relative z-10 h-full p-5 ring-1 ring-white/10 bg-gradient-to-br ${gradient} transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] shadow-xl shadow-black/30`}
-      >
-        <div className="flex h-full flex-col justify-between">
-          <div>
-            <div className="text-sm text-white/70">Platform</div>
-            <h3 className="mt-1 text-xl font-semibold text-white">{title}</h3>
-          </div>
-          <p className="text-sm text-white/85">{subtitle}</p>
-        </div>
-      </div>
-    </Link>
-  )
-}
+import Footer from './components/Footer'
 
 export default function Home() {
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What is Allvitr?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Allvitr provides AI-powered platforms (Hugin, Munin, and Odin) that transform raw data, web signals, and company knowledge into actionable market intelligence and executive insight.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How does Hugin surface market signals?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Hugin continuously monitors trusted sources and the public web, applies AI-based entity, event, and intent extraction, and ranks emerging signals so teams can act earlier.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Who is Allvitr for?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Revenue, strategy, product, and intelligence teams who need faster visibility into market shifts, customer needs, internal knowledge, and performance KPIs.'
-        }
-      }
-    ]
-  }
-
   return (
-    <div className="page" itemScope itemType="https://schema.org/WebPage">
-      <Script
-        id="home-faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <DotsLayer
-        targetId="section-2"
-        showWhenInView={false}
-        mode="uniform"
-        divisions={20}
-        variant="fixed"
-        alwaysVisible
-      />
-      <NavBar />
-
+    <main className="flex flex-col">
       {/* Hero Section */}
-      <section
-        data-nav-theme="dark"
-        className="relative flex items-center justify-center min-h-[70vh] md:min-h-[90vh] py-4 md:py-8 px-0 overflow-hidden"
+      <section className="bg-white text-black flex flex-col min-h-screen">
+        {/* Top Row */}
+        <div className="flex justify-between items-start p-8">
+          <div className="text-2xl font-bold">ALLVITR</div>
+          <Link href="/contact" className="text-xl hover:underline">
+            Contact
+          </Link>
+        </div>
+
+        {/* Bottom Row */}
+        <div className="flex justify-between items-end p-8 mt-auto">
+          <div className="text-xl">Building...</div>
+          <div className="text-xl text-right">From Oslo and California</div>
+        </div>
+      </section>
+
+      {/* Current Project Section */}
+      <a 
+        href="https://hugin.allvitr.no/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="bg-[#ff3131] text-black py-6 transition-colors duration-300 hover:bg-[#cc1f1f] cursor-pointer block"
       >
-        <div className="relative z-10 w-screen max-w-none pt-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-full min-h-[50vh] w-screen">
-            {/* Left side - Allvitr title */}
-            <div className="w-full h-full flex items-center justify-center p-8 md:p-12">
-              <div className="w-full flex justify-center">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-center" itemProp="headline">
-                  Allvitr
-                </h1>
-              </div>
-            </div>
-            
-            {/* Right side - Description text */}
-            <div className="glass w-full h-full flex items-center justify-center p-8 md:p-12">
-              <div className="w-full flex justify-center">
-                <p className="text-lg md:text-xl lg:text-xl text-gray-300 text-center leading-relaxed" itemProp="description">
-                  We turn information overload into clarity, building software that
-                  amplifies human insight and enables autonomous decision-making.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        <div className="text-center text-xl">Hugin</div>
+      </a>
 
-      {/* Section 1: Platforms */}
-      <section
-        data-nav-theme="dark"
-        className="min-h-screen pad-section bg-gradient-to-b from-transparent via-black/100 via-20% to-black md:-mt-[20vh] -mt-0 overflow-hidden"
-      >
-        <div className="mt-[20vh] min-h-[80vh] flex items-center justify-center py-24 md:py-64">
-          <div className="container-95 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
-            {/* Left: Textual content */}
-            <div className="text-left md:col-span-2">
-              <h2 className="text-3xl font-bold text-white mb-3" id="platforms-overview">
-                Our Platforms
-              </h2>
-              <p className="text-lg text-gray-300 mb-6 max-w-lg">
-                Software that turns data into insights.
-              </p>
-              <div className="space-y-5">
-                {PLATFORMS.map(({ key, title, description }) => (
-                  <div key={key}>
-                    <h3 className="text-xl font-semibold text-white">
-                      {title}
-                    </h3>
-                    <p className="text-gray-300">{description}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-16 md:mt-15">
-                <Link href="/platforms" className="btn btn-primary" aria-label="Explore Allvitr Platforms">
-                  Explore Platforms
-                </Link>
-              </div>
-            </div>
-
-            {/* Right: Three interactive stacks */}
-            <div className="relative md:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 justify-items-center md:justify-items-end">
-                {PLATFORMS.map((platform) => (
-                  <PlatformStack
-                    key={platform.key}
-                    title={platform.title}
-                    subtitle={platform.subtitle}
-                    href={platform.href}
-                    gradient={platform.gradient}
-                    backGradient={
-                      'backGradient' in platform
-                        ? platform.backGradient
-                        : undefined
-                    }
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Spacer */}
-      <div data-nav-theme="dark" aria-hidden className="w-full h-20 md:h-28" />
-
-      {/* Section 2: Mission */}
-      <section
-        data-nav-theme="light"
-        className="min-h-[60vh] flex items-center justify-center py-10 md:py-15 bg-gray-300"
-      >
-        <div className="container-95">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center">
-            <div className="text-center pl-4 md:pl-18">
-              <h2 className="text-5xl md:text-8xl text-left font-extrabold mb-6 flex flex-col gap-2 md:gap-15 heading-glow-red" id="mission">
-                <span>Age</span>
-                <span>Of</span>
-                <span>Autonomy</span>
-              </h2>
-            </div>
-            <div className="flex justify-center">
-              <div className="text-left text-gray-700 max-w-xl md:max-w-2xl w-100">
-                <p className="text-lg md:text-xl font-bold">
-                  Autonomy is inevitable.
-                </p>
-                <p className="text-lg md:text-xl mt-8 md:mt-12 mb-8 md:mb-12 font-bold">
-                  Deploy now, advance tomorrow.
-                </p>
-                <p className="text-lg md:text-xl">
-                  We deploy autonomous platforms
-                  <br />
-                  that deliver AI-powered insights: enabling rapid, clear, and
-                  autonomous decision-making.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: AI Integration */}
-      <section
-        data-nav-theme="light"
-        id="section-2"
-        className="py-4 px-0 bg-gray-300"
-      >
-        <div
-          data-nav-theme="dark-contrast"
-          className="relative h-[52vh] md:h-[68vh] container-95 overflow-hidden border border-gray-950"
-        >
-          <DotsLayer
-            targetId="section-2"
-            showWhenInView
-            mode="mouse"
-            divisions={20}
-            variant="section"
-          />
-          <div className="relative z-10 h-full w-full flex items-center px-6">
-            <div className="container-95 w-full">
-              <div className="flex flex-col md:flex-row items-center w-full gap-6 md:gap-10">
-                <div className="w-full md:w-1/2 flex justify-center">
-                  <h2 className="text-4xl md:text-6xl font-extrabold leading-tight text-center gap-4 md:gap-6 text-white" id="ai-integration">
-                    AI Integration
-                  </h2>
-                </div>
-                <div className="w-full md:w-1/2 flex justify-center">
-                  <div className="text-left text-white font-semibold leading-snug text-lg md:text-4xl space-y-1">
-                    <div>Clarity</div>
-                    <div>Speed</div>
-                    <div>Execution</div>
-                    <div className="text-red-600/80">Evolution</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 4: CTA */}
-      <section data-nav-theme="light" className="py-4 md:py-6 bg-gray-300">
-        <div className="w-full flex justify-center">
-          <div className="inline-block text-center py-8 md:py-12">
-            <h2 className="text-3xl md:text-9xl font-bold text-gray-900 mb-10 md:mb-12" id="get-to-work">
-              Let&apos;s Get To Work
-            </h2>
-            <div className="mt-6 flex justify-end">
-              <div className="flex flex-row items-center gap-4">
-                <Link href="/contact" className="btn btn-primary">
-                  Demo Request
-                </Link>
-                <Link href="/platforms" className="btn btn-outline">
-                  Explore Platforms
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+      <Footer />
+    </main>
   )
 }
