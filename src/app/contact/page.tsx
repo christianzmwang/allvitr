@@ -10,11 +10,12 @@ export const metadata = {
 }
 
 type ContactPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
-export default function ContactPage({ searchParams }: ContactPageProps) {
-  const isSent = (Array.isArray(searchParams?.sent) ? searchParams?.sent[0] : searchParams?.sent) === '1'
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const params = await searchParams
+  const isSent = (Array.isArray(params?.sent) ? params?.sent[0] : params?.sent) === '1'
 
   return (
     <div className="bg-white text-black flex flex-col min-h-screen">
