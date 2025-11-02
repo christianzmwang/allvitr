@@ -21,7 +21,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     <div className="bg-white text-black flex flex-col min-h-screen">
       <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
       <div className="flex flex-col flex-1">
-        <div className="flex justify-between items-start p-8">
+        <div className="flex justify-between items-start px-4 py-4 md:px-8 md:py-8">
           <Link href="/" className="text-2xl font-bold hover:opacity-70 transition-opacity">
             ALLVITR
           </Link>
@@ -30,10 +30,10 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
           </Link>
         </div>
 
-        <section className="flex flex-grow overflow-y-auto px-8 pb-12">
+        <section className="flex flex-grow overflow-y-auto px-4 pb-12 md:px-8">
           <div className="flex w-full flex-col justify-center gap-10">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Contact</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight">Contact</h1>
               <p className="mt-3 text-base md:text-lg text-neutral-600">
                 Reach out to explore how Allvitr can automate your market research and deliver actionable intelligence.
               </p>

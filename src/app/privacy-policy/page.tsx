@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Footer from '../components/Footer'
+import LetterGlitchBackground from '../components/LetterGlitchBackground'
 
 export const metadata = {
   title: 'Privacy Policy',
@@ -10,7 +11,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="bg-white text-black flex flex-col min-h-screen">
       {/* Navbar */}
-      <div className="flex justify-between items-start p-8">
+      <div className="flex justify-between items-start px-4 py-4 md:px-8 md:py-8">
         <Link href="/" className="text-2xl font-bold hover:opacity-70 transition-opacity">
           ALLVITR
         </Link>
@@ -19,18 +20,29 @@ export default function PrivacyPolicyPage() {
         </Link>
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 px-8 pb-12 max-w-4xl w-full">
-        <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-        <p className="text-gray-600 mb-8">Last updated: August 31, 2025</p>
-        
-        <div className="space-y-8 text-black leading-relaxed">
-        <p>
-          This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You. We use your Personal Data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.
-        </p>
+      <div className="w-full">
+        <div className="relative h-[260px] w-full overflow-hidden bg-white md:h-[360px]">
+          <LetterGlitchBackground className="h-full w-full bg-white" outerVignette={false} />
+        </div>
+      </div>
 
-        <section>
-          <h2 className="text-3xl font-bold mb-4 text-black">Definitions</h2>
+      {/* Main Content */}
+      <main className="flex-1 w-full">
+        <div className="mt-6 w-full md:w-1/2 px-4 pb-12 md:px-8">
+          <h1 className="text-2xl font-bold mb-4 text-left">Privacy Policy</h1>
+          <p className="text-gray-600 mb-8 text-left">Last updated: August 31, 2025</p>
+
+          <div className="space-y-8 text-left text-black leading-relaxed">
+            <p>
+              This Privacy Policy describes Our policies and procedures on the collection, use and
+              disclosure of Your information when You use the Service and tells You about Your
+              privacy rights and how the law protects You. We use your Personal Data to provide and
+              improve the Service. By using the Service, You agree to the collection and use of
+              information in accordance with this Privacy Policy.
+            </p>
+
+            <section>
+          <h2 className="text-xl font-bold mb-4 text-black">Definitions</h2>
           
           <div className="space-y-4">
             <p><strong>Account</strong> means a unique account created for You to access our Service or parts of our Service.</p>
@@ -60,9 +72,9 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 text-black">Collecting and Using Your Personal Data</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">Collecting and Using Your Personal Data</h2>
           
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Types of Data Collected</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Types of Data Collected</h3>
           
           <h4 className="text-xl font-semibold mb-2 text-black mt-4">Personal Data</h4>
           <p className="mb-4">
@@ -84,14 +96,14 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Tracking Technologies and Cookies</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Tracking Technologies and Cookies</h3>
           <p>
             We do not use Cookies or similar client-side tracking technologies on our Website. The Service functions without placing Cookies on Your Device. We also do not use analytics or advertising pixels. We maintain minimal server-side logs for security and reliability purposes as described under Usage Data.
           </p>
         </section>
 
         <section>
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Use of Your Personal Data</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Use of Your Personal Data</h3>
           <p className="mb-4">The Company may use Personal Data for the following purposes:</p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>To provide and maintain our Service, including to secure accounts and ensure availability.</li>
@@ -113,40 +125,40 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Retention of Your Personal Data</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Retention of Your Personal Data</h3>
           <p>
             The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We retain authentication records and basic security logs for a limited period that is appropriate for security, troubleshooting, and compliance, unless a longer retention period is required by law.
           </p>
         </section>
 
         <section>
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Transfer of Your Personal Data</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Transfer of Your Personal Data</h3>
           <p>
             Your information may be processed in locations where Our Service Providers operate. When transferring Personal Data outside the EEA, We use appropriate safeguards (such as the EU Standard Contractual Clauses and additional measures where necessary) to protect Your information.
           </p>
         </section>
 
         <section>
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Delete Your Personal Data</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Delete Your Personal Data</h3>
           <p>
             You have the right to delete or request that We assist in deleting Personal Data that We have collected about You. Where applicable, You may delete certain information from within the Service (account settings). You may also contact Us to request access to, correct, or delete any Personal Data that You have provided to Us. We may retain certain information where We have a legal obligation or legitimate basis to do so.
           </p>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 text-black mt-8">Disclosure of Your Personal Data</h2>
+          <h2 className="text-xl font-bold mb-4 text-black mt-8">Disclosure of Your Personal Data</h2>
           
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Business Transactions</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Business Transactions</h3>
           <p>
             If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.
           </p>
           
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Law enforcement</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Law enforcement</h3>
           <p>
             Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).
           </p>
           
-          <h3 className="text-2xl font-semibold mb-3 text-black mt-6">Other legal requirements</h3>
+          <h3 className="text-lg font-semibold mb-3 text-black mt-6">Other legal requirements</h3>
           <p className="mb-4">The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:</p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>Comply with a legal obligation</li>
@@ -158,40 +170,41 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 text-black mt-8">Security of Your Personal Data</h2>
+          <h2 className="text-xl font-bold mb-4 text-black mt-8">Security of Your Personal Data</h2>
           <p>
             The security of Your Personal Data is important to Us. While no method of transmission over the Internet or electronic storage is 100% secure, We apply appropriate technical and organizational measures to protect Your Personal Data.
           </p>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 text-black mt-8">Children&apos;s Privacy</h2>
+          <h2 className="text-xl font-bold mb-4 text-black mt-8">Children&apos;s Privacy</h2>
           <p>
             Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under 13 without verification of parental consent, We will take steps to remove that information.
           </p>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 mt-8">Links to Other Websites</h2>
+          <h2 className="text-xl font-bold mb-4 mt-8">Links to Other Websites</h2>
           <p>
             Our Service may contain links to other websites that are not operated by Us. If You click on a third-party link, You will be directed to that site. We strongly advise You to review the Privacy Policy of every site You visit. We have no control over and assume no responsibility for the content, privacy policies or practices of any third-party sites or services.
           </p>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 mt-8">Changes to this Privacy Policy</h2>
+          <h2 className="text-xl font-bold mb-4 mt-8">Changes to this Privacy Policy</h2>
           <p>
             We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes are effective when they are posted on this page.
           </p>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-4 mt-8">Contact Us</h2>
+          <h2 className="text-xl font-bold mb-4 mt-8">Contact Us</h2>
           <p>
             If you have any questions about this Privacy Policy, You can contact by email: <a href="mailto:privacy@allvitr.com" className="text-blue-600 hover:text-blue-800 underline">privacy@allvitr.com</a>
           </p>
         </section>
-      </div>
+          </div>
+        </div>
       </main>
       
       <Footer />

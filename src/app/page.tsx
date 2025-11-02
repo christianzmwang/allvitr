@@ -7,7 +7,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-white text-black flex flex-col min-h-screen">
         {/* Top Row */}
-        <div className="flex justify-between items-start p-8">
+        <div className="flex justify-between items-start px-4 py-4 md:px-8 md:py-8">
           <div className="text-2xl font-bold">ALLVITR</div>
           <Link href="/contact" className="text-xl hover:underline">
             Contact
@@ -15,7 +15,7 @@ export default function Home() {
         </div>
 
         {/* Bottom Row */}
-        <div className="flex justify-between items-end p-8 mt-auto">
+        <div className="flex justify-between items-end px-4 py-4 md:px-8 md:py-8 mt-auto">
           <div className="text-xl">Building...</div>
           <div className="text-xl text-right">From Oslo and California</div>
         </div>
