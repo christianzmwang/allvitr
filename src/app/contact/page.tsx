@@ -16,6 +16,7 @@ type ContactPageProps = {
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const params = await searchParams
   const isSent = (Array.isArray(params?.sent) ? params?.sent[0] : params?.sent) === '1'
+  const hasError = (Array.isArray(params?.error) ? params?.error[0] : params?.error) === 'verification'
 
   return (
     <div className="bg-white text-black flex flex-col min-h-screen">
@@ -41,7 +42,13 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
 
             {isSent && (
               <div className="rounded-md border border-green-500/40 bg-green-100 text-green-900 px-4 py-3">
-                Your message was sent. We’ll be in touch shortly.
+                Your message was sent. We'll be in touch shortly.
+              </div>
+            )}
+
+            {hasError && (
+              <div className="rounded-md border border-red-500/40 bg-red-100 text-red-900 px-4 py-3">
+                Verification failed. Please try again.
               </div>
             )}
 
@@ -150,7 +157,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 font-semibold border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition"
+                  className="px-6 py-3 font-semibold border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition cursor-pointer"
                 >
                   Send
                 </button>
