@@ -42,7 +42,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
 
             {isSent && (
               <div className="rounded-md border border-green-500/40 bg-green-100 text-green-900 px-4 py-3">
-                Your message was sent. We'll be in touch shortly.
+                Your message was sent. We&apos;ll be in touch shortly.
               </div>
             )}
 

@@ -262,7 +262,7 @@ export default function LetterGlitchBackground({
         clearTimeout(resizeTimeout)
       }
     }
-  }, [glitchSpeed, smooth, glitchColors, characters])
+  }, [glitchSpeed, smooth, glitchColors, characters, animate, resizeCanvas])
 
   const containerClassName = ['relative w-full h-full overflow-hidden bg-black', className]
     .filter(Boolean)
