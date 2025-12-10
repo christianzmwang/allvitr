@@ -34,7 +34,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         <section className="flex flex-grow overflow-y-auto px-4 pb-12 md:px-8">
           <div className="flex w-full flex-col justify-center gap-10">
             <div>
-              <h1 className="text-2xl md:text-4xl font-bold tracking-tight">Contact</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Contact</h1>
               <p className="mt-3 text-base md:text-lg text-neutral-600">
                 Reach out to explore how Allvitr can automate your market research and deliver actionable intelligence.
               </p>
